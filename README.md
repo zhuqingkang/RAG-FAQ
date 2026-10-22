@@ -182,6 +182,8 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 ## 配置速查（config.ini）
 
+> 仓库内提供脱敏的 `config.example.ini`；`config.ini` 含 DashScope API Key，已被 `.gitignore` 忽略，请复制样例并填写自己的 Key。
+
 | 段 | 关键项 | 当前值 |
 |---|---|---|
 | `[mysql]` | host / user / password / database | localhost / root / 123 / subjects_kg |
