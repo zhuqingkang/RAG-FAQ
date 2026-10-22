@@ -33,5 +33,8 @@ rag_qa/core/tmp_trainer/
 *空.py
 rag_qa/core/rag_system-2.py
 
+# ===== 本地离线文档（只在本地查看，不入库）=====
+readme/project-intro.html
+
 # ===== docker compose 数据卷（本地运行产物）=====
 milvus_redis/volumes/
