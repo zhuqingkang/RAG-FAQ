@@ -79,13 +79,13 @@
 
   <!-- 9 分类 -->
   <rect x="420" y="694" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
-  <text x="442" y="716" class="t">RAG ① 意图分类 + LLM 选检索策略</text>
-  <text x="442" y="735" class="s">当前实现：分类结果被固定为「专业知识」，其余策略未启用</text>
+  <text x="442" y="716" class="t">RAG ① 意图分流 + LLM 选检索策略</text>
+  <text x="442" y="735" class="s">通用知识直答；专业咨询分派到回溯 / 子查询 / HyDE / 直接检索</text>
 
   <!-- 10 检索 -->
   <rect x="420" y="772" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
-  <text x="442" y="794" class="t">RAG ② BGE-M3 混合检索 k=3</text>
-  <text x="442" y="813" class="s">dense 0.7 + sparse 0.3，可按 source 过滤 → 父块去重</text>
+  <text x="442" y="794" class="t">RAG ② 检索（按策略）→ 父块去重</text>
+  <text x="442" y="813" class="s">dense 0.7 + sparse 0.3，可按 source 过滤</text>
 
   <!-- 11 rerank -->
   <rect x="420" y="850" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
