@@ -1,0 +1,34 @@
+# ===== 模型权重：体积约 5.4 GB，不随仓库分发 =====
+# 请按 README「模型准备」章节从官方源下载后放到对应目录
+rag_qa/models/
+
+# ===== 运行产物 =====
+logs/
+rag_qa/data/.cache/
+**/__pycache__/
+*.py[cod]
+*.log
+
+# ===== 会话数据库（含真实对话记录）=====
+mysql_qa/data/*.db
+mysql_qa/data/*.db-shm
+mysql_qa/data/*.db-wal
+
+# ===== 本地配置（含 API Key，勿提交）=====
+config.ini
+
+# ===== 其它 =====
+.env
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ===== 训练中间产物（checkpoint 单文件可达数百 MB）=====
+rag_qa/core/bert_results/
+rag_qa/core/bert_logs/
+rag_qa/core/tmp_trainer/
+
+# ===== 本地重复/备份文件 =====
+*空.py
+rag_qa/core/rag_system-2.py

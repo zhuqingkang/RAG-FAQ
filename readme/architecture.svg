@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1040" viewBox="0 0 1240 1040" font-family="'Microsoft YaHei', 'Segoe UI', sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8ea2bf"/>
+    </marker>
+    <style>
+      .title { font-size: 24px; font-weight: 700; fill: #16233a; }
+      .subtitle { font-size: 13px; fill: #66788f; }
+      .band { font-size: 12px; font-weight: 700; fill: #4f7cff; letter-spacing: 1px; }
+      .node-title { font-size: 13.5px; font-weight: 600; fill: #16233a; }
+      .node-sub { font-size: 11.5px; fill: #5b6b85; }
+      .node-file { font-size: 12.5px; font-weight: 600; fill: #1e3a6b; }
+      .lane-title { font-size: 14px; font-weight: 700; }
+      .lane-sub { font-size: 11.5px; }
+    </style>
+  </defs>
+
+  <rect width="1240" height="1040" fill="#f6f8fc"/>
+  <text x="40" y="48" class="title">EduRAG 集成问答系统 · 项目结构图</text>
+  <text x="40" y="72" class="subtitle">一个服务、两条问答链路：FAQ（MySQL + BM25 + Redis）优先，未命中转 RAG（Milvus + BGE 精排 + 大模型生成）</text>
+
+  <!-- ================= 接入层 ================= -->
+  <text x="40" y="106" class="band">接入层 l 入口 / 前端</text>
+  <rect x="40" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="58" y="146" class="node-file">app.py</text>
+  <text x="58" y="168" class="node-sub">Flask 同步入口 · 127.0.0.1:5000</text>
+  <text x="58" y="188" class="node-sub">请求内直接阻塞执行</text>
+
+  <rect x="340" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="358" y="146" class="node-file">app_async.py</text>
+  <text x="358" y="168" class="node-sub">FastAPI 异步入口 · :8000</text>
+  <text x="358" y="188" class="node-sub">线程池 + 限流 + 单飞去重</text>
+
+  <rect x="640" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="658" y="146" class="node-file">templates/index.html</text>
+  <text x="658" y="168" class="node-sub">唯一前端页面（FAQ / RAG 共用）</text>
+  <text x="658" y="188" class="node-sub">会话列表 · 消息区 · 输入区</text>
+
+  <rect x="940" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="958" y="146" class="node-file">static/style.css · app.js</text>
+  <text x="958" y="168" class="node-sub">深色玻璃拟态 · 模式切换</text>
+  <text x="958" y="188" class="node-sub">引擎徽标 · 代码块复制</text>
+
+  <!-- ================= 路由层 ================= -->
+  <text x="40" y="242" class="band">路由层 l 统一调度</text>
+  <rect x="40" y="254" width="1160" height="96" rx="14" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
+  <text x="62" y="282" class="node-file">qa_router.py —— 唯一的路由判定，两个入口共用</text>
+  <text x="62" y="306" class="node-sub">answer_query(question, mode, source_filter) → {answer, engine, found, elapsed, note}</text>
+  <text x="62" y="328" class="node-sub">auto：FAQ 命中即返回，未命中/异常转 RAG　|　faq / rag：强制单链路　|　make_result / warm_up_faq / warm_up_rag / describe</text>
+
+  <!-- 路由到两条链路的箭头 -->
+  <line x1="330" y1="350" x2="330" y2="384" stroke="#8ea2bf" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+  <line x1="930" y1="350" x2="930" y2="384" stroke="#8ea2bf" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
+
+  <!-- ================= FAQ 链路 ================= -->
+  <rect x="40" y="386" width="570" height="372" rx="16" fill="#eefaf4" stroke="#8edcba" stroke-width="1.4"/>
+  <text x="62" y="414" class="lane-title" fill="#158a5c">FAQ 链路 · mysql_qa（毫秒级）</text>
+  <text x="300" y="414" class="lane-sub" fill="#3a8a6c">精确匹配型问答，走不通才转 RAG</text>
+
+  <rect x="60" y="428" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
+  <text x="78" y="451" class="node-file">utils/qa_service.py</text>
+  <text x="78" y="470" class="node-sub">线程安全单例 · jieba / BM25 预热入口 ensure_ready()</text>
+
+  <rect x="60" y="492" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
+  <text x="78" y="515" class="node-file">utils/mysql_qa_system.py</text>
+  <text x="78" y="534" class="node-sub">MySQLQASystem.query()：组合 MySQL + Redis + BM25</text>
+
+  <rect x="60" y="556" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
+  <text x="78" y="579" class="node-file">retrieval/bm25_search.py</text>
+  <text x="78" y="598" class="node-sub">jieba 分词 → BM25Okapi → softmax → 最高分 &gt; 0.85 才算命中（30 分钟定时同步）</text>
+
+  <rect x="60" y="620" width="255" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
+  <text x="78" y="643" class="node-file">cache/RedisClient.py</text>
+  <text x="78" y="662" class="node-sub">answer:{query} 缓存</text>
+
+  <rect x="335" y="620" width="255" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
+  <text x="353" y="643" class="node-file">db/MySQLClient.py</text>
+  <text x="353" y="662" class="node-sub">jpkb 表取答案 · 单连接加锁</text>
+
+  <rect x="60" y="684" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
+  <text x="78" y="707" class="node-file">utils/preprocess.py + base/logger.py</text>
+  <text x="78" y="726" class="node-sub">文本预处理（jieba.lcut + lower）· 全链路日志落到 logs/app.log</text>
+
+  <!-- ================= RAG 链路 ================= -->
+  <rect x="630" y="386" width="610" height="372" rx="16" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.4"/>
+  <text x="652" y="414" class="lane-title" fill="#5a3ec8">RAG 链路 · rag_qa（秒级）</text>
+  <text x="906" y="414" class="lane-sub" fill="#6b57c0">语义检索 + 精排 + 大模型生成</text>
+
+  <rect x="650" y="428" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
+  <text x="668" y="451" class="node-file">rag_qa/rag_service.py</text>
+  <text x="668" y="470" class="node-sub">单例（惰性初始化 · 线程安全 · 失败后 60s 冷却）· 预热时强制加载 BGE 模型</text>
+
+  <rect x="650" y="492" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
+  <text x="668" y="515" class="node-file">core/rag_system.py</text>
+  <text x="668" y="534" class="node-sub">RAGSystem.generate_answer(query, source_filter)：分类 → 选策略 → 检索 → 生成</text>
+
+  <rect x="650" y="556" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
+  <text x="668" y="579" class="node-file">core/query_classifier.py ＋ core/strategy_selector.py</text>
+  <text x="668" y="598" class="node-sub">BERT 意图分类（当前被强制为「专业知识」）· LLM 从 4 种检索策略中选 1 种</text>
+
+  <rect x="650" y="620" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
+  <text x="668" y="643" class="node-file">core/vector_store.py</text>
+  <text x="668" y="662" class="node-sub">BGE-M3 dense(0.7)+sparse(0.3) 混合检索 k=3 → 父块去重 → bge-reranker 取 Top2</text>
+
+  <rect x="650" y="684" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
+  <text x="668" y="707" class="node-file">core/prompts.py ＋ DashScope（qwen-plus 兼容接口）</text>
+  <text x="668" y="726" class="node-sub">拼 context + question + 客服电话 → 生成答案；无可靠上下文时兜底话术</text>
+
+  <!-- ================= 离线构建 ================= -->
+  <text x="40" y="792" class="band">离线构建 l 一次性入库（不在请求链路上）</text>
+  <rect x="40" y="804" width="1160" height="92" rx="14" fill="#fffaf0" stroke="#e8cf94" stroke-width="1.4"/>
+  <rect x="60" y="822" width="196" height="58" rx="9" fill="#ffffff" stroke="#ecd9ad"/>
+  <text x="72" y="843" class="node-sub" font-weight="600" fill="#8a6a1f">core/document_processor.py</text>
+  <text x="72" y="862" class="node-sub">目录清单 → 解析 → 父子切块</text>
+
+  <rect x="292" y="822" width="196" height="58" rx="9" fill="#ffffff" stroke="#ecd9ad"/>
+  <text x="304" y="843" class="node-sub" font-weight="600" fill="#8a6a1f">edu_document_loaders/</text>
+  <text x="304" y="862" class="node-sub">PDF/DOCX/PPTX/图片 · OCR</text>
+
+  <rect x="524" y="822" width="196" height="58" rx="9" fill="#ffffff" stroke="#ecd9ad"/>
+  <text x="536" y="843" class="node-sub" font-weight="600" fill="#8a6a1f">edu_text_spliter/</text>
+  <text x="536" y="862" class="node-sub">中文递归切分 1200 / 300</text>
+
+  <rect x="756" y="822" width="196" height="58" rx="9" fill="#ffffff" stroke="#ecd9ad"/>
+  <text x="768" y="843" class="node-sub" font-weight="600" fill="#8a6a1f">core/json_cache.py</text>
+  <text x="768" y="862" class="node-sub">catalog / documents / chunks</text>
+
+  <rect x="988" y="822" width="192" height="58" rx="9" fill="#ffffff" stroke="#ecd9ad"/>
+  <text x="1000" y="843" class="node-sub" font-weight="600" fill="#8a6a1f">VectorStore.add_documents</text>
+  <text x="1000" y="862" class="node-sub">批量编码 → upsert</text>
+
+  <line x1="256" y1="851" x2="288" y2="851" stroke="#c9a94f" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="488" y1="851" x2="520" y2="851" stroke="#c9a94f" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="720" y1="851" x2="752" y2="851" stroke="#c9a94f" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="952" y1="851" x2="984" y2="851" stroke="#c9a94f" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ================= 存储与基础 ================= -->
+  <text x="40" y="924" class="band">存储与基础 l 外部依赖 / 配置</text>
+  <rect x="40" y="936" width="275" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
+  <text x="58" y="963" class="node-file">Milvus · edurag_final</text>
+  <text x="58" y="984" class="node-sub">dense FLOAT16 + sparse，IP</text>
+  <text x="58" y="1002" class="node-sub">IVF_FLAT(nlist 128) / 倒排索引</text>
+
+  <rect x="335" y="936" width="275" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
+  <text x="353" y="963" class="node-file">MySQL jpkb ＋ Redis</text>
+  <text x="353" y="984" class="node-sub">问答对 / 问题列表 / 答案缓存</text>
+  <text x="353" y="1002" class="node-sub">subjects_kg 库 · db 0</text>
+
+  <rect x="630" y="936" width="275" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
+  <text x="648" y="963" class="node-file">SQLite chat_history.db</text>
+  <text x="648" y="984" class="node-sub">conversations / messages</text>
+  <text x="648" y="1002" class="node-sub">WAL · 线程本地连接</text>
+
+  <rect x="925" y="936" width="275" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
+  <text x="943" y="963" class="node-file">base/config.py · logger.py</text>
+  <text x="943" y="984" class="node-sub">config.ini 集中配置</text>
+  <text x="943" y="1002" class="node-sub">日志 → logs/app.log</text>
+</svg>

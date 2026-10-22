@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1240" height="1210" viewBox="0 0 1240 1210" font-family="'Microsoft YaHei', 'Segoe UI', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8ea2bf"/>
+    </marker>
+    <marker id="af" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a9c78"/>
+    </marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a5fd0"/>
+    </marker>
+    <style>
+      .title { font-size: 24px; font-weight: 700; fill: #16233a; }
+      .subtitle { font-size: 13px; fill: #66788f; }
+      .t { font-size: 13.5px; font-weight: 600; fill: #16233a; }
+      .s { font-size: 11.5px; fill: #5b6b85; }
+      .note { font-size: 11.5px; fill: #6b5a2f; }
+      .noteT { font-size: 12px; font-weight: 700; fill: #8a6a1f; }
+    </style>
+  </defs>
+
+  <rect width="1240" height="1210" fill="#f6f8fc"/>
+  <text x="40" y="42" class="title">EduRAG 集成问答系统 · 请求流程图</text>
+  <text x="40" y="64" class="subtitle">一次提问从进入服务到返回答案的完整路径（同步版逐步；异步版的差异在右侧标注）</text>
+
+  <!-- 连线：主脊 -->
+  <line x1="620" y1="122" x2="620" y2="144" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="620" y1="200" x2="620" y2="222" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="620" y1="278" x2="620" y2="300" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="620" y1="356" x2="620" y2="378" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="620" y1="434" x2="620" y2="456" stroke="#4a9c78" stroke-width="1.8" marker-end="url(#af)"/>
+  <line x1="620" y1="512" x2="620" y2="534" stroke="#4a9c78" stroke-width="1.8" marker-end="url(#af)"/>
+  <line x1="620" y1="590" x2="620" y2="612" stroke="#4a9c78" stroke-width="1.8" marker-end="url(#af)"/>
+  <line x1="620" y1="668" x2="620" y2="690" stroke="#7a5fd0" stroke-width="1.8" marker-end="url(#ar)"/>
+  <line x1="620" y1="746" x2="620" y2="768" stroke="#7a5fd0" stroke-width="1.8" marker-end="url(#ar)"/>
+  <line x1="620" y1="824" x2="620" y2="846" stroke="#7a5fd0" stroke-width="1.8" marker-end="url(#ar)"/>
+  <line x1="620" y1="902" x2="620" y2="924" stroke="#7a5fd0" stroke-width="1.8" marker-end="url(#ar)"/>
+  <line x1="620" y1="980" x2="620" y2="1002" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
+  <line x1="620" y1="1058" x2="620" y2="1080" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
+
+  <!-- 1 发起 -->
+  <rect x="420" y="70" width="400" height="52" rx="26" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
+  <text x="620" y="101" class="t" text-anchor="middle">用户在前端输入问题并发送</text>
+
+  <!-- 2 请求 -->
+  <rect x="420" y="148" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="442" y="170" class="t">POST /query</text>
+  <text x="442" y="189" class="s">{query, session_id, mode: auto|faq|rag, source}</text>
+
+  <!-- 3 校验 -->
+  <rect x="420" y="226" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="442" y="248" class="t">参数校验：query 是否为空？</text>
+  <text x="442" y="267" class="s">为空 → 400；mode 非法 → 回退 auto</text>
+
+  <!-- 4 会话 -->
+  <rect x="420" y="304" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="442" y="326" class="t">解析会话（SQLite）</text>
+  <text x="442" y="345" class="s">无 session_id / 不存在 → 新建会话，回填 cid</text>
+
+  <!-- 5 路由 -->
+  <rect x="420" y="382" width="400" height="52" rx="10" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
+  <text x="442" y="404" class="t">qa_router 判定 mode</text>
+  <text x="442" y="423" class="s">auto：先 FAQ 再 RAG　|　faq / rag：强制单链路</text>
+
+  <!-- 6 FAQ 缓存 -->
+  <rect x="420" y="460" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
+  <text x="442" y="482" class="t">FAQ ① Redis 有 answer:{query}？</text>
+  <text x="442" y="501" class="s">命中则直接返回缓存答案，不触发检索</text>
+
+  <!-- 7 BM25 -->
+  <rect x="420" y="538" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
+  <text x="442" y="560" class="t">FAQ ② 分词 → BM25 → softmax</text>
+  <text x="442" y="579" class="s">最高分 &gt; 0.85 才认为命中（否则转 RAG）</text>
+
+  <!-- 8 MySQL -->
+  <rect x="420" y="616" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
+  <text x="442" y="638" class="t">FAQ ③ MySQL jpkb 取标准答案</text>
+  <text x="442" y="657" class="s">写回 Redis → engine=faq</text>
+
+  <!-- 9 分类 -->
+  <rect x="420" y="694" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
+  <text x="442" y="716" class="t">RAG ① 意图分类 + LLM 选检索策略</text>
+  <text x="442" y="735" class="s">当前实现：分类结果被固定为「专业知识」，其余策略未启用</text>
+
+  <!-- 10 检索 -->
+  <rect x="420" y="772" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
+  <text x="442" y="794" class="t">RAG ② BGE-M3 混合检索 k=3</text>
+  <text x="442" y="813" class="s">dense 0.7 + sparse 0.3，可按 source 过滤 → 父块去重</text>
+
+  <!-- 11 rerank -->
+  <rect x="420" y="850" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
+  <text x="442" y="872" class="t">RAG ③ bge-reranker 精排 → Top2</text>
+  <text x="442" y="891" class="s">用父块正文拼 context，避免子块语义碎片化</text>
+
+  <!-- 12 生成 -->
+  <rect x="420" y="928" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
+  <text x="442" y="950" class="t">RAG ④ DashScope 生成答案</text>
+  <text x="442" y="969" class="s">rag_prompt(context, question, phone)</text>
+
+  <!-- 13 归一化 -->
+  <rect x="420" y="1006" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
+  <text x="442" y="1028" class="t">结果归一化 + 写入会话库</text>
+  <text x="442" y="1047" class="s">answer / engine / found / elapsed；单事务写一问一答</text>
+
+  <!-- 14 返回 -->
+  <rect x="420" y="1084" width="400" height="52" rx="26" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
+  <text x="620" y="1115" class="t" text-anchor="middle">返回 JSON → 前端渲染引擎徽标与耗时</text>
+
+  <!-- ============ 左侧分支 ============ -->
+  <line x1="416" y1="252" x2="366" y2="252" stroke="#8ea2bf" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="60" y="228" width="300" height="48" rx="9" fill="#fff4f6" stroke="#f3bcc6"/>
+  <text x="78" y="249" class="t" font-size="12">返回 400：query 不能为空</text>
+  <text x="78" y="267" class="s">日志 warning，不落库</text>
+
+  <line x1="416" y1="486" x2="366" y2="486" stroke="#4a9c78" stroke-width="1.5" marker-end="url(#af)"/>
+  <rect x="60" y="462" width="300" height="48" rx="9" fill="#eefaf4" stroke="#8edcba"/>
+  <text x="78" y="483" class="t" font-size="12">命中：直接返回答案</text>
+  <text x="78" y="501" class="s">engine=faq，毫秒级</text>
+
+  <line x1="416" y1="564" x2="366" y2="564" stroke="#4a9c78" stroke-width="1.5" marker-end="url(#af)"/>
+  <rect x="60" y="540" width="300" height="48" rx="9" fill="#fffaf0" stroke="#e8cf94"/>
+  <text x="78" y="561" class="t" font-size="12">未命中 / FAQ 异常</text>
+  <text x="78" y="579" class="s">auto 模式继续走 RAG，note 记录原因</text>
+
+  <!-- 未命中 → 跳到 RAG -->
+  <path d="M 210 588 L 210 720 L 414 720" fill="none" stroke="#c9a94f" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
+
+  <!-- ============ 右侧说明 ============ -->
+  <line x1="824" y1="174" x2="872" y2="174" stroke="#c9d3e3" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <rect x="876" y="138" width="324" height="76" rx="10" fill="#ffffff" stroke="#dbe3ef"/>
+  <text x="894" y="160" class="noteT">异步版（app_async.py）</text>
+  <text x="894" y="179" class="note">FAQ / RAG / DB 三套 CapacityLimiter 限流</text>
+  <text x="894" y="196" class="note">超时 30s / 180s；同题 single-flight 去重</text>
+
+  <line x1="824" y1="720" x2="872" y2="720" stroke="#c9d3e3" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <rect x="876" y="682" width="324" height="76" rx="10" fill="#ffffff" stroke="#dbe3ef"/>
+  <text x="894" y="704" class="noteT">启动预热</text>
+  <text x="894" y="723" class="note">FAQ：同步加载 jieba + 构建 BM25 索引</text>
+  <text x="894" y="740" class="note">RAG：后台加载 BGE-M3 / reranker，失败 60s 冷却</text>
+
+  <line x1="824" y1="1032" x2="872" y2="1032" stroke="#c9d3e3" stroke-width="1.3" stroke-dasharray="4 3"/>
+  <rect x="876" y="994" width="324" height="76" rx="10" fill="#ffffff" stroke="#dbe3ef"/>
+  <text x="894" y="1016" class="noteT">降级与兜底</text>
+  <text x="894" y="1035" class="note">落库失败只记日志，不影响回答</text>
+  <text x="894" y="1052" class="note">全链路无答案 → 「未命中」+ 兜底文案</text>
+
+  <!-- 图例 -->
+  <rect x="40" y="1160" width="12" height="12" rx="3" fill="#eefaf4" stroke="#8edcba"/>
+  <text x="60" y="1171" class="s">FAQ 链路</text>
+  <rect x="140" y="1160" width="12" height="12" rx="3" fill="#f4f0ff" stroke="#c0aeff"/>
+  <text x="160" y="1171" class="s">RAG 链路</text>
+  <rect x="240" y="1160" width="12" height="12" rx="3" fill="#eef3ff" stroke="#9db6ff"/>
+  <text x="260" y="1171" class="s">入口 / 出口</text>
+  <rect x="350" y="1160" width="12" height="12" rx="3" fill="#fffaf0" stroke="#e8cf94"/>
+  <text x="370" y="1171" class="s">分支与异常</text>
+</svg>

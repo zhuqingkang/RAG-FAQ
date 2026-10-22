@@ -1,0 +1,2048 @@
+学科名称,问题,答案
+Python学科,用上下文管理器实现函数运行时间的计算?,"import time
+import contextlib
+
+
+@contextlib.contextmanager
+def timing():
+    start = time.time()
+    yield None
+    end = time.time()
+    print(""函数执行时间是%d毫秒"" % (end - start))
+
+
+def func(number):
+    li = [1, 2, 4]
+    if number < 4:
+        return li[number - 1]
+    else:
+        if number > 3:
+            return func(number - 1) + func(number - 2) + func(number - 3)
+
+
+with timing():
+    print(func(30))"
+Python学科,"有字典{'a':1,'b':2,'c':3},现在有一个需求
+装饰器练习题","有一个 字典{'a':1,'b':2,'c':3},现在有一个这个需求：
+1).向字典中添加新的键值对，如果字典中的键，已经存在，则取消添加，打印提示：键已经存在。
+2).如果键不存在，则添加到字典中。（请使用装饰器来实现,顺便复习下*args和**kwargs的用法）
+
+
+def dict_check(func):
+    def wrapper(*args, **kwargs):
+        dict_obj: dict = args[0]
+        key = args[1]
+        if key in dict_obj.keys():
+            print(""键已经存在"")
+        else:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+class MyDict(dict):
+    @dict_check
+    def add(self, key, value):
+        self[key] = value
+
+
+d1 = MyDict({'a': 1, 'b': 2, 'c': 3})
+d1.add(""a"", 4)
+print(d1)
+d1.add(""d"", 4)
+print(d1)"
+Python学科,"两个人开发项目,我push到github上后
+别人直接pull可以看到我的代码吗
+为什么我要pull request 他才能看到我提交的代码","如果你本地的git仓库是已经和 git 服务器上的git仓库关联过的，修改文件之后，你只需要两步就可以把修改的内容同步到 git 服务器上：
+
+ 
+
+1. commit 也就是提交修改的内容到本地的 git 仓库
+
+2. push 推送本地 git 仓库到服务器 git 仓库
+
+ 
+
+别人想要看到你的更改，他自己 pull 一下，也就是拉去服务器 git 仓库的更新内容就可以看到了"
+Python学科,关联子查询的执行顺序是什么,"sql的编写顺序
+    select .. from .. where .. group by ..having .. order by ..
+sql的执行顺序
+    from .. where .. group by .. having .. select .. order by ..
+
+关联子查询 : 
+
+在关联子查询中，对于外部查询返回的每一行数据，内部查询都要执行一次。另外，在关联子查询中是信息流是双向的。外部查询的每行数据传递一个值给子查询，然后子查询为每一行数据执行一次并返回它的记录。然后，外部查询根据返回的记录做出决策。
+
+select * from dept d where exists(select * from emp e where e.deptno = d.deptno); 
+
+    特点
+        1. 先执行外层查询
+        2. 再执行内层查询
+
+非关联子查询:
+
+非相关子查询是独立于外部查询的子查询，子查询执行完毕后将值传递给外部查询
+    select * from emp where sal = (select max(sal) from emp);
+    特点
+        1. 先执行内层查询
+        2. 再执行外层查询"
+Python学科,定义类字典对象(继承于dict类)，如何修改读写字典元素方法,"class test(dict):
+
+	def __init__(self, item):
+		super().__init__(item)
+
+	def __getitem__(self, key):
+		if key == ""a"":
+			return 100
+		else:
+			return super().__getitem__(key)
+		
+	def __setitem__(self, key, value):
+		print(key, value)
+		super().__setitem__(key, value)
+
+t = test({""a"":1,""b"":2})
+print(t[""a""])
+print(t[""b""])
+print('---------------------')
+t[""b""] = ""haha""
+print(t[""b""])
+print('---------------------')
+print(t)"
+Python学科,Ubuntu上Navicat for MySQL 显示乱码,"找到 navicat 安装路径，用文本编辑器打开 start_navicat 文件，会看到 export LANG=""en_US.UTF-8"" 将这句话改为 export LANG=""zh_CN.UTF-8""，就可以了。"
+Python学科,为什么isalnum函数会通过中文,"需要在字符串的后面进行编码
+
+ 
+
+name.encode('utf-8').isalnum()
+
+ 
+
+这样才能实现正确的判断"
+Python学科,pycharm资源管理区域文件的显示更新,"{""answerText"":""{\""mid\"":\""f3c85641-9c54-4a12-a78d-b1cfe3d879a9\"",\""type\"":\""image/png\"",\""name\"":\""pycharm资源管理区域文件的显示更新.png\"",\""objectMeta\"":{\""width\"":752,\""height\"":1528}}"",""answerType"":""PIC""}"
+Python学科,如何在 Ubuntu 中快速创建Pycharm桌面快捷方式？,"官方也有关于pycharm在linux的桌面快捷设置，一条命令就可以搞定：
+
+$ sudo ln -s /opt/pycharm-2017.1.3/bin/pycharm.sh /usr/bin/pycharm
+注意: /opt/pycharm-2017.1.3 是 pycharm 文件的路径,这个要根据自己pycharm文件位置进行相应更改.
+
+在搜索框下输入pycharm:
+
+接下就把图标拖拽到桌面或者任务栏就可以了"
+Python学科,VMware安装VMware Tools时显示灰色如何解决,"1.关闭虚拟机；
+
+2.在虚拟机设置分别设置CD/DVD、CD/DVD2和软盘为自动检测三个步骤即可；
+
+3.再重启虚拟机，灰色字即点亮。"
+Python学科,"faild to load module canberra
+-gtk-module 报错",用 sudo apt-get install libcanberra-gtk-module   命令安装  libcanberra-gtk-module  模块
+Python学科,PyCharm使用中文版本还是英文版本,强烈推荐使用英文版本，中文版本虽然一时半会儿可以让你更快熟悉PyCharm这个软件的部分功能的使用，但是英文IT界内大部分人都是使用的英文版本，所以使用中文版本就会有沟通问题，当你碰到什么问题，或者想要学习更多新功能的时候，此时看到的资料大部分都是英文的。所以推荐刚刚开始学习的时候就使用英文版本，这时候如果有碰到英文单词不知道什么意思，建议用工具查一下并且记录下来，PyCharm软件常用的英文单词很少，而且含义单一，很好记忆
+Python学科,python3.7 64位版本pygame安装报错,"3.6可以正常通过pip install pygame  进行安装
+
+3.7版本需要通过whl进行安装 whl见附件，安装前需要解压缩，后缀名为whl的
+
+针对64位的方法进行解决的，首先安装pip install wheel
+
+在终端上cd到你的pygame的那个文件夹下输入以下内容
+
+pip install pygame-1.9.3-cp37-cp37m-win_amd64.whl即可正确安装"
+Python学科,"找不到可以连接的有效对等进程
+Could not open /dev/vmmon","在控制台运行下面命令
+
+sudo spctl --master-disable
+这样就开启了允许安装『任何来源』的配置
+
+这样就不会拦截软件的安装，而导致错误提示
+
+"
+Python学科,lxml的tree报错,原因是etree最低支持版本是3.4版本，用户的版本是3.3版本，解决办法是升级python环境
+Python学科,redis存储类型里面提到的“string类型是二进制安全的,"这个主要是和C语言里面的某些字符串处理函数比较，得到的概念，redis里面的字符串处理函数并不像C语言那样,使用'\0'作为判定一个字符串的结尾，而是使用了独立的 len，这样可以保证即使存储的数据中有'\0'这样的字符,它也是可以支持读取的"
+Python学科,如何创建线程安全的单例对象,"一、首先，复习下课程中的讲解的单例对象的代码。
+
+class Person(object):
+
+    __instance = None
+    __init_flag = False
+
+    def __new__(cls,name):
+        if cls.__instance == None:
+            cls.__instance = object.__new__(cls)
+            return cls.__instance
+
+        else:
+            return cls.__instance
+
+    def __init__(self,name):
+        if Person.__init_flag == False:
+            self.name = name
+            Person.__init_flag = True"
+Python学科,selenium使用chrome无头浏览器执行js代码,"准备工作：
+windows：
+    chrome浏览器更新到59版本以上
+    下载并安装chromedriver 下载地址：https://sites.google.com/a/chromium.org/chromedriver/ 下载对应版本的webdriver，下载后的webdriver驱动放置到我们的python安装目录或者放置到其他设置了环境变量的目录中
+     更新安装selenium到最新版本:  pip install -U selenium
+     安装完成后需要重启电脑，否则可能出现问题
+ubuntu
+    由于ubuntu默认安装的chrome版本最高到50 你需要手动更新chrome到最新版本，下载安装包并安装 下载地址https://www.google.com/chrome/thankyou.html?platform=linux&statcb=1&installdataindex=defaultbrowser
+    下载并安装chromedriver 下载地址：https://sites.google.com/a/chromium.org/chromedriver/ 下载对应版本的webdriver  webdriver 放到/usr/local/bin 中或者其他设置了环境变量的目录
+   更新安装selenium到最新版本 :    pip install -U selenium"
+Python学科,怎么获取MongoDB中某个集合中所有文档的键的名字,"db.things.insert( { type : ['dog', 'cat'] } );
+db.things.insert( { egg : ['cat'] } );
+db.things.insert( { type : [] } );
+db.things.insert( { hello : []  } );
+想获得唯一键
+
+type, egg, hello
+可以用MapReduce做到这一点：
+
+mr = db.runCommand({
+  ""mapreduce"" : ""my_collection"",
+  ""map"" : function() {
+    for (var key in this) { emit(key, null); }
+  },
+  ""reduce"" : function(key, stuff) { return null; }, 
+  ""out"": ""my_collection"" + ""_keys""
+})
+然后在生成的集合上运行distinct，以找到所有的键：
+
+db[mr.result].distinct(""_id"")
+[""foo"", ""bar"", ""baz"", ""_id"", ...]"
+Python学科,PyCharm只能以单元测试方式运行python代码怎么解决,方法或者类中包含 test
+Python学科,如何给某个特定的Python版本安装pip,"在 pip 的官网有介绍如何给 python 安装 pip
+
+主要是下载 get-pip.py 文件，使用想要安装 pip 的 python 解释器运行这个 py 文件就可以了。"
+Python学科,crawler spider中如何处理url返回respon,crawlspider 为我提供了一个方法，所以我们重写parse_start_url(response)方法即可，但是需要注意处理完成后的返回值
+Python学科,Screenshot: available via scre,"原因：
+
+webdiver没有提取到数据
+提取到数据但是元素包含在iframe标签中，iframe 元素会创建包含另外一个文档的内联框架（即行内框架，所以导致我们提取不到内部框架标签内容
+ 
+解决方法：
+
+    如果是没有提取到数据，则需要自己去检查具体原因
+    如果被包含在iframe标签则，使用driver.
+  使用 driver 的 switch_to 方法切换到iframe中，然后再使用find_element等方式提取想要的元素
+  或者直接使用xpath去提取数据
+"
+Python学科,使用crawlspider爬取aqi历史数据请求多,"原因：
+
+由于提取规则的问题导致2中链接都被提取到
+
+ 
+
+解决方法：
+
+修改提取规则
+
+修改后的提取链接：
+
+    Rule(LinkExtractor(allow=r'daydata\.php\?city=.+?&month=\d{4}-\d+'), follow=False, callback='parse_day')
+
+建议：
+
+    在使用crawler spider的时候构建提取规则的时候的提取规则一定要严谨，如果不严谨会导致出现类似的 提取链接多、提取链接缺失等问题，遇到类似的问题先考虑提取规则的问题"
+Python学科,爬虫处理返回的是gzip格式数据,"请求头中需要添加user-agent以外的其他信息例如cookie等
+
+    对获取下来的gzip数据进行解压缩解压缩方式
+
+     from io import StringIO,BytesIO  #python3 使用bytesio方法
+
+     from StringIO import StringIO  #python2使用
+
+     import gzip
+
+    #以下代码以python3位例子
+
+    buf = BytesIO(bytestr)       # bytestr就是获取的gzip数据
+
+    f = gzip.GzipFile(fileobj=buf)
+
+    html_response = f.read()    #得到解压缩的html内容
+
+"
+Python学科,windows如何安装redis,"    安装3.0.504版本 下载链接，https://github.com/MicrosoftArchive/redis/releases 如果安装其他一些版本建议卸载重现安装此版本，当前gitbub只维护64位版本，如果想使用32位版本请另行查找连接
+    安装redis过程中记得勾选把redis添加到环境变量，如果没有添加则需要自己把安装的redis添加到环境变量中
+    redis-server redis.windows.conf  启动redis server"
+Python学科,Pycharm不能动态获取用户设置的环境变量，需要设置,进行操作添加临时变量后再次使用代码就可以获取到新添加的环境变量
+Python学科,win10如何安装python虚拟环境以及爬虫环境,"以win10环境为例
+
+    windows安装虚拟环境
+安装python解释器建议直接安装python3最新版本，去python官网下载python解释器，根据操作系统版本32位还是64位下载对应的版本python解释器,仅仅安装python解释器其他的包不要安装
+启动cmd终端准备开始安装虚拟环境,执行一下命令：
+pip install virtualenv 
+安装 windows 版本的virtualenvwrapper，这个要比我们原始的virtualenv好用很多，执行命令：
+pip install virtualenvwrapper-win
+配置virtualenvwrapper 虚拟环境位置l想linux下面的.virtualenv，如果不做配置默认是C:\Users\用户\Envs，一把C盘空间不大所以我们把虚拟环境目录设置到其他空间比较大的目录
+4.1 创建工作目录，例如我这里创建在：D:\Envs
+4.2 为创建的工作目录设置环境变量，右键我的电脑
+到此配置virtualenvwrapper工作目录完成
+配置完成后重新启动cmd命令窗口，因为新配置的环境变量对当前dos窗口不生效"
+Python学科,pycharm专业版如何激活,"第一种方式：
+
+这种方式是在线激活，也就是说必须要联网，在激活后使用的过程中，也必须联网。。。
+
+不要把pycharm升级到最新版，如果你升级了，第一种方式可能就不能激活了。。。
+
+1.  打开pycharm。打开下面的选项：
+
+2. 在输入框中输入：http://idea.imsxm.com  然后点击 Activate即可。注意：这个网址，如果失效了，从网上重新搜索一个。
+
+第二种方式：
+
+这种方式属于离线方式，激活的时候需要联网，激活之后，正常使用的过程，不需要联网。
+
+1.  修改 hosts文件。windows和ubuntu是一样的，只不过文件存在位置不同。
+
+sudo vi /etc/hosts ,打开文件，在文件最后添加：0.0.0.0 account.jetbrains.com
+
+2. 使用 注册码 激活。注意：注册码是有时间限制的，网上再找一个激活码。
+
+把 激活码 复制进去，点击 OK。"
+Python学科,os.path.dirname() 方法有什么作用？,"1.os.path.dirname(file) 方法返回 file 文件所在的文件夹的路径
+file 是文件所在路径的字符串，可以是绝对路径，也可以是相对路径，dirname 方法本质上是通过 / 符号来切割字符串，找到 file 所在的路径。比如
+
+file = ""/Users/bravian/PycharmProjects/demo/test.py"", dirname 返回 ""/Users/bravian/PycharmProjects/demo""
+
+file= ""./demo/test.py""，dirname 返回 ""./demo""
+
+2.__file__ 和 os.path.abspath(__file__) 的值是一样的
+python解释器内置变量__file__ 的值是文件的绝对路径，所以__file__ 和 os.path.abspath(__file__) 的值是一样的
+
+"
+Python学科,cssrem设置的时候提示“系统找不到指定路径”如何解决？,"问题分析：
+对于 sublime text 来说，cssrem 的配置文件的路径是 Packages\cssrem\cssrem.sublime-setting 文件，而我们下载后，解压完得到的文件是 cssrem-mater，配置文件路径是 Packages\cssrem-mater\cssrem.sublime-setting，所以默认的路径就找不到 cssrem.sublime-setting 文件啦。
+
+解决办法：
+把 Packages 文件夹中的 cssrem-master 文件夹名字修改为 cssrem。"
+Python学科,Python中GC的垃圾回收算法是什么？,"在Python中对象的释放有两种方法，引用计数法，垃圾回收法，这里主要讲解GC的垃圾回收方法。
+
+GC的垃圾回收算法也有两种，标记-清除算法（mark-sweep）和分代（generational）算法。
+
+标记清除法
+通过标记清除法可以找到那些不可达的循环引用对象。在Python中，所有能够引用其他对象的对象都被称为容器(container)，只有容器之间才可能形成循环引用。Python的垃圾回收机制利用了这个特点来寻找需要被释放的不可达的循环引用对象。
+
+为了记录下所有的容器对象，Python将每一个容器都链到了一个双向链表中，使用双向链表是为了方便快速的在容器集合中插入和删除对象。有了这个维护了所有容器对象的双向链表以后，Python在垃圾回收时使用如下步骤来寻找需要释放的对象：
+
+对于每一个容器对象，设置一个gc_refs值, 并将其初始化为该对象的引用计数值。
+对于每一个容器对象，找到其引用的所有对象，将被引用对象的gc_refs值减1。
+执行完步骤2以后所有gc_refs值还大于0的对象都被非容器对象引用着, 至少存在一个非循环引用。因此不能释放这些对象，将他们放入另一个集合。
+在步骤3中不能被释放的对象, 如果他们引用着某个对象, 被引用的对象也是不能被释放的, 因此将这些对象也放入另一个集合中。
+此时还剩下的对象都是无法到达的对象，现在可以释放这些对象了。"
+Python学科,mongod.service not found 怎么解决,"原因分析
+直接到 mongodb 官网下载 mongodb 之后，默认情况下，在 linux 系统里面不存在以后台服务运行 mongod 所需要的配置文件 mongod.servie ，所以运行
+
+service mongod start
+命令会提示找不到 mongod.service 文件
+
+ 
+解决方法
+想要使用 service mongod start 以后台服务的形式启动 mongod，需要完成下面2步。
+
+1. 使用 nano 编辑器命令，创建 mongod.service 文件
+sudo nano /etc/systemd/system/mongod.service
+2. 在mongod.service文件中配置上服务对应的程序
+在打开的文件中，填写上下面的内容
+
+[Unit]
+Description=High-performance, schema-free document-oriented database
+After=network.target
+
+[Service]
+User=mongodb
+ExecStart=/usr/local/mongodb/bin/mongod --quiet
+
+[Install]
+WantedBy=multi-user.target
+其中
+
+/usr/local/mongodb/bin/mongod 
+是mongodb的mongod文件的路径，这个路径由你的 mongodb 的安装路径来决定。
+
+ 
+
+3. 使用 start 命令来启动 mongod 服务，使用 status 命令来查看 mongod 服务的运行情况
+sudo service mongod start
+sudo service mongod status
+正常启动后，使用 status 命令可以看到下面的信息"
+Python学科,Missing scheme in request url:,"原因：
+
+    scrapy中的spider 中的start_urls 必须是一个可迭代对象，而python中如果使用()来创建元组且只有一个元素的时候，需要有一个逗号才能创建元组start_urls = (‘http://www.baidu.com’,)
+
+注意事项：
+
+    start_urls要求必须是一个可迭代对象，可以是一个元组或者可以是一个列表
+    start_urls中的元素要求是完整url，例如https：//www.baidu.com  不要只写www.baidu.com
+解决方法：
+
+    如果使用元组，那么如果元素只有一个url那么元组后面需要添加一个逗号，或者直接是用列表 "
+Python学科,Tesseract OCR 中文库如何安装？,"sudo apt-get install tesseract-ocr-all  安装所有可用的语言包
+
+    详细的教程参考：https://www.howtoing.com/tesseract-ocr-installation-and-usage-on-ubuntu-16-04
+
+    里面同样详细介绍了tesseract的安装与使用
+
+    "
+Python学科,win7 fiddler4 安装https证书失败如何解决," 请参考播客文章   http://blog.csdn.net/qq_37579266/article/details/78301175
+
+    这个播客文章中有这详细的解决这个问题的步骤
+
+"
+Python学科,"scrapy genspider name domain
+创建spider有哪些注意点","1. scrapy genspider domain 创建spider的时候后面domain一定给正确的域名格式: baidu.com 而不是https://www.baidu.com/  genspider命令 会根据爬虫模板来创建spider，如果不正确使用，模板创建出来的spider出现问题如下图
+
+start_urls 中的url问题  需要自己验证url是否可用例如<http://www.itcast.cn/channel/teacher.shtml>用浏览器可以正常访问,<http://www.itcast.cn/channel/teacher.shtml/>  如果后面加上一个/以后发现不能正常访问，平常我们去访问https://www.baidu.com  https://www.baidu.com/ 大部分网站在url末尾的路径符号/有没有都可以正常访问，但是**有些网站url的匹配规则比较严格加上/以后就不能访问，例如上面的url例子**
+
+"
+Python学科,spider爬取图片后重命名不能创建新目录,"原因
+配置目录： PIC_DIR = './new_picture'
+构造目录代码：new_pic_name = PIC_DIR + new_name # new_name = 'lili.png'
+配置目录的后面/丢掉，且构造目录的方法使用的普通字符串加操作得到结果：new_pic_name = './new_picturelili.png' 出现错误
+
+解决方法
+1. 目录配置时候使用：PIC_DIR = './new_picture/' 后面的/不要丢掉
+2. 构造目录的时候使用os.path.join(PIC_DIR ,new_name) 构造，无论你配置的后面有没有/都可以正确执行得到正确的目录
+
+"
+Python学科,Phantom虚拟机默认访问127.0.0.1不能获取到数据,"原因
+ phantomjs内部域名解析问题, 没有找到具体原因
+
+解决方法
+1. 可以直接通过访问百度的域名ip地址直接获取资源 如上图
+
+2. 通过soocket 模块逆向解析获取域名ip 再通过得到的ip地址来获取资源
+
+import socket
+cur_ip = socket.gethostbyname('baidu.com')"
+Python学科,scrapy中item使用'.'点号的方式赋值出现错误,item继承与scrapy.Item 是一个类 字典的类型，而且比字典还会多一些错误校验的措施（例如定义的字段名字是title，但是赋值的时候使用item['tittle'] 这时候就会给我报错，如果我们使用的是普通字典则不会报错），使用方式与字典的方式一样使用。
+Python学科,chrome中xpath能提百度贴吧帖子链接，使用代码提不到,"原因：
+xpath 插件对获取到的源码做了部分优化, 初始的源码中贴吧的链接标签类属性中后面有空格<u>class=""j_th_tit ""</u>
+xpath插件把类属性中的空格给优化了所以导致我们的使用的xpath规则在代码中提取不到任何东西
+
+解决方法：
+遇到类似的xpath在chrom中能提取到正确数据而在程序中不能正常提取则可以考虑是这种情况导致的，
+思路： 启动xpath之前检查源码，启动xpath之后检查，对比两次的源码查看是否是这个问题导致"
+Python学科,urllib2.HTTPError:HTTP Error,"win7下面使用fiddler后使用urllib2出现以下问题urllib2.HTTPError: HTTP Error 504: Fiddler - Receive Failure
+
+原因：
+fiddler在win7下面有https证书安装的问题，也就是如果我们用的程序或者爬虫代码爬取https页面的时候会出现这样的一个问题。
+
+解决方法：
+ * win7下面不要使用fiddler来抓取https数据
+
+ * 使用wireshark替换fiddler或者直接使用chrom本身的调试工具
+ * 升级操作系统使用win8以上的系统
+
+"
+Python学科,爬虫爬取下来的数据写入文件有哪些方式,"爬取下来的数据格式不同，写入文件的方式也不同
+
+
+1. 爬取的数据是文本文件，则打开文件的方式**‘w'**模式打开并写入文件，例如f.write(<u>**content**</u>),则要求content是str的类型，如果爬取的到数据类型与其不匹配则转化到相应的格式
+
+
+2. 爬取的数据是图片、程序、视频等，则打开的文件方式**'wb'**模式，正常写入就可以。"
+Python学科,ubuntu 中如何安装Selenium,"ubuntu 中使用sudo apt-get install selenium，则可能会出现安装完成后selenium中的部分功能不能用,
+从官网上下载selenium安装包，使用手动的方式进行安装"
+Python学科,xpath中的 position 方法怎么理解,position 方法是相对于当前节点的父节点说的
+Python学科,not 运算符什么时候使用，有什么作用,"not 运算符可以用来对原来的 boolean 表达式的值进行取反运算，如果原来表达式的值是 True，经过not运算之后，表达式的值是 False; 如果原来表达式的值是 False，经过 not 运算之后，表达式的值是 True。
+
+# coding=utf-8
+
+# 举个栗子：
+# 假设已经有个变量表示是否生病，生病是 True, 没有生病是 False
+# 1. 如果老师今天没有生病，那么今天就约美女班主任老师去看电影
+# 2. 否则，如果是发烧，就去医院看医生
+# 3. 否则，如果是咳嗽，就去楼下药房自己买点药
+# 要表示上述的逻辑，就需要用到 not
+
+is_sick = False  # True 表示生病,False 表示没有生病
+sick_type = ""发烧""  # 病的种类
+
+if not is_sick:
+    print(""今天约美女班主任老师去看电影"")
+elif sick_type == ""发烧"":
+    print(""去医院看医生"")
+elif sick_type == ""咳嗽"":
+    print(""去楼下药房自己买点药"")
+
+# 这个例子中，因为我们已经定义好 is_sick 的语义，is_sick = False 表示没有生病
+# 所以如果 print(""今天约美女班主任老师去看电影"") 语句要执行，if 后面的表达式 ""xxx is_sick"" 必须为 True
+# 当 is_sick 为 False 情况下，想要 xxx is_sick 为 True，只需要对 is_sick 进行逻辑非的运算，
+# 所谓逻辑非运算，非 True = False，非 False = True，就是原来逻辑值的反值，这就是逻辑非运算的
+# 效果。在 Python 中，逻辑非的运算符就是 not 这个符号。
+# 当然，如果我已经有一个变量，is_sick ，当 is_sick = False 的时候表示生病，is_sick = True 的时候表示
+# 没有生病，那么 if 这里就不需要 not 运算符，当然这时这个变量取名为 is_not_sick 更好理解。"
+Python学科,is 运算符在iPython3中和PyCharm中结果不一致,对于Python而言，存储好的脚本文件（Script file）和在Console中的交互式（interactive）命令，执行方式不同。对于脚本文件，解释器将其当作整个代码块执行，而对于交互性命令行中的每一条命令，解释器将其当作单独的代码块执行。而Python在执行同一个代码块的初始化对象的命令时，会检查是否其值是否已经存在，如果存在，会将其重用（这句话不够严谨，后面会详谈）。所以在你给出的例子中，文件执行时（同一个代码块）会把a、b两个变量指向同一个对象；而在命令行执行时，a、b赋值语句分别被当作两个代码块执行，所以会得到两个不同的对象，因而is判断返回False。
+Python学科,用mkvirtualenv命令创建虚拟环境提示找不到命令,"方法一：
+
+在命令行里面执行下面的命令，初始化 virtualenvwrapper
+
+source /usr/local/bin/virtualenvwrapper.sh
+执行上述 bash 脚本之后，可以临时在环境变量中添加上 virtualenvwrapper 中的工具，但是关闭终端，下次再打开终端，仍然会找不到 virtualenvwrapper 里面的工具。
+
+方法二：
+
+#进入项目家目录,打开.bashrc文件
+cd ~
+vi .bashrc
+在 .bashrc 文件中，另起一行，添加如下内容：
+
+source /usr/local/bin/virtualenvwrapper.sh"
+Python学科,网络调试助手无法收到 ubuntu发送的包,"可能的原因：
+ubuntu发送的数据包windows没有关闭防火墙。
+
+解决办法：
+关闭windows防火墙"
+Python学科,字符串类型和数字类型怎么比较大小,"在Python2中，比较运算遵循以下规则:
+
+1. 数字和数字按大小排序 （数字类型包括 int, float, long, complex, bool）
+
+2. 字符串和字符串按字典序排序(str, 按 unicode 编码比较每个字符的大小)
+
+3. 数字类型和非数字类型比较，除None外,数字类型总是小于非数字类型。
+
+4. 两个非数字不同类型，按其类型名的字典序排序
+
+5. 第4点有一个特例，老式类的实例总是小于新式类
+
+6. 非数字/字符串类型的同一类型的不同实例的比较，如果类定义了__cmp__()方法，则用该方法比较
+
+7. 同上，若类型没定义__cmp__()方法， 则按实例在内存中的地址排序
+
+8. None < None
+
+9. 3，4，5，7 是CPython的实现，不是Python语言自身的标准，参见CPython implementation detail。Python语言规范只要求对非数字、非字符串类型的不同类型对象的比较，总是不相等的，比较结果可以是任意的，但必须是一致的（即多次比较，结果恒定）。
+
+在实际工程中，一般不会对不同类型的对象进行比较，因为没有实际意义。
+
+Python3对这个特性进行了改进 ( What’s New In Python 3.0 ), 规则如下：
+
+1. incomparable类型对象比较 <, <=, >=, > 会 raise TypeError 异常，比如1 < ''， 0 > None ，len <= len 都不再有意义，但是 None < None 会返回 Fasle
+
+2. incomparable类型对象比较 ！=, == 仍是合法的，不同类型的对象比较，总为False
+
+3. cmp()和__cmp__()方法被弃置了，取而代之的是__lt__()，__eq__()，__hash__() ...
+
+Python2  当初会设计这种比较规则，可能是为了便于对包含不同类型对象的容器排序。list.sort()和sorted()都仿照了C/C++里的sort。Python2.4后sort使用key来比较不同对象就更Pythonic。"
+Python学科,mv命令系统如何判断命令是改名字还是移动,"mv source target
+
+这里 source 表示源文件或者源目录，target 表示目标文件或者目标目录
+
+其判断逻辑是这样的：
+
+1. 首先判断 target 是不是一个已经存在的目录
+
+   1. 如果目标文件是到某一目录文件的路径，源文件会被移到此目录下，且文件名不变。
+   2. 如果目标文件不是目录文件，则源文件名（只能有一个源文件）会修改为目标文件名，并覆盖己存在的同名文件。如果源文件和目标文件在同一个目录下，此时mv的作用就是和改文件名等效。
+2. 另外，当目标文件是目录文件时，源文件或目录参数可以有多个，则所有的源文件都会被移至目标文件中。所有移到该目录下的文件都将保留以前的文件名。所以，上面案例中先判断 test1 是不是已经存在的目录，经过检测发现是目录，那么就把源文件移动到 test1 下面。
+
+"
+Python学科,为什么可以用2个对象接收一个函数,"此方法是在基础阶段最开始讲解函数部分，返回多个对象章节中讲到的
+
+当返回多个对象，接收参数的时候，如果多个参数，就需要对应多个变量接收
+
+如果只有一个对象，则会返回一个元组
+
+此方法为什么，方法的规定，具体可以查阅相关文档"
+Python学科,为什么不在同一网段的ip不能直接通信,这里 有一篇帖子 ：https://www.cnblogs.com/S-volcano/p/5032065.html 作为参考。
+Python学科,docker 创建容器的参数,"-p是映射端口
+
+-e是传递参数
+
+-network是映射网络"
+Python学科,归一化算法问题,"用(x1-x2)^2 是在计算两个特征的距离 来计算两个特征在空间中的距离
+
+就像你说的当两个特征的值差距太大，影响力会极端的不断等
+
+ 
+
+归一化的目的在于把所有的维度 缩放到一个固定的范围比方说 -1 ~ 1  之间
+
+ 
+
+ 
+
+这样子一来 所有的特征他们的影响力就是一样的了"
+Python学科,关于vim 退出,"w：保存
+q：退出
+wq 或 x：保存退出，wq 和 x 都是保存退出
+q！：强制退出
+w！：强制保存，管理员才有权限"
+Python学科,怎么让一个用python写的服务器.py程序一直运行呢,python-daemon 这个 python包 研究一下
+Python学科,def 末尾return None,"return None  跟不写, 没有任何区别"
+Python学科,全局变量可以在函数中定义么,"可以, 定义时加个global
+比如在函数里定义一个全局变量a:
+def func():
+    global a
+    a = 1"
+Python学科,绑定端口时为什么不需要写具体的ip地址呢,如果 不写的话 就是 绑定 自己的 本地的ip地址。
+Python学科,./run.sh 是什么意思,"""./""代表""本目录""的意思，所以""./run.sh"" 代表执行本目录下名为 run.sh 的文件"
+Python学科,pycharm导入模块的快捷键是什么,alt+enter
+Python学科,在方法中的局部变量，是不是无法被其他方法调用,方法 中的 局部变量 不能在 其他 方法里使用。如果想做到这样，可以 根据 情况 定义成 实例属性或者类属性
+Python学科,"数据库,明明关联会降低查询性能，为什么还会分出这么多表",因为 如果 都存 一张表里 很多 字段 都是重复的。太消耗 磁盘空间了
+Python学科,mac 安装mysql无配置文件,"mac 系统下。没有配置文件，需要自己手动创建。
+
+参考这篇帖子：https://blog.csdn.net/jyongchong/article/details/77862819"
+Python学科,live-server安装失败,降低node版本，使用sudo安装
+Python学科,"windows环境中验证码不显示
+OSError: cannot open resource","通过报错信息不能准确分析问题原因，初步分析：项目的图片验证码使用时需要actionj.ttf, Arial.ttf, Georgia.ttf 这三个字体，而在你的win中操作抛出异常OSError: cannot open resource，这个错误可能你的win中缺少对应的字体，需要查看一下win中的字体库，看是否缺少，缺少安装对应字体库，如果还不能解决，方便时可远程看一下（win中的字体库通常是在c盘windows/fonts）"
+Python学科,axis 的问题," axix = 0 在不同的方法看起来好像有不同的方向 但是掌握一个大原则
+
+使用0值表示沿着每一列或行标签\索引值向下执行方法
+使用1值表示沿着每一行或者列标签模向执行对应的方法
+主要是要看你给的什么标签，前面给的是行标签，还是列标签。"
+Python学科,vmWare三种网络模式：桥连接、net模式、仅主机模式区别,理解这个 需要 对 网络有 很不错的基础才行哦。https://www.linuxidc.com/Linux/2016-09/135521p3.htm  这里 有一篇文章你看看，能看懂最好，看不懂 也别纠结。知识储备 没到这个 程度。
+Python学科,"arrary切片, data[:,-1]","data是一个二维数组, data[:, -1]表示:
+[ : (取第一个二维数组的全部) , -1（取第二个二维数组的最后一个元素） ]"
+Python学科,没有middleware.py文件,需要 切换到 虚拟环境里 创建 爬虫项目
+Python学科,服务器uwsgi运行不起来,"如果是 502 的話說明虽然支持项目运行的uwsgi进程已经不再了。
+
+但是之前运行中的sock文件还在，并没有删除掉。当用户再次使用 uwsgi --ini my_uwsgi.ini 来运行服务器的时候，因为有之前的sock文件的存在，所以服务器并不会产生新的sock文件。自然服务也就无法运行。此时，及时使用uwsgi --stop uwsgi.pid命令也不会删除sock文件，因为这个时候系统已经找不到这个sock文件了。
+
+直接进入到项目的目录中，手动 rm -rf 删除掉sock文件。然后运行uwsgi --ini my_uwsgi.ini 就可以了。"
+Python学科,熵的解释,"可以简单粗暴的理解为『当混乱度越高 熵值就越高』
+
+从概率统计的角度看，熵是对随机变量不确定性的度量，也可以说是对随机变量的概率分布的一个衡量。熵越大，随机变量的不确定性越大。
+
+ 
+
+ 
+
+所以我们可以总结为 『熵是对随机变量不确定性的度量』"
+Python学科,jQuery中关于$符号的规则,$ 符号是 JQ 对象的一个简写，只要是透过 JQ 获取元素或者初始化的时候都需要添加
+Python学科,cls.pokes前为什么要加cls?不可以直接pokes.,pokes 如果是类属性，可以通过类对象获取到，一般 cls 表示类对象
+Python学科,Flask mysqldb Library not load,"因为你是使用的python3 ,MySQLdb是之前python2的，并不支持Python3， 使用时可以通过pymysql.install_as_MySQLdb()这句话，意思就是用pymysql来代替mysqldb"
+Python学科,“浮点型”转换成“整型”的问题,"浮点数 float 类型可以转 int 类型啊，只是转换之后会有精度丢失
+
+"
+Python学科,"app = Flask(__name__) name路径
+__name__所在的路径是否就是静态文件所在路径",__name__是确定Flask这个核心对象被创建的根目录，以便接下来获得静态文件和模板文件的目录是以这个根路径为基础。
+Python学科,select模块里只有poll()方法没有epoll()方法,mac电脑 是不支持 epoll的 ，epoll的代码 你需要在 ubuntu里写
+Python学科,大数字除法不精准问题,使用 decimal 模块 可以解决这种 精度问题
+Python学科,虚拟机桥接模式后不能上网,切换成 nat模式
+Python学科,什么是SerializeToString,"SerializeToString()序列化为字符串
+
+ 
+
+也就是将我们的 example 序列化排排队排好
+
+ 
+
+在 tf 中我们需要将写入的内容序列化之后才有意义而且避免内存泄露"
+Python学科,"Flask routing BaseConverter
+Flask 类属性weight代表什么？","Flask routing BaseConverter 里类属性weight的作用是什么？.
+
+这个weight咱们用的并不多，可以理解成转化器的权重，好比有两个相同路由，所使用转换器不通，可以通过weight配置权重"
+Python学科,getattr作用,"返回对象属性值。
+
+class A(object):
+
+      bar = 1
+
+a = A()
+
+c=getattr(a, 'bar')
+
+print(c)"
+Python学科,实例变量/实例方法怎么理解,"举个例子什么是实例
+
+人类，是人的类，不是一个具体，但是小明，就是一个具体的实例
+
+具体到代码上
+
+class Person():
+
+
+      def test1(self):
+
+             pass
+
+小明=Person()
+
+小明.test1()
+
+小明就是实例，通过小明调用的方法，都是实例方法，也就是带self的
+
+比如test1就是实例方法，是必须通过实例调用才可以的，而不可以通过Person.test()这种方式"
+Python学科,python -m ,"python xxx.py
+python -m xxx.py
+这是两种加载py文件的方式:
+1叫做直接运行
+2相当于import,叫做当做模块来启动"
+Python学科,sys模块中的exit与pygame中的exit方法的区别,"sys.exit 执行会直接退出程序，这也是经常使用的方法，也不需要考虑平台等因素的影响，一般是退出Python程序的首选方法。
+退出程序引发SystemExit异常,(这是唯一一个不会被认为是错误的异常)， 如果没有捕获这个异常将会直接退出程序执行，
+当然也可以捕获这个异常进行一些其他操作（比如清理工作）。
+
+sys.exit()函数是通过抛出异常的方式来终止进程的，也就是说如果它抛出来的异常被捕捉到了的话程序就不会退出了，
+而是去进行一些清理工作。
+
+SystemExit 并不派生自Exception 所以用Exception捕捉不到该SystemEixt异常，应该使用SystemExit来捕捉。
+该方法中包含一个参数status，默认为0，表示正常退出， 其他都是异常退出。
+还可以这样使用：sys.exit(""Goodbye!""); 一般主程序中使用此退出. "
+Python学科,如何实现在一段字符串中显示某个字符串多次出现的位置,"例如""hello world hello python""中o出现的位置，显示结果为（4，5，16，23）
+
+li = ""hello world hello python""
+
+
+def findall(li):
+    ret_li = []
+    start_index = 0
+
+    while True:
+        ret = li.find(""o"", start_index)
+        if ret != -1:
+            ret_li.append(ret)
+            start_index = ret + 1
+        else:
+            break
+    return ret_li
+
+
+print(findall(li))"
+Python学科,pycharm拖动静态文件到templates文件夹,"pycharm拖动静态文件到templates文件夹时，无法像课件那样自动更改html中导入的js图片路径
+在templates里面的文件，才会随着你的拖动而修改，在外面拖动进来的不会修改"
+Python学科,父进程会不会等待子进程结束才结束,"不会等待, 除非设置join方法, 否则父进程退出后，是不会通知子进程的，这个时候子进程会成为孤儿进程，最终被init进程收养"
+Python学科,jinja2模板没有自动补全,电脑没有反应过来清缓存重新加载
+Python学科,__name__	与__qualname__的区别,"官方解释：https://www.python.org/dev/peps/pep-3155/
+
+__qualname__ 叫做  限定名称。只有在 函数嵌套、类嵌套、或者方法嵌套的时候，才会和 __name__不同。非嵌套情况下 两者相等。
+
+嵌套之后，__qualname__ 就是 点分的路径。"
+Python学科,write()方法覆盖问题,write方法 是否覆盖 文件内容，是由 文件打开模式 决定的。如果 不想 覆盖文件原来的内容 就 使用 a 模式打开。a模式打开之后 就不会覆盖 原来的信息了。
+Python学科,无法CD到var/log下的redis文件夹中,想进入这个文件里，可以先su 切换到root账户，在cd redis
+Python学科,如何判断字符串中含有特殊字符,"调用 isalpha方法, 如果返回True, 那么就没有特殊字符"
+Python学科,实例方法、类方法和静态方法,"实例方法
+
+    定义：第一个参数必须是实例对象，该参数名一般约定为“self”，通过它来传递实例的属性和方法（也可以传类的属性和方法）；
+
+    调用：只能由实例对象调用。后面主要使用的，用于创建对象，使用对象
+
+类方法
+
+    定义：使用装饰器@classmethod。第一个参数必须是当前类对象，该参数名一般约定为“cls”，通过它来传递类的属性和方法（不能传实例的属性和方法）；
+
+    调用：实例对象和类对象都可以调用。 类方法的使用通常是系统本身使用的，我们一般开发不常用这个
+
+静态方法
+
+    定义：使用装饰器@staticmethod。参数随意，没有“self”和“cls”参数，但是方法体中不能使用类或实例的任何属性和方法；
+
+    调用：实例对象和类对象都可以调用。主要用于封装比如数据库类使用的时候"
+Python学科,把一个元素全为数字的列表中的所有偶数加1,"这个问题我们需要遍历整个，然后把每个元素的 index 出来
+
+然后用一个条件判断筛选所有的偶数
+
+ 
+
+接下来把这些偶数的 index 的数值 + 1
+
+list1 = [1,2,3,4,5,6,7,8 ]
+p = len(list1)
+for i in range(p):
+    if list1[i] % 2 == 0:
+        list1[i] += 1
+print(list1)"
+Python学科,redis端口和连接,"redis的默认端口是6379，通过对redis的配置文件修改，可以修改端口
+
+终端无法启动redis，可以查看一下redis安装是否正常
+
+可以参考以下文章
+
+https://www.cnblogs.com/zongfa/p/7808807.html"
+Python学科,SQLAlchemy 多对多中间表 操作命令,"我看到以下这篇文章，是用于多对多的，你可以参考一下，希望能够对你有帮助
+
+https://blog.csdn.net/aimill/article/details/80744322
+
+ "
+Python学科,使用循环手工输入5个整数，将其存入列表，打印出最大值和最小值,"import re
+ 
+s = input('请输入5个整数以空格隔开: ')
+nums = [int(i) for i in re.findall(r'\d+', s)]
+ 
+zuida, zuixiao = max(nums), min(nums)
+print('最大值是{}，位于第{}'.format(zuida, nums.index(zuida) + 1))
+print('最小值是{}，位于第{}'.format(zuixiao, nums.index(zuixiao) + 1))"
+Python学科,解释器与集成开发环境的本质区别,"解释器     相当于空气，人类没有空气就直接死了
+
+开发环境  相当于人不仅需要空气，还需要吃喝
+
+ 
+
+专业来说：解释器相当于你的代码转换为计算机所认识的语言
+
+开发环境：你的代码不仅仅需要解释器，还需要其他的外部支持"
+Python学科,递归调用最大层级1000次是只有python这样吗,"php最大递归调用 256次
+
+node.js 最大递归调用 15681次
+
+Chrome 最大递归调用 15665 次
+
+Firefox 最大递归调用 174556 次
+
+每种语言还有环境都有自己的限制"
+Python学科,如何查看python里函数的帮助,"在函数上点击ctrl，鼠标在点击那个函数，即可看到函数的源码内容以及注释了
+
+这部分内容，在python基础里面有说明，可以回顾视频"
+Python学科,MAC地址是指的什么,可以认为是 交换机等 数据链路层设备 用来 传输数据的 地址。ip地址 是用来 路由器等 网路设备之间 传输 数据的地址。
+Python学科,变量可以私有化,"變量的確可以被私有化，
+
+python中用下划线控制变量权限
+①不加下划线,如(count): 表示公有变量,可以在类内部和外部访问
+②前置单下划线(如count):表示私有化属性和方法,应该被视为API中非公开的部分（不管是函数、方法还是数据成员),那么以“”开头的名称都不会被导入，除非模块或包中的“all”列表显式地包含了它们
+③前置双下划线(如 _count):Python中的这种用法是为了避免与子类定义的名称冲突,无法在类外部访问(原因:name mangling名字重整),单下划线是Python程序员使用类时的约定，表明程序员不希望类的用户直接访问属性。仅仅是一种约定！实际上，实例.变量，可以被访问
+④名称前后的双下划线(如init):表示Python中特殊的方法名,""魔法函数"""
+Python学科,如何利用径向神经网络解决异或问题,"在数字逻辑中，异或是对两个运算元的一种逻辑分析类型，符号为XOR或EOR或⊕。
+
+与一般的或（OR）不同，当两两数值相同时为否，而数值不同时为真。
+
+那么我们要如何来选择神经元呢？
+
+输入：我们一共有四个训练样本，每个样本有两个特征，分别是(0, 0), (1, 0), (0, 1), (1, 1);
+理想输出：参考上面的真值表，样本中两个特征相同时为0，相异为1
+隐藏层的部分，我们需要两个神经元分别来计算到输出曾之前 0, 1的可能性"
+Python学科,使用celery报错 ModuleNotFoundError,"celery -A celery_tasks.main worker -l info 运行
+
+报错 ModuleNotFoundError: No module named 'c'
+
+这个问题可能在于在模块引入的时候没有尽到根目录"
+Python学科,激活码从哪里获得,http://47.93.248.15/pycharm/  文章，你可以访问以下，按照文章进行破解，如果无法破解成功，请联系老师远程为你操作
+Python学科,什么是cart算法,"CART 算法可以做分类 也可以做回归，我们今天就讨落在决策树上的使用，也就是在分类上。
+
+ 
+
+跟 ID3, 不同，CART 算法是直接把特征进行二分。比 Id3 效率更高 
+
+CART分类树算法使用基尼系数来代替信息增益比，基尼系数代表了模型的不纯度，基尼系数越小，则不纯度越低，特征越好。这和信息增益(比)是相反的。"
+Python学科,函数和类区别,python中 一切皆 对象。函数 也是一个 对象。类 实际也是一个 对象。 函数和类，他们的 类型不同，语法不同，其他 区别  我们 不关心。面向对象 编程 类和函数 都可能用到，所以 没什么 适用不适用 这一说
+Python学科,虚拟环境使用,"每个虚拟环境尽量只创建一个项目,因为使用虚拟环境的目的，就是怕多个项目之间存在版本差异"
+Python学科,python 单引号的使用,"单引号字符串：'abc' 
+如果在单引号使用双引号，中间的内容会当作字符串打印, 比如:'ac""123""d'"
+Python学科,Non-ASCII character '\xe5' in ,可以在python文件最上方加上  # -*- coding:UTF-8 -*-  这句话
+Python学科,特征值、目标值占位符的作用是什么,"特征值的作用是帮我们用来推测目标值
+
+ 
+
+ 
+
+比如说  『1, 3, 5, 7,9 是奇数』
+
+ 
+
+从这句话中 1, ,3, 5, 7, 9 就是 特征值 奇数 是目标值
+
+ 
+
+一个计算图应该被参数化来接受输入，这就是占位符，占位符告诉程序，它占的这个位置，之后会有输入进来，用tf.placeholder()实现。"
+Python学科,什么是张量,"你可以当做是一个多维的数组，维度可以是0，也可以是10
+
+0维张量的是一个标量
+
+1维张量的是一个向量
+
+2维张量的是一个矩阵
+
+还有3维、4维。。。
+
+3维可以看做是矩阵构成的向量
+
+4维可以看做是3维张量构成的向量"
+Python学科,"fit_transform, fit","fit方法是用于从一个训练集中学习模型参数，其中就包括了归一化时用到的均值，标准偏差。
+
+ 
+
+transform方法就是用于将模型用于位置数据，fit_transform就很高效的将模型训练和转化合并到一起，训练样本先做fit，得到mean，standard deviation，然后将这些参数用于transform（归一化训练数据），使得到的训练数据是归一化的，而测试数据只需要在原先得到的mean，std上来做归一化就行了，所以用transform就行了。
+
+ 
+
+fit_transform 则是 先 fit 在 transform"
+Python学科,deepcody,"这是深复制.
+我们寻常意义的复制就是深复制，即将被复制对象完全再复制一遍作为独立的新个体单独存在。
+
+所以改变原有被复制对象不会对已经复制出来的新对象产生影响。 "
+Python学科,print(0 and False)得到的结果怎么是0,"and 二边返回的是结果，2边的结果必须都是1才为1
+
+ 
+
+所以你这个结果是0
+
+ 
+
+1 and False    0
+
+0 and False  0
+
+1 and 1        1
+
+0 or False 0
+
+1 or False  1"
+Python学科,Django的前端页面显示不出来,"当执行127.0.0.1：8000/register.html的时候怎么设置urls让它显示?
+
+
+127.0.0.1：8000/register，设置urls为register，没有后缀名html，通过模板转发到register.html"
+Python学科,加载html网页时，如果出现html是汉字命名,"可以通过以下方法进行转换
+
+from urllib.parse import unquote
+
+get_file_name = unquote(get_file_name)"
+Python学科,pycharm导包时出于灰色状态,灰色 是因为 你在代码里 还没使用 导入的 类或者方法。这个 不是错误。
+Python学科,process.queue()和manger().queue,multiprocessing.Queue 实现了 一些 额外的方法，这些方法是 manger().queue() 里 没有的。但是 这些 额外方法，在大部分代码里 是 用不到的。所以基本上 可以认为这俩队列是一样的。
+Python学科,"[None,28*28,1]28*28是一张图片的像素吗","28*28 的意思是 输入的格式为 28*28的方式
+
+的确也是因为图片一张是 28*28像素的原因才做这样的设置"
+Python学科,代码上方会表明编码格式 # coding:utf-8,python2 中 不支持中文，所以 代码第一行 会写上 # coding:utf-8 ，用来支持中文的。Python3中 默认情况下是 支持 中文的，所以不用写
+Python学科,进程通信为什不用全局变量来实现,"进程之间 不 共享 全局变量，所以用 全局变量是不行的。
+需要用队列queue来进行通信"
+Python学科,if else 能返回上一级继续判断吗,if else  做不到 这样的 逻辑  循环可以
+Python学科,print和return在打印和接收数据的区别,"1、print是直接输入内容到终端上
+
+2、return的意思是返回，具体来说如下
+
+def test1():
+
+        print(""1"")
+
+ 
+
+当你调用test1()时候，执行了print(“1”)在终端上输出了了
+
+def test1():
+
+    return ""1""
+
+当你调用test1()时候，是什么都没发生，因为是这个函数返回了一个1，但是你没处理，需要做如下处理
+
+a=test1()
+
+print(a)
+
+这样我把返回值接收以后在打印"
+Python学科,使用 变量 += 元组 时，为什么会自动对元组进行拆包,"1、是固定语法
+
+2、+=是相当于2个集合合并
+
+3、举例来说，相当于a=[1,2,3] b=[4,5,6],a+=b  是把b的每一个元素追加到a中，a=[1,2,3,4,5,6]
+
+4、同样道理，你代码中追加元组进去，会把元组每一个追加进去"
+Python学科,使用more命令时，按f可以向下翻，按b不会往回走，没反应,"Ctrl+f 向下滚动一屏
+Ctrl+b 返回上一屏"
+Python学科,K-means算法中，求的是谁的平均值,"K-means的思路是这样的​​​​​​​
+
+首先，随机确定K个初始点作为质心；
+然后，将数据集中的每个点分配到一个簇中，具体来讲，为每个点找距其最近的质心，将其分配到改质心对应的簇；
+接着，每个簇的质心更新为该簇所有点的平均值。
+
+按照这样的思路无限循环, 直到质心不更新为止"
+Python学科,python私有属性/方法中单下划线和双下划线区别,"单下划线没有意义(一般是提示程序员这个变量当私有变量来处理, 但是外部还是可以进行调用, 所以只是一个提示作用, 有经验的程序在看到这种变量的时候都会将其作为私有变量来处理)，双下划线是在对象初始化以后，外部无法调用"
+Python学科,列表中那么多的数，我想实现相邻两个数只差怎么办,"比如，
+
+一个列表a有2个数字[2, 6]，你的计算结果是 [6-2]，实际上是 [a[1]-a[0]]
+
+一个列表a有3个数字[2, 6, 8]，你的计算结果是 [6-2, 8-6]，实际上是 [a[1]-a[0], a[2]-a[1]]
+
+一个列表a有4个数字[2, 6, 8, 15]，你的计算结果是 [6-2, 8-6, 15-8]，实际上是 [a[1]-a[0], a[2]-a[1], a[3]-a[2]]
+
+ 
+
+所以，你总结出规律了么
+
+a = [1, 2, 3, 4, 5, 6]
+i = 0
+r = []
+while i < len(a) - 1:
+    r.append(a[i + 1] - a[i])
+    i += 1
+print(r)"
+Python学科,Linux高级编程中ubantu可以换成centos吗,"可以，都一样
+
+就是Ubuntu是传智提供的，已经安装好python3和mysql
+
+如果你自己安装centos，就需要自己安装python3和mysql"
+Python学科,为什么要在vim模式下写python,"1、简单直白点就是练习你打字速度
+
+2、以后可能需要临时修改点代码，就直接用vim编辑了
+
+3、锻炼你使用vim编辑器能力"
+Python学科,已经commit了还能rollback吗,"commit是提交事务，rollback是当事务出现错误的时候才会回滚，也就是数据撤回
+
+所以commit完成后，无法通过rollback回滚"
+Python学科,移动设备也有固定的IP地址吗,移动设备 也会有 ip地址 ，默认 ip地址 是动态分配的哦，不是固定的。
+Python学科,在 vim 状态怎么进入编辑模式,使用 vim 打开文件后，按 i或者a 进入 编辑模式
+Python学科,gevent中的join(),join 方法 的作用 实际上 是让 主线程 阻塞，等所有的 协程 执行完了 ，主线程再继续执行。如果 不加join，主线程 结束之后，协程也会跟着结束。所以要加 join 。web服务器中 不加join 是 因为 主线程是 死循环，不会结束。所以不加join也可以
+Python学科,CTRL +c 是中断什么的,"ctrl + c 是中断当前程序的运行
+
+当你在 终端里面运行一个程序的时候，如果这个程序运行了很久还没有停止，你又想要做其他事情，这个时候你要么重新开一个终端做其他事情，要么中断当前正在运行的程序。"
+Python学科,init的变量设置时，什么时候需要使用None,如果 你定义了一个变量 ，但是暂时不想给 这个变量赋值，那么你可以把 这个变量 设置成None。把 变量的值 设置成None，不影响 以后的赋值
+Python学科,用什么方法计算selenium通过chrome下载文件的速度,这个部分跟您的网路设置有关，目前并没有计算的方法
+Python学科,桥接后怎么就没有了ipv4 的地址,学校的网，必须要 使用nat模式才行
+Python学科,tuple index out of range,"tuple index out of range意为元组指数超过范围
+
+在这里format里面的参数和前面的槽是一一对应的，因此当槽的个数大于参数时就会出现报错
+
+所谓的 tuple 就是元组
+
+Python的元组与列表类似，不同之处在于元组的元素不能修改。
+
+元组使用小括号，列表使用方括号。
+
+元组创建很简单，只需要在括号中添加元素，并使用逗号隔开即可。
+
+ 
+
+如果需要进一步的关于如何操作元祖的话可以参考这个链接
+
+http://www.runoob.com/python/python-tuples.html"
+Python学科,"xshell中,scp不是内部或外部命令",scp 是 用于 两个 linux系统之间 赋值文件的。不适用于 windows
+Python学科,vim中在行前加入“# ”号的快捷键是什么？即单行注释快捷键,"Step 1：在命令行模式下，将光标固定在第一列，按Ctrl+V快捷键进入VB可视化模式：
+
+Step 2：上下移动光标，选择你想要注释的行：
+
+Step 3： 选择好之后，按**大写的**I键进入insert模式，输入注释符“//”或“#”：
+
+Step 4：最后按ESC键(两次)，选择的多行已经注释掉啦，吼开森~
+
+Step 5：取消多行注释时同样重复Step1-Step2，但此时光标选中注释符，并选好行数之后。只需按d键（小写），注释就被删除啦：
+
+https://blog.csdn.net/summy_j/article/details/75104748
+
+ 
+
+操作比较复杂，一般不建议，如果你要编辑内容比较多，可以先把文件下载下来编辑在上传"
+Python学科,python里的多态是什么意思,"python的多态，在课程中有讲解
+
+主要是面对对象的三大特性  封装、多态、继承，以下是关于介绍多态
+
+https://baijiahao.baidu.com/s?id=1592874973987555433&wfr=spider&for=pc"
+Python学科,请问有没有什么函数或内置属性可以用来查看某个类的父类是谁,在定义类的时候，你不写是默认继承自obj类，如果写就是指定的类，实际上最基类都是obj
+Python学科,tcp服务器和客户端是什么意思,"客户端就是类似你打王者荣耀的手机
+
+服务端就是你这些数据要保存在服务器上，让别人也能访问到"
+Python学科,多种内置属性的含义,"__name__: 类名
+
+__module__: 类定义所在的模块（类的全名是'__main__.className'，如果类位于一个导入模块mymod中，那么className.__module__ 等于 mymod）
+
+__dict__ : 类的属性（包含一个字典，由类的数据属性组成）
+
+https://www.cnblogs.com/yangliguo/p/8178135.html
+
+这边有很详细的解释"
+Python学科,"飞机大战内存释放
+在while true里面一直贴图片, 怎么释放的内存",释放内存是通过系统的gc进行释放的，属于是自动释放，具体原来是根据引用计数的方式，当该对象引用计数为0的时候，就自动释放了
+Python学科,mac的PyCharm是不是不能用epoll,"epoll是liunx 2.6内核增加的新功能
+
+ 
+
+所以要在  Linux 下才可以唷"
+Python学科,为什么说python是一种胶水语言,"胶水可以黏接两种不同的材质，而 python 也具备有这样的特质
+
+python在大多数场合的性能已经够用，不需要借助其他语言或者干脆只是充当脚本的作用。
+
+自己就可以来，所以说他像胶水一样"
+Python学科,"做tcp,绑定的端口老是会提示呗占用","这个问题是因为你在第一次使用的时候端口就已经被占用了
+
+如果想要在使用的话需要把原本的终端机彻底关闭
+
+这样子才能使用同样的端口号"
+Python学科,如何用公有方法获取在类里面定义的私有属性,"class Person(object):
+    def __init__(self,name,age):
+        self.name = name
+        self.__age = age
+
+    def get_age(self):
+        return self.__age
+
+xx = Person(""xx"",19)
+print(xx.get_age())"
+Python学科,公有属性和公有方法不明白,公有属性，就是 前面不加俩下划线的属性。公有方法 也是一样的。
+Python学科,遇到python内置类型使用错误,int('6') 提示不是一个callback 检查 前面的代码是不是把内置int替换赋值成其他数 int = 100 ，导致我们int此时是一个变量而不是一个函数
+Python学科,正则匹配密码强度,"要求密码包含特殊字符【数字键盘0~9上面的字符】，数字，字母区分大小写，密码长度至少8位最多16位
+分析：
+- 确定字符串长度 .{8,16}
+- 特殊字符 [!@#$%^&*()]
+- 数字 \d
+- 小写字母 [a-z]
+- 大写字母[A-Z]
+- 怎么去处理一个字符中必须包含指定的字符【先行断言】
+
+#1. 保证字符串匹配8~16个字符
+re.search(r'.{8,16}','1aga')
+
+#2. 要求字符串包含特殊字符
+re.search(r'(?=.*[!@#$%^&*()]).{8,16}','1aga#$aaa')
+
+#3. 要求字符包含数字
+re.search(r'(?=.*[!@#$%^&*()])(?=.*\d).{8,16}','aga#$aaa6')
+
+#4. 必须有大小写字母
+re.search(r'(?=.*[!@#$%^&*()])(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,16}','aga#$aaa6')
+
+#保证字符必须是8~16个以内  ^$ 界定符保证长度
+re.search(r'^(?=.*[!@#$%^&*()])(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,16}$','aga#$aaa6Aag')"
+Python学科,input 函数解释,"使用方式：data = input(""提示信息"")
+解释： input方法用于接收用户从键盘的输入，为了便于用户输入给一个提示信息比较好，例如请输入密码等，返回值是一个字符串。data就是用户输入的字符串"
+Python学科,MySQL 全局变量查询,"1. 查看所有全局变量 SHOW GLOBAL VARIABLES; 
+
+2. 查看单独某一个全局变量 
+    select @@FOREIGN_KEY_CHECKS; 
+3. 模糊查询 show global variables like ""foreign%""; "
+Python学科,空字符串匹配正则问题,"空字符匹配任何正则都可以匹配命中，且返回空字符串
+re.search(r'w','')  返回结果是一个空的字符串。"
+Python学科,re  findall取消分组,"# 取消分组
+# 语法格式(?:re)
+re.findall(r'(?:ab){1,}\d+','ababab123ab456')
+['ababab123', 'ab456']  # 结果OK"
+Python学科,scrapy 同一个进程同时运行多个爬虫示例,"默认情况当你每次执行scrapy crawl命令时会创建一个新的进程。但我们可以使用核心API在同一个进程中同时运行多个spider
+import scrapy
+from twisted.internet import reactor
+from scrapy.crawler import CrawlerRunner
+from scrapy.utils.log import configure_logging
+
+class MySpider1(scrapy.Spider):
+# Your first spider definition
+...
+
+class MySpider2(scrapy.Spider):
+# Your second spider definition
+...
+
+configure_logging()
+runner = CrawlerRunner()
+runner.crawl(MySpider1)
+runner.crawl(MySpider2)
+d = runner.join()
+d.addBoth(lambda _: reactor.stop())
+
+reactor.run() # the script will block here until all crawling jobs are finished"
+Python学科,MYSQL 导入数据出现外键引用,"问题： 由于数据库外键引用检查导致的，可以先关闭
+设置外键引用检查关闭，主要用于多个数据库表数据的时候使用
+   SET GLOBAL FOREIGN_KEY_CHECKS = 0； 
+导入完数据库后重新设置成1 "
+Python学科,xpath 中如何使用正则,"doc.xpath(r'//*[re:match(@id, ""postmessage_\d+"")]', namespaces={""re"": ""http://exslt.org/regular-expressions""})
+安装上面固定的格式就可以在xapth中使用正则"
+Python学科,Mysql如何查询一个表的所有字段,select COLUMN_NAME from information_schema.COLUMNS where table_name = 'table_name'
+Python学科,linux下面批量停止同一类进程,"ps -ef | grep main.py |awk '{print $2}'|xargs kill -9
+ps -ef 查看进程
+grep main.py 过滤要要停止的进程
+xargs kill -9 杀死过滤到的进程
+awk '{print $2}' 获取进程id
+"
+Python学科,xpath – 如何匹配包含某个字符串的属性？,"标签
+<div class=""atag btag"" />
+
+//div[contains(@class, 'atag') and contains(@class ,'btag')]
+
+"
+Python学科,linux下面查看端口占用,"lsof -i :11366 |grep ""(LISTEN)"" | awk '{printf($1)}'
+ 把11366 替换成你要查看的端口号"
+Python学科,重置vmware虚拟机网络,"{""answerText"":""d310928c-9dba-45ea-91fc-e058f0758c4d"",""answerType"":""NEWS""}"
+Python学科,typora 中markdown插入视频,"插入video标签即可
+<video id=""video"" controls="""" preload=""none"" poster=""""> <source id=""mp4"" src=""视频路径或者资源"" type=""video/mp4""> </video>"
+Python学科,linux 查看指定进程的资源占用情况,"top -p `pgrep python | tr ""\\n"" "","" | sed 's/,$//`'
+
+pgrep python 中python替换成你要刷选的进程即可"
+Python学科,"no module name ""MySQLdb""",pip install PyMySQL，将数据库连接改为 mysql+pymysql://username:password@server/db，接下来的操作就一切正常了。
+Python学科,虚安环境安装flask成功，找不到,直接用pip instal，如果加了sudo默认装到真实环境里，并没有装到虚拟环境，所以在虚拟环境里找不到了
+Python学科,OSError:mysql_config not found,"原因是linux需要mysql相关的一些依赖包,
+yum install mysql-devel gcc gcc-devel python-deve "
+Python学科,error keyword argument 'method,注册路由route时 methods属性 写成method，修改为methods即可
+Python学科,python中的条件语句,"1. 条件语句常常用于if 或者 while 后面做为判断执行的条件
+2. 条件语句 运行结果是bool类型，例如判断语句，也可以是一个函数方法，但是函数方法需要返回bool类型
+3. python中的数字 也可以作为条件语句 0 表示false 其他数字表示True
+4. None 表示False 
+5. python中的数组、列表、字典为空的时候也表示False
+"
+Python学科,面向对象类名字命名规则,类名字命名与变量命名类似，见名知意，类命名主要以类的功能用户来命名，例如： Person类 ：包含一些人的特征属性以及行为，不要包含其他的行为属性。
+Python学科,获取修改密码的token的时候报错,"错误：Could not find config for 'verify_code' in settings.CACHES
+检查下setting配置verify_code属性值和序列化器的这个字段是否一样"
+Python学科,celery 启动任务添加不成功,"检查导包路径：
+from meiduo_mall.libs.yuntongxun.CCPRestSDK import REST，改为from .CCPRestSDK import REST"
+Python学科,点击run 的话 不会运行django服务器，而运行帮助文档,配置 edit configurations 中 parameters  中添加runserver
+Python学科,pymysql.err.InterfaceError,"错误原因，因为使用了一个已关闭的链接导致的问题导致
+有可能是程序那个地方链接关闭【检查代码逻辑看看是不是有些地方不小心把链接关闭了】
+有可能是链接失效，可以使用前检查链接是否有效，尝试重新链接
+使用一个连接池解决这个问题
+"
+Python学科,{'172001': '网络错误'}云通讯失败,"在sms.py中,添加下列代码即可
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context  # 全局取消证书验证
+"
+Python学科,docker pull elastisearch 不成功,"添加版本号之后pull
+docker image pull delron/elasticsearch-ik:2.4.6-1.0"
+Python学科,manage.py  No such file or ...,"切换到manage文件上,之后在执行 启动命令"
+Python学科,chrome无法访问本地6000端口服务,"错误312（net：：ERR_UNSAFE_PORT):未知错误
+由于某些策略的原因，浏览器认为一些端口为不安全端口6000正好在里面
+换一个端口，否则你需要配置chrome的设置
+如果仅仅是测试建议更换端口
+"
+Python学科,python socket 异常一览表,"{""answerText"":""e65204c6-7539-40a0-9154-9e050eed09c2"",""answerType"":""NEWS""}"
+Python学科,f-string表达式,"f-string python的新式格式化方式，python3.6后出现的
+使用{}的方式进行格式化，会把{}中的表达式计算后填充到当前位置，字符串前面以f“” 开头的字符串
+例子{变量}：
+name = ""xiaowang""
+age = 20
+f'{name} is {age} old!'
+# 结果是 'xiaowang is 20 old!'
+
+例子2{函数}：
+li = [1,2,3,4]
+ f'list li length is {len(li)}'
+ # 结果 'list li length is 4'
+
+附带一个参考链接:http://zetcode.com/python/fstring/"
+Python学科,datetime与字符串相互转化,"datetime转字符串，使用datetime对象的strftimef方法
+# python 版本3.6
+from datetime import datetime
+now = datetime.now()
+now.strftime(""%Y-%m-%d"")
+# 结果  '2019-09-10'
+
+字符串转datetime 使用datetiem.strptime方法
+ strtime =  '2019-09-11 12:30:20'
+#时间是什么格式，下面的格式化方式就要什么样
+datetime.strptime(strtime,'%Y-%m-%d %H:%S:%M')
+# 结果 datetime.datetime(2019, 9, 11, 12, 20, 30)"
+Python学科,python 进程 jion方法," join 默认是阻塞回收等待进程结束并回收进程资源
+1. 阻塞，主程序阻塞在当前位置，直至子进程结束
+2. 回收子进程资源，如果不回收会一直消耗系统资源
+3. jion 由 进程的创建者调用，谁创建的子进程谁回收"
+Python学科,xhsell or CRT 进行远程文件传输,"1. 安装lrzsz 命令，centos： sudo yum install lrzsz  ubuntu：sudo apt-get install lrzsz
+2 . 上传命令 rz + 文件
+3. 下载命令 sz + 文件件
+4. 仅支持单文件，如果多文件请压缩"
+Python学科,PEP 484规则，解释器自动进行类型判断,"# 语法格式如下，参数类型 使用: 标识
+# 参数    变量名字: 类型
+# 返回值： -> 返回值类型
+def greeting(name: str) -> str:
+    return ""Hello, {}!"".format(name)
+
+这样看着更直观一些，而且pycharm 有一定提示作用"
+Python学科,http中GET与POST请求区别,"get 请求主要用于获取资源使用，请求体无法携带数据，相关的插入参数主要依赖 URL path 以及查询参数，以及cookie协携带的数据
+Post 主要用于创建资源，请求体可携带大量数据，例如上传图片资源，用户注册等。"
+Python学科,mysql5.7 忘记 root密码怎么办？,"1.在配置文件[mysqld]部分添加skip-grant-tables参数，重启服务
+2.然后 mysql -u root 登录
+3.执行
+UPDATE mysql.user SET authentication_string=PASSWORD('123') WHERE user='root';
+flush privileges;
+4.skip-grant-tables参数，注释掉，重启"
+Python学科,redis 设置密码访问,"
+找到配置文件/etc/redis/redis.conf，添加：
+requirepass 123
+
+把访问密码 设置成123.
+
+
+连接到redis中，执行：keys * 命令，发现 不能访问数据库了。
+
+然后执行 ：auth 123 ,又可以访问了哈哈。"
+Python学科,哪些元素 可以设置 z-index 样式,只有相对定位，绝对定位，固定定位的元素有此属性，其余标准流，浮动，静态定位都无此属性，亦不可指定此属性。
+Python学科,redis 如何开启 远程访问？,"找到配置文件后  注释：bind  127.0.0.1
+然后修改：protected-mode no
+重启服务"
+Python学科,通过apt仓库 安装最新版mysql,"1. 添加 mysql apt 仓库
+
+   1）执行：sudo dpkg -i mysql-apt-config_w.x.y-z_all.deb
+   
+   deb包下载地址：https://dev.mysql.com/downloads/repo/apt/
+   
+	2）执行：sudo apt-get update
+	
+2. 安装
+
+	sudo apt-get install mysql-server
+	
+	
+下面是 删除的方法：
+
+sudo apt-get remove mysql-server
+sudo apt-get autoremove
+
+dpkg -l | grep mysql | grep ii    查看是否还有 残余包没有卸载
+sudo apt-get remove package-name  卸载残余包"
+Python学科,pip ：cannot import name 'main',"解决办法1：
+换一种执行pip的方法：python3 -m pip3 install pygame
+
+
+解决办法2：
+降低 pip的版本
+python -m pip uninstall pip   
+python -m pip install pip==9.0.3"
+Python学科,pip 使用 豆瓣源 安装 python包,例如：pip3 install pygame -i http://pypi.douban.com/simple/  --trusted-host=pypi.douban.com
+Python学科,高版本 jquery 入口函数 报错,"{""answerText"":""6aa39167-a6cb-4bb2-918e-50383d03bf7b"",""answerType"":""NEWS""}"
+Python学科,win10 可以 ping同 乌班图虚拟机，反过来不行,关闭 杀毒软件，和 win10 系统自带的 防火墙
+Python学科,mac电脑 打不开乌班图 虚拟机,"VMware虚拟机打不开/dev/vmmon无此文件或目录
+
+
+解决：
+
+sudo spctl --master-disable  添加任何来源
+
+选择“系统偏好设置” 
+打开后，选择“安全性与隐私”
+在“通用”里面，可以看到最下面：有来自开发者“VMware，Inc.”的系统软件已被阻止载入。点击旁边的“允许”
+"
+Python学科,vscode编辑器 相对路径 问题,这个编辑器 比较别扭 ./ 指的是 相对于 工作区顶层文件夹，而不是 相对于文件当前目录
+Python学科,html 中如何解决 嵌套盒子 垂直外边距合并问题,父盒子 加上 样式：overflow: hidden;
+Python学科,pip10 工具bug," 如果使用pip 出现这个错误：ImportError: cannot import name 'main'
+
+解决办法1：
+换一种执行pip的方法：python3 -m pip3 install pygame
+
+
+解决办法2：
+降低 pip的版本
+python -m pip uninstall pip   
+python -m pip install pip==9.0.3
+"
+Python学科,python3 自带 的虚拟环境使用,"win10下：
+
+创建虚拟环境：
+python -m venv 虚拟环境名字
+
+
+
+激活虚拟环境：
+虚拟环境目录\Scripts\activate.bat
+
+乌班图下: source xx/虚拟环境目录/bin/activate
+
+
+
+退出虚拟环境：
+虚拟环境目录\Scripts\deactivate.bat
+"
+Python学科,js中 dom元素的 offsetHeight 属性,如果子元素 不脱离文档流，这个属性的值 就是 盒子最终的高度值，包含 padding和 border
+Python学科,jinja2.exceptions.undefinederr,"在setting 补充jinja2模版引擎环境
+‘environment’:'meiduo_mall.utils.jinja2_env.jinja2_enviroment'"
+Python学科,pycharm运行app，启动找不到app,"edit_configurations 编辑manager ,在parameters 中添加runserver"
+Python学科,python manager.py db init 运行程序,将程序app.run()  改成manager.run()
+Python学科,mac如何显示隐藏文件呀？,按command + shift + . 进行隐藏与非隐藏
+Python学科,live-server 运行失败  = async path,"需更新node版本
+可参考博客步骤更新https://blog.csdn.net/zkpython/article/details/100878504"
+Python学科,docler pull elasticsearch 失败,docker image pull delron/elasticsearch-ik:2.4.6-1.0 指定版本pull 成功
+Python学科,push rejected,"git pull
+git pull origin master
+git pull origin master --allow-unrelated-histories
+依次执行命令解决"
+Python学科,js 中因es5爆红,在左上角file --setting里打开，languages$frameworks 中的javascript选中ECMAScript6
+Python学科,"远程链接云服务器中mysql,redis,docker等链接",需在云服务器中开放对应端口安全组
+Python学科,vue : cannot find element #app,先检查 html里面 div 是否绑定app，如已绑定，检查将导入 regiser.js script语句放在html最后
+Python学科,expected an indented block 缩进错,"1. 第一种 python中的代码块控制，主要是靠缩进保证的，遇到这个问题
+这个问题一般都是代码块缩进不正确导致，请求观察错误提示的位置，以及上下位置应该是有一个缩进出现了问题
+2. 第二种可能出现这个问题的原因是，缩进中混合了tab键与空字符，导致混用，也会出现这个问题，所以对于python程序员来说 空格代替缩进更好一些
+"
+Python学科,前端引用了jquery 报$ undefined的错误,$主要是jquery中定义的，遇到未定义的错误的时候，正常是疑问juquery没有加载成功，可以检查下jquery的路径是否有问题导致的jquery没有加载成功！
+Python学科,linux系统中使用pip安装python模块包提示没有权限,出现这样的问题的时候，一般是在系统环境中安装东西的时候可能会出现，可以使用sudo pip install xxx 这样解决权限不足的问题
+Python学科,用weget apt 等安装出现https 40x错误的情况,"1. 这个情况一般都是网路出现问题
+2. 检查本机网络是否正常（ping www.baidu.com看看是否网络ok，或者你打开浏览器访问百度是否可以打开）
+3.  如果正常可以考虑是网络不稳定，可以重新尝试再次下载
+4. 如果依然不能成功，考虑下下载的网址是否有问题，可以浏览器访问下
+5. 还要可能是自己网络问题【可以切换个手机热点试下】"
+Python学科,(admin.E403) A 'django.......,出现此问题，通常是使用了django2 版本之上，建议使用django 完成此项目，此问题解决 django2 版本之前，如果使用jinja2 配置中必须保留 原本django  DjangoTemplate 配置
+Python学科,StrictredisCluster 包导入不成功,"出现此问题，为redis 与 redis-py-cluster 版本不兼容问题
+请尝试降低 redis 版本 为2.10.6，  redis-py-cluster 1.3.5试下，或尝试其他降低版本"
+Python学科,TypeError: 'ConfiguredStorage',检查utils 文件中 jinja2_env 中是否为 staticfiles_storage.url
+Python学科,centos下面安装开发相关的工具环境,"# 直接使用yum安装工具集【例如编译相关的工具】
+sudo yum update
+sudo yum groupinstall ""Development Tools"""
+Python学科,远程传输工具安装,"# ubuntu
+sudo apt install lrzsz
+# cetos
+sudo yum install lrzsz
+
+sz  下载的文件
+rz 上传的文件
+"
+Python学科,Ubuntu配置MySQL8.0 允许远程访问,参考链接: https://www.jianshu.com/p/852915e5a62b
+Python学科,js 中 箭头函数 需要注意哪些问题,"        （1）函数体内的this对象，就是定义时所在的对象，而不是使用时所在的对象。
+
+        （2）不可以当作构造函数，也就是说，不可以使用new命令，否则会抛出一个错误。
+
+        （3）不可以使用arguments对象，该对象在函数体内不存在。如果要用，可以用 rest 参数代替。
+
+        （4）不可以使用yield命令，因此箭头函数不能用作 Generator 函数。"
+Python学科,npm 使用淘宝下载源,"执行这行命令，以后你的 npm 就会从淘宝镜像下载包了，速度会比原来快很多
+npm config set -g registry https://registry.npm.taobao.org"
+Python学科,live-server 服务器 配置 允许任意 ip 访问,参考链接:  https://www.jianshu.com/p/7cf79b0883ec
+Python学科,django配置 允许跨域请求,参考链接: https://www.jianshu.com/p/af80c99dc976
+Python学科,python3 内建函数有哪些,参考链接: https://www.jianshu.com/p/8bf11a2ed489
+Python学科,mac 系统下 安装了mysql，配置任意目录 访问,参考链接:https://www.jianshu.com/p/1420285866a8
+Python学科,远程连接mysql 不成功,"在mysql 所在系统 
+登录mysql：mysql -uroot -p 
+使用mysql数据库：use mysql; 
+查询user host 是否是%：select user,host from  user; 
+若不是修改为：update user set host='%' where user='root',"
+Python学科,anaconda 在wiindows上面出现各种问题,"anaconda 在windows上面会出现各种各样的问题，建议同学
+卸载anaconda ，并删除安装目录使用系统python环境，然后需要什么包安装什么包即可！"
+Python学科,ubuntu pip 安装包 timeout ,"创建文件
+mkdir ~/.pip
+sudo gedit ~/.pip/pip.conf
+编辑文件
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+trusted-host=mirrors.aliyun.com"
+Python学科,python虚拟环境的目的,"最根本原因是解决包的版本依赖问题
+公司中可能存在多个项目，而且项目开发的时间又不尽相同，那么每个项目都是用了不同的python版本与各种第三方模块包，这时候我们系统中同样需要有多个版本的python环境，否则项目根本运行不起来，所以后面出现虚拟环境，这个虚拟环境都是独立的一个环境，这样我们可以为每个项目单独简历一个虚拟环境，保证项目各自使用自己的环境，从而解决版本冲突依赖问题"
+Python学科,出现包安装，导入失败的问题,我们明明已经把包安装了，但是在pycharm中导入却提示失败没有此模块，出现这中问题，基本都是，我们安装模块的环境与pycharm配置的python环境不一致导致的，例如我们安装的模块在python2 环境中，pycharm使用了python3的环境！ 切换到我们与pycharm一致的环境再次安装模块就ok了
+Python学科,创建虚拟环境出现OSError: Command错误,"出现这个错误的原因很大的可能是pip版本过低以及setuptools工具包版本太低导致
+
+# 升级pip 到最新版本
+pip install -U pip
+# 升级setuptools 到最新版本
+pip install -U setuptools 
+
+ 升级这2个包后重新创建虚拟环境基本就ok了"
+Python学科,mysql不支持bool类型,"如果当把一个数据设置成bool类型的时候，
+数据库会自动转换成tinyint(1)的数据类型,其实这个就是变相的bool。 默认值也就是1,0两种,分别对应了bool的true和false"
+Python学科,列表推导式单条件判断与2个条件判断使用,"#1. 单条件判断,注意条件是循环后,仅保留满足条件的
+[i for i in range(10) if i%2==0]  ---->[0, 2, 4, 6, 8]
+
+#2个条件判断，注意判断在循环之前,利用python的三目运算,这样可以安装我的方式对数进行处理
+[i if i%2==0 else str(i) for i in range(10)]---->[0, '1', 2, '3', 4, '5', 6, '7', 8, '9']
+
+#3 其他情况基本都是在这个基础上变化得到的
+
+
+"
+Python学科,django中使用celery出现不能发现任务的问题,有的同学经常在配置django的异步celery任务的时候，经常出现发现不了任务，出现这种情况是因为我们celery任务中没有加载djaong的环境，所以导致任务加载不到！ 请同学配置django项目的环境后，再次启动celery 应该可以正常发现任务了
+Python学科,打包python程序为可执行程序,有的同学想把自己写的python程序打包成可以执行文件，同学可以使用pyinstaller模块去打包成，建议查询下想要的教程
+Python学科,float方法使用,"float 用于转化浮点数, 有2种使用方式
+1.   把字符串转化成浮点数 例如： float('3.14')
+2. 把整数转化成浮点数,便于后续计算  float(3)"
+Python学科,python中类的属性的查找顺序,"python面向对象涉及到继承的时候，属性查找顺序，就不是在单一类中进行查找了，具体查找顺序，按照继承的MRO顺便查找，例如 Sub（A,B） 这样的一个多继承，MRO表【Sub，A，B】，假如我要找一个show方法，首先在sub类中进行查找，如果sub中没有，则向后遍历从A查找，直至查找到这个属性，或者抛出没有属性的异常"
+Python学科,vscode配置成 sublime text3 风格 主题,参考博客：https://www.jianshu.com/p/1a126aed93c3
+Python学科,python3运算符 += 和 = 之间的区别,参考博客：https://www.jianshu.com/p/cf2e96196906
+Python学科,回车和换行符 ,参考博客：https://www.jianshu.com/p/95f556ec2667
+Python学科,配置 vscode 字体,参考博客：https://www.jianshu.com/p/117a875f4c8e
+Python学科,Vue-devtools 安装成功但无法使用,参考博客：https://www.jianshu.com/p/7d53a3771907
+Python学科,python中if表达式中表达真假,"python中下面的常用的几种数据类型在if表达式中表达真假
+1. 数字，数字0在if表达式中表示False 其他非0数字都是真
+2.  列表，元组，字典等复杂数据接口，空表示False 非空表示True"
+Python学科,linux 下面的普通用户与root用户,"普通用户与root用户区别
+1. 普通用户与root用户目录权限不同，root权限要大，例如好多情况，普通用户操作都需要sudo权限
+2.  用户的主目录不同 普通用户的主目录都是在/home/用户名  这样的目录作为主目录，而root用户的主目录是 /root 目录
+3. root用户权限大，容易出现误操作，慎用root用户"
+Python学科,正则中的^符号,"正则中^有两种使用场景，分别表示不同的意思
+1.  ^ 用于正则前面表示以什么开头，例如 ^\d 以数字开头
+2. ^ 用于[] 集合，表示取反，例如[^\d] 表示匹配非数字的字符"
+Python学科,Windows上面修改myslql密码,"windows 最简单的方式使用mysqladmin命令
+1. 使用管理员方式打开cmd窗口
+2.  执行下面的命令进行密码修改 mysqladmin -u用户名 -p旧密码； password 新密码"
+Python学科,concurrent_log_handler 问题,"concurrent_log_handler 在windwos下面使用报错误import win32file ImportError: DLL load failed: 找不到指定的程序 出现这样的错误
+
+解决方法：
+到python的安装目录（如果是虚拟环境则到虚拟环境目录）中的\Lib\site-packages\pywin32_system32把这里面的dll文件拷贝到C:\Windows\System32目录中"
+Python学科,hmtl的url地址,"假如我们当前的地址： http://127.0.0.1:8000/movie/
+假如当前页面中有ajax请求: 地址这样写的   show/all
+# 注意最后 地址会被拼接成http://127.0.0.1:8000/movie/show/all
+
+# 假如url地址是: /show/all  与上面唯一的区别是 前面多一个斜杠
+ 请求地址: http://127.0.0.1:8000/show/all/"
+Python学科,面向对象 私有属性,"1. 面向对象的属性分为私有跟公有属性
+2. 公有属性可以对方访问使用，可以通过.的方式访问
+3. 因为开发需求可能有些属性需要设置成私有的，私有的目的就是不对外暴露，仅仅对象内部使用，这是用属性需要是私有化。
+4.  有的情况可能需要对外暴露一个接口，例如： 钱是私有属性，转账是对外暴露的接口，我们可以设置一个规则，接口只让转入不让转出。 所以往往遇到类似的场景我们需要编写对应的接口方法。"
+Python学科,ValueError: last_login,"ValueError: The following fields do not exist in this model or are m2m fields: last_login Django
+使用自定义模型或者使用django提供的login方法的时候会报这样一个错误，要求用户模型是继承与AbstractUser,否则会报这个错误。当登录的时候会更新这个字段 如果模型中没有这个字段就会报错误"
+Python学科,lambda表达式,lambda 表达式是个匿名函数，返回值是个函数，所以我们可以使变量取接收，然后当做函数调用， lambda表达仅仅编写一些简单的表达式，是为了简化我们的一些编写，完全可以用函数定义的方式替换，所以同学们把这个当做一个简化的函数定义即可
+Python学科,try 异常传递,异常是有传递特性的，这个是异常的机制，在传递过程，任何一个环节都可以捕获，如果不捕获继续向上传递。 举例说明： main-->fn1-->fn2 假如fn2中出现异常，fn2方法中没有捕获，则向上传递至fn2 的调用者fn1 假如fn1也捕获继续向上传递至main，假如main也不捕获就会异常导致程序终止
+Python学科,"pycharm打开导航栏
+Ubuntu里pycharm怎么打开导航条","pycharm版本不同可能设置不同：
+1. view-->toolbar [老版本] 
+2. view-->appearance->toolbar 【新版本】
+里面还有其他的工具菜单，根据自己需求设置"
+Python学科,"多继承 MRO 父类 属性查找
+python中多继承 继承问题","{""answerText"":""92ed2f2a-8472-49a8-8ff2-c4eebd43c2fb"",""answerType"":""NEWS""}"
+Python学科,"ubuntu 创建Python虚拟环境 出现错误
+ubuntu虚拟机创建虚拟环境一直报错，不知道什么原因","出现的原因可能是 工具包版本太低需要更新
+1.  更新pip    pip install -U pip  如果是pip3 这是使用pip3 install
+2. 更新setuptools工具 pip install -U setuptools "
+Python学科,ubuntu pip 安装包 timeout,"创建文件
+mkdir ~/.pip
+sudo gedit ~/.pip/pip.conf
+编辑文件
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+trusted-host=mirrors.aliyun.com"
+JAVA学科,IncompleteElementException,"org.apache.ibatis.builder.IncompleteElementException
+mybatis找不到对应的result map
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=6db01c27e9264ae39105737cde80a3a4"
+JAVA学科,套餐列表图片没有办法正常显示,"套餐列表图片没有办法正常显示
+套餐列表页面图片无法显示
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=a3eec45fcce34dfc9f7d17c414841661"
+JAVA学科,七牛云图片上传成功 图片不回显,"七牛云图片上传成功 图片不回显
+七牛云图片上传成功 图片预览失败 
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=810e5d8ad69747f9809883ea49621aa9"
+JAVA学科,interface not allow null!,"interface not allow null dubboadmin中没有提供者
+IllegalStateException: interface not allow null!
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=5bb4f2cedf5842189d3df74387b62ddb"
+JAVA学科,表单校验语法报错 () => {},"传智健康-html页面表单校验语法报错 () => {}
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=d44adcbb198341aa97d43a27d9bc6279"
+JAVA学科,xls或者xlsx文件上传失败,"传智健康上传excel的xls或者xlsx文件上传失败
+传智健康上传excel的xls或者xlsx文件上传失败，file.type 没有获取到后缀名，导致无法识别excel文件
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=18a84f76deaa48068ef3efd657a5a9f2"
+JAVA学科,NoSuchMethodError,"java.lang.NoSuchMethodError: com.google.gson.JsonObject.keySet()Ljava/util/Set;
+启动health_mobile工程时报错：
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=23d0da600d054b12aeee7d26b18fde31"
+JAVA学科,体检预约成功后不显示预约信息,"体检预约成功后不显示预约信息
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=9139fe53a0684cb8aef662079ca9b3da"
+JAVA学科,FreeMarker生成html之后，中文乱码,"静态页面生成中文乱码
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=1129ebd21d7540f795eeb3753dcd5eed"
+JAVA学科,在传智健康的PDF报表生成的时候出现找不到华文宋体,"PDF报表生成的时候出现找不到华文宋体
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=65f72abb33904959b478e6859fbeaad3"
+JAVA学科,Timeout 连接zookeeper失败,"1. zookeeper server can not be connected 2. Zookeeper连接失败
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=dec2af85b29b4430a8453a939b55390c"
+JAVA学科,日历展示预约信息，样式出不来,"传智健康项目做日历展示预约信息，样式出不来
+日历展示预约信息页面效果不对
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=fb6330d89ea34170b6044bb5d7234e9e"
+JAVA学科,执行生成静态页面之后，页面报错,"执行生成静态页面之后，页面报错
+FTL stack trace (""~"" means nesting-related):Failed at: ${setmeal.img} [in template ""mobile_setmeal_detail.ftl"" at line 29, column 60]
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=6815c6a1f12e4a3ba511e2be6051822d"
+JAVA学科,getOrderSettingByMonth,"getOrderSettingByMonth方法返回的数据只有1-7天导致最后前端页面展示不正确 
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=8513c0efeb474c3ca30e1d2ffc042ce3"
+JAVA学科,套餐详情页面中检查组和检查项的数据都是空的,"checkGroups数组为空数组
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=bbe24ceba2ed42548e9d008b6a35d8a5"
+JAVA学科,Spring-redis.xml文件配置报错,"Spring-redis.xml文件中beans报红
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=a88c48d81f25481a98b8a0934b940265"
+JAVA学科,Access is denied 拒绝访问 登陆失败,"AccessDeniedException Access is denied 拒绝访问 登陆失败
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=ba8d608a4b734e81988356dbdff49b1f"
+JAVA学科,做分页查询的时候报空指针异常 检查组分页查询空指针,"com.itheima.service.CheckGroupServise, method: pageQuery, exception: java.lang.NullPointerException: null, dubbo version: 2.6.0, current host: 127.0.0.1 java.lang.NullPointerException
+做分页查询的时候报空指针异常 检查组分页查询空指针
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=bd88bcddfef2469db41f391d214f0fcf"
+JAVA学科,parameterType和resultType区别,"传智健康 mybatis中的parameterType和resultType区别
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=72557fab58b34ef586f09d727611bfd3"
+JAVA学科,传智健康体检预约收不到短信验证码,"传智健康体检预约点击发送验证码后收不到短信验证码
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=150a78239fa84dfc93180e112e7c0c10"
+JAVA学科,Spring Boot 请求访问URL页面显示404,"访问URL页面显示404
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=1f7bc379e69d4fdf8ccf41192afe0d2d"
+JAVA学科,找不到文件: Cento 64位.vmdk,"开启此虚拟机需要用到此文件,如果移动了此文件,请提供它的新位置
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=b13bb4186dcd4cdaa843f365c1303f0c"
+JAVA学科,SpringBoot无法使用@Runwith注解,"快速构建SpringBoot项目的测试类无法使用@Runwith注解
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=7bc7fb69cf0b4732a2a5900bfe4752ba"
+JAVA学科,Spring Cloud 定义Feign 启动失败,"A bean with that name has already been defined in null and overriding is disabled.
+2个Feign接口类内定义了相同的名字，
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=a2c43a8d413c484ebc9aba4b99689253"
+JAVA学科,rabbitmq 路由模式,具体参考下:https://www.cnblogs.com/zousc/p/12739504.html
+Python学科,"input标签中的placeholder  与value的区
+input中的name属性说明
+input标签中的value属性理解
+为什么答案不是是placeholder这一个标签","1. input中的placeholder属性 ，主要用于提示用户，这个框中要输入什么类型的信息。
+2. input中的value属性，相当于设置了我们的框中的内容
+3. 当用户输入数据的时候，value就会变化成了对应的值
+4. 至于name属性，主要是配置我们学习的表达提交的时候，把数据组织成 {name""value}，这样的格式提交给服务器。"
+Python学科,"python中编码规范网址？
+pep8 规范哪里有
+老师python的规范的网站多少呢","我们最常用的是pep 8 规范，对应的网址是：https://www.python.org/dev/peps/pep-0008/
+当然了除了pep8 规范外还有很多其他规范请看下面的地址：https://www.python.org/dev/peps/ 
+
+建议大家简单了解下即可，不用太深入去学习。因为学习这个与我们的时间产出不成正比。"
+Python学科,"python 中 in关键词用法
+in 怎么使用
+in怎么用？","在python中的in关键词，主要有两种使用场景
+1. 用于容器（列表，元组，字典、集合等）类型元素遍历 格式如下： for item in containers：pass
+2：用于判断元素是否在某一个容器型的数据结构中 if item in containers： pass   例如： if  1 in [1,2,3]: 执行对应的代码逻辑"
+Python学科,flask paginate 怎么使用,"请参考使用文档：https://pythonhosted.org/Flask-paginate/
+如果对使用有疑惑可以再问老师。"
+JAVA学科,实现购物车加1 减1 会出现数量累加的问题,"当用户手动输入数量失去焦点时，会出现数量累加的问题
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=f087d84fe1e4401888394e64ba6b2d2e"
+JAVA学科,搜索模块批量导入数据到ES,"搜索模块批量导入数据到ES报错-内存溢出
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=f33c4a439d6d4bc2981271de85aa7d34"
+JAVA学科,UnsupportedEncodingException,"java.io.UnsupportedEncodingException: UTF - 8
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=f38e5d88b9e349dc9ee3421b24726adf"
+JAVA学科,consul启动指定错盘符问题,"consul启动时指定盘符不存在错误
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=066eebb66b4a47cab3443b600eb55be4"
+JAVA学科,consul服务启动报错,"powerShell启动consul报错
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=14f5229f1f854e87a9f041e05a09997e"
+JAVA学科,充吧项目 连接MySQL的10060错误,"充吧项目 连接MySQL的10060错误:Can't connect to MySQL server on '192.168.200.129'(10060)
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=700b0463d11341a8bc3d2e37669cf727"
+JAVA学科,Mysql驱动问题,"The server time zone value '???ú±ê×??±??' is unrecognized or represents more than one time zone.
+解决办法如下: http://112.126.69.168:8080/reception/showReceptionView?id=aac87a461b364d8382133754a9b6d795"
+Python学科,"ssh无法连接远程
+ssh终端无法登录","ssh 不能连接远程服务的几个情况：
+1. 对方服务器没有安装ssh服务，或者ssh服务没有开启，检查shsh服务
+2. 服务器的防火墙拦截导致，检查防火墙设置
+3. 对方ssh服务端口不是默认22
+4. 如果服务器不是自己的那没办法，如果是自己的可以尝试解决。 
+5. ssh服务安装参考链接https://blog.csdn.net/wgc0802402/article/details/91046196
+6. 防火墙设置参考链接：https://blog.csdn.net/smileui/article/details/87909393"
+JAVA学科,"请问Java基础方面有书籍推荐吗
+我学习JAva能够买什么书籍来帮助自己吗",《算法》  《算法导论》 《Java并发编程实战》 《Java性能优化权威指南》 《JVM高级特性与最佳实践》 《Head First 设计模式》 《Spring Cloud微服务实战》 《Spring Boot实战 》 《重构 改善既有代码的设计》 《Agile Java》 《Java Puzzlers》 《UNIX网络编程》
+JAVA学科,"微信支付
+IDEA旗舰版会员到期使用不了怎么办","微信支付在继承 (extends) WXPayConfig时，idea提示只能实现 implements
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=856d8ee2760746f68abed2440c210bfa"
+JAVA学科,"根据名称或编码查询,在更新数据时如何清空缓存",先根据key删除数据，在重新添加数据到redis
+JAVA学科,"首页广告轮播图图片不展示
+畅购导入基础代码依赖出错","畅购项目的首页轮播图不展示 , 页面的图片展示区域是空白的 
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=a8d7c87ee52b429fbc4cfc312b71d450"
+JAVA学科,自己写构造方法和系统默认给出来哪个好,一般使用系统默认的构造方法，如果有需求的话，可以自定义构造方法
+JAVA学科,"git推送失败了
+git 推送到远程失败",推送远程失败可能是权限或者分支错误，可以参考一下两个帖子：https://www.cnblogs.com/wf-skylark/p/9315463.html 、https://blog.csdn.net/sgsgy5/article/details/82589730
+JAVA学科,#工具没说在哪里下载啊,工具在资料中有，资料下载地址可以找班主任获取
+Python学科,"git仓库创建成功之后,克隆的时候出现没有权限,访问被拒绝等","解决方案:如果使用ssh的地址进行克隆很有可能出现访问被拒绝,这是因为没有配置公钥和私钥
+    可以使用https的地址进行克隆,就不会出现问题了"
+Python学科,"pycharm中解决前端模板语法报红
+pycharm如何设置jinja2模板
+pycharm如何设置前端模块语言","点击file中点击setting,点击language,点击javascript,点击javascript language varseion,
+    点击 Python Template Language, 点击Template language,选择对应的模块语言，例如选择 jinja2"
+JAVA学科,"构造方法()里的初始化顺序, 是要按照定义时候的顺序来写吗?",是的.  先写的优先被初始化
+JAVA学科,枚举和数组和集合的关系,具体请参考:http://c.biancheng.net/java/110/
+JAVA学科,如果方法无返回值，然后里面还用到return;说明什么,说明程序不在执行. 不需要任何返回直接写return;就可以或者.不写这个return;二者都行
+JAVA学科,"break,和continue是只能跳出循环吧",是的 用于跳出循环
+Python学科,"for 循环 语法格式
+for 循环中的变量
+for循环的自定义变量","python 中的 语法格式：
+for item in container：pass
+其中container 就是我们要遍历的数据结构：例如列表，元组等
+item 每次循环返回一个元素值， 这个变量是我们自己定义的，名字你可以随便起名的，推荐见名知意的方式取名字 例如： 我要遍历一个班级的学生 可以这样： for student in students： pass  student 可以明确的让看到代码的人知道 我遍历得到的元素是一个学生对象。更利于代码维护。"
+Python学科,"虚拟机创建快照
+vmvare如何创建虚拟机快照
+是不是一定要再虚拟机关闭状态才能拍摄快照？",vmware创建快照教程（注意要创建快照，你的虚拟机是关机状态才可以）： https://jingyan.baidu.com/article/48a420578e7f05e9242504ae.html
+JAVA学科,黑马面面 企业模块添加数据或修改出现乱码,"出现乱码. 说明请求的传递到后台的已经出现乱码. 1.使用request.setCharacterEncoding(""UTF-8"");解决乱码. 2.可以使用过滤器统一解决乱码问题"
+JAVA学科,SpringBoot中如何把一个自定义类的对象添加到Ioc中,"编写一个自定义类,只需要在类上加上@Component即可声明到Spring的ioc容器中"
+Python学科,"python中__main__理解
+__name__==__main__
+__main__这个主模块代码，一般写到主模块的哪里？",__main__ 是顶层代码执行环境的名字.当一个模块从标准输入，脚本或者解释器提示行中被读取时，模块的__name__属性被设置成__main__。 也就是当我们是用python  xxxx.py 的方式运行一个py程序的时候，这个程序__name__ 就是 __main__ 。 他有2种用途1. 可以编写模块的测试代码，因为当我们导包的时候这些代码并不执行，只有把这个模块作为主程序运行才会运行，所以我们可以作为模块测试代码 。 2. 作为成序的入口程序。
+Python学科,"chrome 插件如何下载？
+不能翻墙 插件下载不了
+xpath插件哪里下载
+我需要老师帮忙安装xpath",同学chrome插件需要翻墙才能下载，如果你的可以翻墙 直接下载安装即可，如果不可以同学可以去这个地址搜索下载然后离线安装即可： https://pictureknow.com/extensions
+JAVA学科,html与jsp文件的区别,"html是静态语言,可以直接在浏览器打开. 而jsp是动态语言需要部署到tomcat上才可以.本身jsp就是一个sevlet"
+JAVA学科,idea创建maven项目没有src文件夹问题,具体操作可以参考:https://blog.csdn.net/lk142500/article/details/88782116/
+JAVA学科,SecureCRT的sftp怎么操作,具体可以参考:https://www.cnblogs.com/wq-9/p/13259622.html
+JAVA学科,Map集合中如何根据value删除键值对,"首先循环遍历整个Map , 然后比对value值是否和要删除得value值是否一样, 如果一样取出key,将其value删除"
+JAVA学科,idea中 maven启动控制台中文出现乱码,请查看以下链接: https://www.cnblogs.com/grimm/p/12069026.html
+JAVA学科,sout回车 为什么不会自动生成输出语句？,在方法里面去写才可以
+Python学科,"css 样式修改了，前端不生效？
+html代码修改了，页面不生效？
+修改了css，但是前台展示没有变化","出现css样式修改了不生效可以按照以下步骤进行排查：
+1. 清理前端缓存，重新加载检查是否生效，有时候是缓存问题导致的css样式没加载
+2. 以上方式以及不生效，那么在浏览器右键检查前端css样式是否加载了，如果没有加载，说明我们后端写的代码依旧有问题样式没有正常加载，重新加载样式是否写的有错误
+3. 如果样式加载了，但是这个样式以及不能正常显示，那么很可能是样式覆盖导致的我们自己写的样式没有正常剩下，需要排查那个样式影响了我们写的样式"
+Python学科,"linux下面怎么使用管理员权限？
+怎么切换到root用户？
+centos怎么使用管理员权限？
+ubuntu怎么使用管理员权限？
+#怎么用管理员权限","1. 当我们执行命令的方式 添加sudo命令 附带管理员权限
+2. 我们可以直接切换到root管理员用户，执行 su root  然后输入密码后进入管理员用户
+3. 如果我们是普通用户推荐使用第一种方式去执行相关命令，因为root权限大，可能导致一些不必要的问题出现。"
+Python学科,"导入数据库提示FOREIGNKEY 错误
+数据库 导入数据失败，FOREIGNKEY","原因： 是导入多个表存在外键关系, 导致导入失败
+解决方法：
+1. 关闭外键约束检查 set foreign_key_checks = 0
+2. 导入数据库数据，推荐进入数据库胡使用source命令导入
+3. 导入成功后再次开启外键约束检查 set foreign_key_checks = 1"
+JAVA学科,为什么要学反射#里反射是做什么用的?,具体可以参考这里：https://blog.csdn.net/weixin_40307206/article/details/101268931
+JAVA学科,#控制台会一直打印吗,RuntimeException 是运行时异常，不会一直打印，会一次性把代码运行的错误打印出来
+JAVA学科,"搜索服务启动无限报错
+畅购中 商品下架同步索引库#控制台一直报 运行时异常","商品信息同步索引库的时候，有的同学经常会出现搜索服务启动无限报错的情况
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=b1ed52ad86e54584bd62b8c8fd8f154e"
+JAVA学科,"畅购项目导入starter-canal   pom文件报红
+加入#依赖 版本报错","畅购项目导入starter-canal   pom文件报红
+
+ 搭建数据监控服务pom文件报红
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=bb5d5504e5224284b5e77ec93da3c719"
+JAVA学科,"畅购添加商品报错
+畅购项目中java代码调用es出现#错误","畅购添加goods保存报MismachedInputException
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=de9d5c54ea664fec8cb9efd767885dc2"
+Python学科,"pycharm打了断点，没执行到哪里
+#断点不显示内容","出现上面问题，可能有2中情况：
+1.  我们没有使用debug模式，导致在断点处没有执行
+2.  由于代码逻辑，不会执行断点位置逻辑 【这个要我们重新梳理罗排查】"
+Python学科,"pycharm不能用了
+ide激活码过期了
+pycharm过期了
+#无法使用了
+#提示到期没法使用了
+老师我ubuntu里的pycharm到期了，怎么破解呀",请同学可以参考下面的链接：https://www.shuopython.com/archives/2339  或者自行百度查找
+Python学科,"解锁后面的课程
+如何解锁后面的课程
+解锁后面的学科","1. 正常情况我们都是通过阶段作业后自动解锁后面课程，主要是检查你当前阶段课程学习的怎么样
+2. 如果同学有特殊情况，例如我工作马上需要，或者我毕业论文要用到等 请同学跟班主任沟通申请解锁课程"
+Python学科,"python 中pycharm打断点问题
+pycharm调试代码的第一行打断点。也不知道在哪里打断点？","pycharm设置断点注意：
+1. 我们遇到错误的时候，我们先要大致判断出错的方位
+2. 根据推测范围，设置断点
+3. 启动debug模式进入断点调试"
+JAVA学科,切割字符中，特殊符号的切割,"字符串切割特殊字符时，需要进行转义比如split(""\#""),加上转义就可以了"
+JAVA学科,"请问可以帮我,看看简历可以吗?",那你把简历发给我吧
+JAVA学科,"split切割传入的字符串 也分中英文状态下吧
+切割字符 特殊转义符 。","是的, 区分中文和英文状态下."
+JAVA学科,idea中#的作用,可以参考这个：https://www.cnblogs.com/signheart/p/4d2058ae687f9a29680c070de85f7fbe.html
+JAVA学科,快速生产方法的返回值#这有什么作用,ctrl+alt+v可以为当前的方法或者接收道的变量添加返回值 ，可以参考idea的快捷键使用：https://blog.csdn.net/qq_38963960/article/details/89552704
+JAVA学科,"idea登录不了，显示已过期，需要激活使用
+IDEA打开进入一个界面需要账号、密码
+打开IDEA编译器，显示这个内容",可以在淘宝搜索idea，然后买个激活码。还是比较便宜的。
+JAVA学科,#定义是什么呢，我输入成agrn不会报错，也可以正常打印,args可以理解为是一个变量名称，就是main方法上接收的变量名。
+Python学科,"京东图书案例，scrapy爬取不到数据
+爬取京东图书案例中，自己运行代码请求状态正常，结果为空",由于近期京东图书页面调整，数据不是从静态页面获取，二十单独的一个数据请求获取的，请同学尝试分析数据获取请求即可
+Python学科,"ssh链接远程密码
+ssh远程连接#系统密码怎么看？
+ssh远程访问ubuntu的密码怎么查看？",ssh链接需要连接的主机安装了ssh服务，ssh密码就是我们登陆主机的用户名与密码。
+Python学科,django安装的django-redis目录不对怎么处理,出现这个问题，就是同学你使用的python环境问题，很大的可能你安装django-redis的环境与你自己pycharm中使用的不是一个环境，如果使用虚拟环境，请先切换到对应的虚拟环境后再安装，如果你使用系统环境，请确认你使用的python版本是否正确。使用正确的环境才可能正确安装
+Python学科,"pycharm （社区）官网下载不了
+pycharm 激活 [看第三点]","出现这个问题：
+1. 可能是你当前使用的网络环境有波动，换个时间段尝试下
+2.  pycharm本身官网问题，一样也换个时间段再尝试下
+3. 如果还是不行可以尝试从百度网盘去下载 https://www.torrent.org.cn/t-253289"
+JAVA学科,mybatis查询插入多个参数,"<a  target=""_blank"" href=""https://www.cnblogs.com/xiaoshen666/p/11117967.html"">该链接有答案</a>"
+Python学科,pycharm run 的时候，显示的是运行过的任务（文件）,"{""answerText"":""43fad2e4-4f24-41b8-8644-e2f01ff47d6f"",""answerType"":""NEWS""}"
+Python学科,pycharm中如何分屏展示多个python文件,"{""answerText"":""cb123d06-6be9-4073-a457-3e8c5a0084bf"",""answerType"":""NEWS""}"
+JAVA学科,反射的作用,"JAVA反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法；这种动态获取的以及动态调用对象的方法的功能称为java语言的反射机制。主要用途：
+反射最重要的用途就是开发各种通用框架。"
+JAVA学科,v-model是什么,"v-model就是vue的双向绑定的指令,能将页面上控件输入的值同步更新到相关绑定的data属性,也会在更新data绑定属性时候,更新页面上输入控件的值"
+JAVA学科,el表达式,是一种在JSP页面获取数据的简单方式
+JAVA学科,indexOf和substring,该链接有答案
+Python学科,"python 中 % 取余符号
+9%2输出结果","{""answerText"":""36aec9ef-d8ae-4405-a85d-8821641b72d6"",""answerType"":""NEWS""}"
+Python学科,"思维导图安装
+你好我想在电脑里面安装思维导图系统","1. 去https://www.xmind.cn/官网下载免费版xmind
+2. 安装后使用即可
+3. 免费版的足够我们日常使用了"
+Python学科,"调整学习计划
+如何调整学习计划",想调整学习计划，请同学找班主任，班主任会指导你调整.
+JAVA学科,"老师，CRT安装后没有安装成功，只是弹出了一些文本框
+一直失败
+为什么安装完CRT软件，桌面也没有显示",crt安装咱们资料中有详细的安装步骤文档，如果根据文档安装还有不成功，可以使用在线答疑找导师
+JAVA学科,"畅购支付回调无法完成内网映射
+#内网映射工具 现在不能使用了吗",目前课程中提供的内网穿透失效了，现在可以使用这个https://my.oschina.net/u/3514138/blog/2222980
+JAVA学科,"VNW 虚拟机安装,没有密钥",密钥参考：https://www.cnblogs.com/vhhi/p/10202204.html
+JAVA学科,"数字类#集合，排序使用什么方法？
+list排序",可以使用sort方法来进行排序
+Python学科,python -m,"python xxx.py
+python -m xxx.py
+这是两种加载py文件的方式:
+1叫做直接运行
+2相当于import,叫做当做模块来启动"
+Python学科,Non-ASCII character '\xe5' in,可以在python文件最上方加上  # -*- coding:UTF-8 -*-  这句话
+Python学科,回车和换行符,参考博客：https://www.jianshu.com/p/95f556ec2667
+JAVA学科,400错误,"很多同学出现的问题都是在以后接口测试的过程中经常出现400错误
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=02d503a687b84fadaa278fa9d880e36d"
+JAVA学科,微信支付jar包安装步骤,"在加入微信支付的依赖之后，总是下载不下来微信支付的依赖，所以需要手动安装
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=07745afbd600439e8ec63c820e1d2457"
+JAVA学科,IllegalStateException,"Caused by: java.lang.IllegalStateException: availableProcessors is already set to [4], rejecting [4]
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=240c8202c6d244b996903b885a83c927"
+JAVA学科,InstantiationException,"Error invoking SqlProvider method (tk.mybatis.mapper.provider.base.BaseSelectProvider.dynamicSQL)
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=28ef8723199b48b99b9aee83991f60cb"
+JAVA学科,server authentication,"登录认证失败cannot retry due to server authentication, in streaming mode
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=30d28a49ab6c4813959b8e3e1fb38d02"
+JAVA学科,畅购结算页面点击购买数量+加号时，数量会增加2,"在结算页面点击+时，数量会加2，后台会调用两次请求
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=41290f1a31694bfeb85119271dbb30ff"
+JAVA学科,"去登陆页面,重定向次数过多","去登陆页面,一直重定向重定向次数过多登录页面无法访问
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=4729aeca267b43ae81ee65ff46fbf7bf"
+JAVA学科,库存没有回滚,"测试的时候发现如果出现异常，库存并没有回滚
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=4e72681f7c224e12bda23bb38ad812a6"
+JAVA学科,FeignException,"Caused by: feign.FeignException: status 404 reading SkuFeignClient#findSkusBySpuId()
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=50b5667e4d904fffa9b0ae4f9cd4fc6a"
+JAVA学科,跳转支付页面报错,"报ClassCastException异常
+报 java.util.LinkedHashMap cannot be cast  to com.changgou.order.pojo.Order
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=5655d770a4fb49d09aa338bc5df22973"
+JAVA学科,"加入购物车时, 抛出空指针异常","在通过postman来测试添加购物车接口时, 发现后端报错NullPointerException ;
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=5ad2908253d24594a968620c95c2f1e4"
+JAVA学科,头部携带的令牌重复的问题,"网关路径跳转到具体微服务需要携带令牌，但有时会出现头部携带的令牌重复的问题
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=5f76f8f30fff4fc684f2507826cf6f20"
+JAVA学科,HttpRetryException,"Caused by: java.net.HttpRetryException: cannot retry due to server authentication, in streaming mode
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=887db4498ea148f88e498344c5ac18f4"
+JAVA学科,为什么第三天和第九天生成jwt的方式不一样,"为什么第三天和第九天生成jwt的方式不一样
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=8a378e953a6c4913b08b1b88400f0b11"
+JAVA学科,携带令牌访问资源服务出错报错 401,"携带令牌访问资源服务出错
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=8a75de98a96247178ec2af86f0704779"
+JAVA学科,UnsatisfiedDependencyException,"Error creating bean with name 'albumServiceImpl': Unsatisfied dependency expressed through field 'brandMapper'
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=95a48892c3de4e33a3991d8d2b42e013"
+JAVA学科,nginx出现404,"商品详情页生成后需要部署 到nginx中，学生访问经常出现404
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=985effbc7eb74e4ab96b52397098f6c4"
+JAVA学科,静态资源在前端控制台加载时报404,"在访问购物车 , 订单模块时, 访问不到静态资源 , 页面报错404 ;
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=a39a55956554414b86c198c60954f3bd"
+JAVA学科,IllegalArgumentException,"Caused by: java.lang.IllegalArgumentException: mapper [categoryName] of different type, current_type [text], merged_type [keyword]
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=acb5f919bbc44eeabd2ca14d98938961"
+JAVA学科,rabbitmq连接不上,"启动服务报rabbitmq服务连接不上
+
+连接不到rabbitmq
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=b1c879ea4e02432ab99c07c7dea37078"
+JAVA学科,jwtAccessTokenConverter'创建失败,"jwtAccessTokenConverter'创建失败，空指针异常
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=c88142b933f14064aa324c09d4c2756d"
+JAVA学科,访问某个路径会包401未授权,"自定义路径过滤器实现后，访问某个路径会包401未授权
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=d05800a797264ecfa46820c6f15b871b"
+JAVA学科,秒杀时间段不显示,"秒杀页面时间段不显示moment.min.js识别不到
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=d9c9c3fe25254ad882f173e6aa555708"
+JAVA学科,fescar-server 启动闪退,"fescar-server 在启动时 , 点击 fescar-server.bat时 , 出现闪退 ;
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=eff33cf4eef74223b8af84de82d34fe1"
+JAVA学科,lombok集成之后，添加@Slf4j报红,"添加@Slf4j报红
+很多学生在进行lombok集成之后，添加@Slf4j报红
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=cff8fd7745e64d80acf58d5854c7cdc5"
+JAVA学科,没有队列boot_queue,"No queue ‘boot_queue’没有队列boot_queue
+向rabbitmq中发送消息时,队列不存在
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=9e409e005fab427b844ed65ec3094c51"
+JAVA学科,"Springboot启动失败,加载失败Environment","Causedby: org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.springframework.core.env.Environment' available
+Springboot启动失败,加载失败
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=896344f5549c41f2a4ff4558b40f9eaa"
+JAVA学科,unknown POSIX error,"rabbitmq 【ERROR: epmd error for host ""192"":badarg (unknown POSIX error)】
+安装rabbitmq-server 后启动错误如下 如果报以下错误： ERROR: epmd error for host “192”:badarg (unknown POSIX error)
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=44ed659236d24b05bfb2131cde3a2f24"
+JAVA学科,"通过网关访问,路径正确,访问结果404","通过Gateway访问微服务页面显示Whitelabel Error Page
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=30328836e8404cb8a134d38fead13a20"
+JAVA学科,TransportException,"Cannot execute request on any known server
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=64a4f9567d994df79a1b0bb76705ef48"
+JAVA学科,rabbitMQ连接不上,"SocketTimeoutException
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=54c17874e02a4e78892c7c922e03fae9"
+JAVA学科,lombok无法安装,"IDEA上搜索不到Lombok，无法进行安装
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=27ef18844c0f42a88a19994be3c7550c"
+JAVA学科,EurekaServer高可用环境搭建的时候报错,"java.lang.IllegalArgumentException: Schema specific part is opaque
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=59dfeb17e5034a2ca7da0a5059e5ca47"
+JAVA学科,SpringCloud通过Ribbon远程调用服务报错,"IllegalStateException:No instances available for user-service
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=58263f6017224631a7f0d4ab2cb7a9af"
+JAVA学科,springboot中遇到不能返回页面，只返回字符串。,"不能返回页面，只返回字符串。
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=b56efa0af0744223ab18f151531464ad"
+JAVA学科,授权码模式获取jwt令牌报错,"解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=00414b6c7b244b69a916c0024edac660"
+JAVA学科,"LocalDateTime不能直接实例化不能直接实例化
+#不能直接实例化吗？",LocalDateTime没有提供一个无参构造，所以不能直接通过new来创建LocalDateTime对象
+JAVA学科,idea一直报错 java: 程序包context不存在,将工程复制到一个新的目录下从新导入下工程.再试试
+JAVA学科,老师的案例打开报错,具体报的是什么错误信息. 截图看下
+JAVA学科,char类型的数组怎么转成String类型的数组,具体请参考这个帖子: https://www.cnblogs.com/cdsj/articles/5895031.html
+JAVA学科,CRT注册失败,资料里面有注册机. 使用下就行了
+JAVA学科,changgou_web模块 是干什么得,changgou_web模块是前端用户展示的页面服务
+JAVA学科,jdk配置失败怎么回事,按照视频在一步一步配置一遍.
+Python学科,"Mysql grand 授权详解
+mysql grand 中的 @符号作用","语法规则如下：
+GRANT
+    priv_type [(column_list)]
+      [, priv_type [(column_list)]] ...
+    ON [object_type] priv_level
+    TO user [auth_option] [, user [auth_option]] ...
+    [REQUIRE {NONE | tls_option [[AND] tls_option] ...}]
+    [WITH {GRANT OPTION | resource_option} ...]
+
+object_type说明: {
+    TABLE
+  | FUNCTION
+  | PROCEDURE
+}
+
+priv_level 权限级别说明: {
+    *
+  | *.* 
+
+
+  | db_name.*
+  | db_name.tbl_name
+  | tbl_name
+  | db_name.routine_name
+}
+
+user：user_name'@'host_name  前面是用户名@host 用来表示用户
+
+auth_option 认证可选项: {
+    IDENTIFIED BY 'auth_string'  通过什么样的密码认证【更多用的是这个】
+  | IDENTIFIED WITH auth_plugin
+  | IDENTIFIED WITH auth_plugin BY 'auth_string'
+  | IDENTIFIED WITH auth_plugin AS 'auth_string'
+  | IDENTIFIED BY PASSWORD 'auth_string'
+}
+
+resource_option 首选可选项【用的比较少】: {
+  | MAX_QUERIES_PER_HOUR count
+  | MAX_UPDATES_PER_HOUR count
+  | MAX_CONNECTIONS_PER_HOUR count
+  | MAX_USER_CONNECTIONS count
+}
+GRANT ALL ON db1.* TO 'jeffrey'@'localhost';  
+解释：
+all 所有权限 给 db1 下面所有的表，给jeffrey'@'localhost用户"
+Python学科,"windows 提示不是内部或外部命令
+cmd 中提示命令（命令提示符）不存在
+命令提示符","出现这个情况一般有下面的几个情况:
+1. 命令拼写错误，请检查命令拼写
+2.  你使用的这个命令没有安装，请尝试百度搜索安装
+3.  你按照完软件后没有配置对应的环境变量，导致命令没找到
+4.  配置完环境变量后，你的cmd窗口没重启，重启cmd状况即可"
+JAVA学科,handleCurrentChange,"Property or method ""handleCurrentChange"" is not defined
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=44f1f38ed7444ae795743af802b97617"
+JAVA学科,TemplateCode is mandatory,"com.aliyuns.exception.ClientException:MissingTeplateCode:TemplateCode is mandatory for this action.
+阿里云发短信出现异常：TemplateCode is mandatory for this action.此操作必须使用模板代码
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=23f6367d0e10405cb7a518056a229917"
+JAVA学科,BeanCreationException,"org.springframework.beans.factory.BeanCreationException
+Could not resolve placeholder 'outputPath' in value ""${outputPath}""
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=2fdfdc4103cd4b1b903a44c7335c024d"
+JAVA学科,valid hostname,"java.lang.IllegalStateException: Request URI does not contain a valid hostname 注意服务名不能写下滑线
+解决办法如下:
+http://112.126.69.168:8080/reception/showReceptionView?id=a734721c631649bdb6855a49745299fa"
+JAVA学科,fescar-server,"com.alibaba.fescar.common.exception.FrameworkException: can not connect to fescar-server.
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=0cc65b5ed97043b38ddc6036224cc39e"
+JAVA学科,RetryableException,"feign.RetryableException: cannot retry due to redirection, in streaming mode executing POST 
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=244cd68f87c7464cb8829dea5159eb25"
+JAVA学科,获取jwt只能用localhost不能用127.0.0.1,"访问127.0.0.1:8001/api/oauth/login获取jti，cookie的时候。可以返回正确的Result,在redis中也有jwt生成，但是没有cookie,但是使用localhost就正常获取cookie
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=36cf852b7e4c4f8bb8105c8a852c6a83"
+JAVA学科,畅购连接数据库提示1251,"畅购 远程连接docker容器中，MySQL数据库，连接不上
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=89893e4b824b4228a5b0da85c8fb2386"
+JAVA学科,添加购物测时报错,"添加购物测时报Unable to connect to localhost:6379
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=c9cfc85ae067465fbacf75fca4887e22"
+JAVA学科,申请令牌测试的时候报错401,"在测试时候postman 返回错误信息为{
+""error"": ""invalid_token"",
+""error_description"": ""Encoded token is a refresh token""
+}
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=d359af2698c046e6ba89482b7dff5ea7"
+JAVA学科,数据库拒绝连接,"解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=ed99086d1445448293621438c178fb9e"
+JAVA学科,CartFeign#add404或者500,"添加购物车经常出现CartFeign#add（String，Integer）404或者500
+解决办法如下:
+ http://112.126.69.168:8080/reception/showReceptionView?id=f579a729f9e5447f9e37357667de2b75"
+JAVA学科,创建数组会分配内存，如果程序中创建数组然后删除，内存会清理吗,线程结束后，jvm会自动进行垃圾回收。回收内存
+JAVA学科,带参数的方法定义的格式中小括号里能只写变量名吗,不可以。定义方法的时候，必须是 （类型  参数名称）
+JAVA学科,JDK在哪里可以下载呢,在资料当中已经提供好了JDK，在day01天的资料中，如果没有资料信息，请联系班主任
+Python学科,"vmware ubuntu 调整磁盘大小
+虚拟机调整磁盘大小
+乌班图的磁盘不够用能更改码",请同学参考下面的这个：https://blog.csdn.net/linjiasen/article/details/85261380
+Python学科,"键盘是否属于计算机一部分
+键盘是否属于计算组成部分
+键盘时候属于计算组成部分",键盘属于计算机的一部分，可以归属到 计算机输入设备中。
+JAVA学科,collection的remove方法得介绍,Collection的remove适合于非遍历情况下的删除，直接调用底层自己实现的remove方法，但是因为对底层实现的不了解，所以当其在遍历情况下，将导致异常或者BUG，比如在ArrayList中，直接删除元素后，所有之后的元素会向前移一位，如果不考虑清楚，则可能会遗漏若干个对象的判断，而Iterator的remove方法是由底层各个实现专门为遍历删除时提供的方法，其的安全性，准确性，效率都高于Collection的remove()方法。
+JAVA学科,网页端不能缓存视频吗,不可以得， 只有app端可以缓存
+Python学科,"python中子类不能获取父类__init__中的属性
+子类继承父类，不能使用父类中init中参数能不能获取？",同学你好，是这样的在python中，在子类中是不能获取父类__init__中设置的属性，如果想要使用，需要再子类中通过super显示调用父类初始化方法才可以使用
+Python学科,老师，有可以恢复移动硬盘数据的方法吗？,有一款软件工具 diskgenius，不能保证可以完全恢复，如果不是很重要的数据，丢一些无所谓，可以考虑使用，如果是重要的数据，建议同学自己找专门的数据恢复的店进行恢复
+Python学科,"pycharm 哪里下载？
+windows怎么下载pycharm",同学可以去pycharm官网进行下载：https://www.jetbrains.com/pycharm/download/  下面是下载地址，推荐下载社区版本，专业版，需要同学自己百度查找激活码
+Python学科,如何打开虚拟机,"打开别人提供的好的虚拟机环境，请同学先下载安装VMware 软件 然后再请参考下面的连接中的2个文档：链接：https://pan.baidu.com/s/1gPnl5GX2YmnKrTCCWI6xZw 
+提取码：0h44"
+JAVA学科,Java中变量与常量的区别是什么?,常量是不可改变的.变量是可以在程序运行过程中发生改变的.
+JAVA学科,IDEA中设置浏览器打开选项,请参考如下:https://jingyan.baidu.com/article/59703552bee84f8fc1074051.html
+JAVA学科,javac不是内部或外部命令，也不是可运行的程序或批处理文件,这个是代表Java得环境变量配置有误，仔细检查下环境变量
+JAVA学科,"eureka中的ip的不是localhost而是电脑名称
+#中的实例获取ip的结果不是#而是我的电脑名称","eureka的client注册到server时默认是使用hostname而不是ip,这就导致client在多台机器时，服务间相互调用时也会使用hostname进行调用，从而调用失败。 这时候就需要使用ip来服务到eureka-server上，需要在eureka的client增加配置如下：  eureka.instance.prefer-ip-address=true eureka.instance.instance-id=${spring.cloud.client.ipAddress}:${server.port}"
+JAVA学科,mybatis获取XML配置文件地址的时候获取不到,检查xml所在得包是什么结构得。xml所在得包应该是a/b/c这种，而不是a.b.c
+JAVA学科,mac笔记本配置jdk环境,具体参考：https://jingyan.baidu.com/article/7f766daffd99354101e1d095.html
+Python学科,"32位电脑是否可以安装pycharm
+我电脑32位能安装pycharm吗
+电脑32位是否可以安装64位电脑","同学你好，64位系统可以安装32位软件，但是32位系统不能安装64位软件
+在2017前之前，pycharm是支持32位安装的，但是这个之后的版本都不支持32 ，都是64位的，因为我们现在大部分的软件都是64位的包括系统也是，所以推荐同学安装64位，如果自己电脑是32位，建议同学重新安装下系统，因为以后你装软件可能会很多次遇到类似的问题"
+Python学科,"jupyter 要安装到windows还是ubuntu
+jupyter是要安装在windows上还是要安装在虚拟机里",jupyter是一个交互式的python学习工具，这个你既可以安装到windows也可以按照到linux中，或者都安装即可。哪里方便你装哪里
+Python学科,ch系数模型评估,https://www.cnblogs.com/xingnie/p/10334572.html 同学可以参考下这个博客 里面相对不错
+Python学科,"pycharm中如何设置console相关属性
+pycharm中如何设置console字体大小","{""answerText"":""d5409bd2-d153-4f1c-8ea3-e50e0ac4afee"",""answerType"":""NEWS""}"
+JAVA学科,使用分页插件查数据时，跳转页面只展示数据没有前端页面效果,"第一: 检查下是否配置试图解析器,  第二. 看下Controller上面的注解是@Controller 还是 @RestController. 如果是 @RestController的话返回值会当做json展示"
+JAVA学科,java中String和char的区别是什么?,具体区别详情请参考:https://blog.csdn.net/qauchangqingwei/article/details/80831797
+JAVA学科,"装饰者模式
+装饰者模式 怎么更好的理解呢？",装饰器模式（Decorator Pattern）允许向一个现有的对象添加新的功能，同时又不改变其结构(主要目的在于增强接口，而不是扩展接口)。这种类型的设计模式属于结构型模式，它是作为现有的类的一个包装，注意该模式主要用在之前设计系统时没有很好的考虑未来需求（如果你预料到了新需求，你或许会使用其他方式，此时装饰器模式就可能不具备竞争力了），现在要添加新功能为类添加新功能，出于代码复用观点（对扩展开放，对修改关闭原则），不改变结构，此时你可以考虑使用装饰器模式去适应新需求；
+JAVA学科,在学习springmvc框架的入门案例中，找不到出错的问题,如果程序在运行过程中出现问题，首先将错误信息复制，使用百度进行查找，可以多参考几个帖子，根据网上给出的思路，尝试解决问题，这样可以锻炼自己解决问题的能力，如果还是未解决，可以在线答疑，找老师帮忙解决
+JAVA学科,"证书协议问题
+密钥证书无法生成","在进行微信统一下单接口调用时，有的同学电脑会出现PKIX：unable to find valid certification path to requested target   证书协议问题
+解决办法如下: 
+http://112.126.69.168:8080/reception/showReceptionView?id=a2c1923b882049c3829a7f6756122527"
+JAVA学科,老师，为什么我的psvm回车生成不了主方法,可能是idea没有加载完成，可以等待会在重新输入psvm，或者是不小心设置了什么东西，可以尝试重置设置，在输入psvm进行测试
+JAVA学科,#程序包#不存在,https://www.pianshen.com/article/28591577403/  参考该方法进行解决
+JAVA学科,不同模块下的类无法导入,不同模块下的类是无法导入的，只能在同模块才能导入类
+JAVA学科,Lambda表达式在JDK8之后才能使用吗,是的，jdk1.8的新特性
+JAVA学科,classpath 具体指哪里呢,"classpath是指 WEB-INF文件夹下的classes目录
+classpath 和 classpath* 区别： 
+classpath：只会到你的class路径中查找找文件; 
+classpath*：不仅包含class路径，还包括jar文件中(class路径)进行查找"
+JAVA学科,Tomcat在docker里下载什么版本呢？,Tomcat在docker里下载什么版本需要根据当前项目需求决定，目前一般使用tomcat8
+JAVA学科,maven deploy,该命令是将maven的web项目部署到远程服务器
+JAVA学科,"老师你好，问一下#
+老师我想我问下#怎么调",getIndex这个是你在其他类中调用的还是在你导入的jar包中调用的，首先要确保该方法是在哪里调用
+JAVA学科,"还是jsp调用摄像头拍照的事情
+jsp调用摄像头拍照
+jsp能调用摄像头拍照么",jsp调用摄像头拍照，可以参考 https://blog.csdn.net/xuliangjunsilu1/article/details/6715860 这个帖子，但是目前jsp的使用率非常低
+JAVA学科,"老师，帮看看crt装上用不了
+老师帮看看crt连不上",crt连接不上：1，先查看本地和远程是否能ping通。2，关闭本地的防护墙。3，关闭远程服务的防火墙。4，保证本地和远程能ping在进行连接。
+JAVA学科,#配置web,具体可以参考这个：https://www.cnblogs.com/sam-uncle/p/8676529.html
+JAVA学科,这个初始的16怎么理解呀,"StringBuilder里面维护了一个char数组，默认数组长度为16，append(""123456"")，那就还可以再拼接10个长度的字符，满了之后会重新生成数组，如果你能大概知道你要拼接字符串是多长，最好指定长度，避免内部频繁扩容"
+JAVA学科,java代码运行显示数据库拒绝访问和jdk有关系吗？,显示数据库拒绝访问，这个是和jdk没有关系，你可以尝试：1，看下数据库是否启动，2，如果数据在远程，查看本地和远程是否通信。
+JAVA学科,在磁盘中无法新建文本文档,1，首先查看是不是磁盘权限问题，2，确认登录的用户有没有创建文本的权限
+Python学科,"区块链第七阶段货币网址打不开
+第七阶段区块链，那些数字货币网址和交易平台网址都打不开
+为什么我的#打不开网页
+#这个网页打不开",同学要想打开这个需要我们科学上网，您设置科学上网后，就可以正常打开，如何检测是否可以科学上网尝试打开谷歌搜索如果可以就OK了。至于科学上网的方法，请同学尝试百度找解决方法。
+Python学科,"代码下面显示灰色的波浪线是什么原因？
+pycharm中代码有波浪线
+代码下面红色波浪线？
+python中波浪线","代码有红色波浪线，表示语法有错误
+如果是灰色波浪线，表示我们的变量名字可能不太满足python的一些规范，但是不影响。
+你可以把鼠标放到波浪线上面，上面会提示对应的信息，可以根据提示调整即可"
+JAVA学科,static静态方法使用非静态变量,"在外部调用静态方法时，可以使用""类名.方法名""的方式，也可以使用""对象名.方法名""的方式。而实例方法只有后面这种方式。也就是说，调用静态方法可以无需创建对象。
+
+静态方法在访问本类的成员时，只允许访问静态成员（即静态成员变量和静态方法），而不允许访问实例成员变量和实例方法，实例方法则无此限制。"
+Python学科,"f-string格式输出保留数字
+f'{stu_id}' 格式化输出保留数字
+f string 格式化输出保留小数点（精度）
+f-string 格式化对齐","更多的f-string可以参考如下博客： 
+https://blog.csdn.net/sunxb10/article/details/81036693"

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EduRAG 集成问答系统 · 项目介绍</title>
+<noscript><style>.reveal{opacity:1 !important;transform:none !important}</style></noscript>
+<style>
+  /* ============ 主题变量 ============ */
+  :root {
+    --bg: #f6f8fc;
+    --bg-soft: #eef3fb;
+    --card: #ffffff;
+    --ink: #16233a;
+    --ink-2: #354764;
+    --muted: #5b6b85;
+    --line: #e2e9f3;
+    --brand: #4f7cff;
+    --brand-2: #7b5cff;
+    --faq: #12a06b;
+    --faq-soft: #e8f7f0;
+    --rag: #6b4ee6;
+    --rag-soft: #f0ecfe;
+    --warn: #b98115;
+    --warn-soft: #fdf4e3;
+    --shadow: 0 18px 40px rgba(22, 35, 58, .08);
+    --radius: 16px;
+    --mono: "Consolas", "Monaco", "Courier New", monospace;
+  }
+  html[data-theme="dark"] {
+    --bg: #0e1526;
+    --bg-soft: #131d33;
+    --card: #151f36;
+    --ink: #e8eefc;
+    --ink-2: #c3cfe4;
+    --muted: #93a3c4;
+    --line: #25324d;
+    --brand: #6f92ff;
+    --brand-2: #9b83ff;
+    --faq: #3ddc97;
+    --faq-soft: #12301f;
+    --rag: #a48cff;
+    --rag-soft: #221a3d;
+    --warn: #ffc857;
+    --warn-soft: #33280f;
+    --shadow: 0 18px 40px rgba(0, 0, 0, .38);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  h1, h2, h3, h4 { line-height: 1.35; margin: 0; letter-spacing: -.2px; }
+  p { margin: 0; }
+  code, pre { font-family: var(--mono); }
+  img { max-width: 100%; display: block; }
+
+  .wrap { width: min(1120px, calc(100% - 48px)); margin: 0 auto; }
+
+  /* ============ 顶部导航 ============ */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    z-index: 60; transition: width .1s linear;
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(14px);
+    background: var(--bg);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner {
+    display: flex; align-items: center; gap: 18px;
+    height: 64px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.3px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 9px; flex: 0 0 30px;
+    display: grid; place-items: center; color: #fff; font-size: 11px; font-weight: 800;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    box-shadow: 0 6px 16px rgba(79, 124, 255, .35);
+  }
+  .nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; }
+  .nav a {
+    padding: 7px 12px; border-radius: 999px; font-size: 13.5px; color: var(--muted);
+    white-space: nowrap; transition: .18s;
+  }
+  .nav a:hover { color: var(--ink); background: var(--bg-soft); }
+  .nav a.active { color: var(--ink); background: var(--bg-soft); font-weight: 600; }
+  .icon-btn {
+    width: 34px; height: 34px; flex: 0 0 34px; display: grid; place-items: center;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    border-radius: 10px; cursor: pointer; font-size: 15px; transition: .18s;
+  }
+  .icon-btn:hover { border-color: var(--brand); color: var(--brand); }
+
+  /* ============ 通用区块 ============ */
+  section { padding: 72px 0; }
+  section + section { border-top: 1px solid var(--line); }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--brand);
+  }
+  .eyebrow::before {
+    content: ""; width: 18px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--brand), var(--brand-2));
+  }
+  .h2 { font-size: 30px; font-weight: 800; margin: 12px 0 10px; }
+  .lead { color: var(--muted); max-width: 760px; font-size: 15px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+  }
+
+  /* ============ Hero ============ */
+  .hero { padding: 86px 0 64px; border-top: none; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: -30% -10% auto -10%; height: 460px;
+    background:
+      radial-gradient(520px 260px at 18% 0%, rgba(79,124,255,.16), transparent 70%),
+      radial-gradient(460px 240px at 82% 8%, rgba(123,92,255,.14), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 40px; align-items: center; position: relative; }
+  .hero h1 { font-size: 44px; font-weight: 800; letter-spacing: -1px; }
+  .hero h1 span {
+    background: linear-gradient(120deg, var(--brand), var(--brand-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p.lead { margin-top: 16px; font-size: 16px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+  .pill {
+    font-size: 12.5px; padding: 5px 12px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--ink-2); background: var(--card);
+  }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 11px; font-size: 14px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    cursor: pointer; transition: .18s;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--brand); color: var(--brand); }
+  .btn.primary {
+    color: #fff; border: none;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    box-shadow: 0 10px 24px rgba(79, 124, 255, .3);
+  }
+  .btn.primary:hover { color: #fff; box-shadow: 0 14px 30px rgba(79, 124, 255, .38); }
+
+  .hero-panel { padding: 22px; }
+  .hero-panel h4 { font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .4px; }
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .stat { padding: 14px; border-radius: 12px; background: var(--bg-soft); }
+  .stat b { display: block; font-size: 24px; letter-spacing: -.6px; }
+  .stat span { font-size: 12px; color: var(--muted); }
+  .stat em { font-style: normal; font-size: 13px; font-weight: 700; color: var(--brand); }
+
+  /* ============ 两条链路 ============ */
+  .lane-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+  .lane { padding: 24px; position: relative; overflow: hidden; }
+  .lane::after {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  }
+  .lane.faq::after { background: var(--faq); }
+  .lane.rag::after { background: var(--rag); }
+  .lane h3 { font-size: 19px; display: flex; align-items: center; gap: 10px; }
+  .tag {
+    font-size: 11px; font-weight: 700; letter-spacing: .8px; padding: 3px 9px;
+    border-radius: 999px;
+  }
+  .tag.faq { color: var(--faq); background: var(--faq-soft); }
+  .tag.rag { color: var(--rag); background: var(--rag-soft); }
+  .lane ul { margin: 16px 0 0; padding-left: 0; list-style: none; }
+  .lane li { position: relative; padding-left: 18px; margin: 9px 0; font-size: 14px; color: var(--ink-2); }
+  .lane li::before {
+    content: ""; position: absolute; left: 2px; top: .68em;
+    width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .35;
+  }
+  .lane .metric { margin-top: 16px; font-size: 12.5px; color: var(--muted); }
+  .lane .metric b { color: var(--ink); }
+
+  /* ============ 图表 Tabs ============ */
+  .tabs { display: flex; gap: 6px; margin: 26px 0 16px; flex-wrap: wrap; }
+  .tab {
+    padding: 9px 16px; border-radius: 10px; font-size: 13.5px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--card); color: var(--muted); cursor: pointer;
+  }
+  .tab.active {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  }
+  .figure { padding: 14px; }
+  .figure img { border-radius: 10px; cursor: zoom-in; background: #fff; }
+  .figcap { display: flex; justify-content: space-between; gap: 12px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+  .figcap b { color: var(--ink-2); font-weight: 600; }
+
+  /* ============ 机制卡片 ============ */
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 28px; }
+  .mech { padding: 22px; }
+  .mech h3 { font-size: 16.5px; display: flex; align-items: center; gap: 10px; }
+  .num {
+    width: 26px; height: 26px; flex: 0 0 26px; border-radius: 8px; display: grid; place-items: center;
+    font-size: 12px; font-weight: 800; color: var(--brand); background: var(--bg-soft);
+    border: 1px solid var(--line);
+  }
+  .mech p { margin-top: 10px; font-size: 14px; color: var(--ink-2); }
+  .kv { margin-top: 14px; display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+  .kv div { display: flex; gap: 8px; }
+  .kv span:first-child { min-width: 86px; color: var(--ink-2); font-weight: 600; }
+
+  /* ============ 参数表 ============ */
+  table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 22px; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table.data th, table.data td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.data th { background: var(--bg-soft); font-size: 12.5px; color: var(--muted); font-weight: 700; white-space: nowrap; }
+  table.data tr:last-child td { border-bottom: none; }
+  table.data code { font-size: 12.5px; padding: 1px 5px; border-radius: 5px; background: var(--bg-soft); color: var(--ink-2); }
+
+  /* ============ 优化网格 ============ */
+  .opt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 28px; }
+  .opt {
+    padding: 20px; border-radius: 14px; background: var(--card);
+    border: 1px solid var(--line); box-shadow: var(--shadow); transition: .2s;
+  }
+  .opt:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+  .opt h4 { font-size: 14.5px; }
+  .opt .k { display: block; font-size: 12px; color: var(--brand); font-weight: 700; margin-bottom: 6px; letter-spacing: .6px; }
+  .opt p { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .opt .badge {
+    display: inline-block; margin-top: 12px; font-size: 11.5px; font-weight: 700;
+    color: var(--faq); background: var(--faq-soft); padding: 3px 9px; border-radius: 999px;
+  }
+
+  /* ============ 缓存对照 ============ */
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+  .on { background: var(--faq); }
+  .off { background: var(--muted); opacity: .5; }
+  .note {
+    margin-top: 18px; padding: 16px 18px; border-radius: 12px; font-size: 13.5px;
+    background: var(--warn-soft); color: var(--ink-2); border: 1px solid color-mix(in srgb, var(--warn) 28%, transparent);
+  }
+  .note b { color: var(--warn); }
+
+  /* ============ 后续可改 ============ */
+  .next-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 26px; }
+  .next {
+    display: flex; gap: 14px; padding: 16px 18px; border-radius: 12px;
+    background: var(--card); border: 1px solid var(--line);
+  }
+  .next .idx {
+    font-family: var(--mono); font-size: 12px; font-weight: 700; color: var(--brand);
+    min-width: 30px; padding-top: 2px;
+  }
+  .next h4 { font-size: 14px; }
+  .next p { font-size: 12.8px; color: var(--muted); margin-top: 4px; }
+  .next em { font-style: normal; color: var(--ink-2); }
+
+  /* ============ 技术栈 ============ */
+  .stack-groups { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 28px; }
+  .stack { padding: 20px; }
+  .stack h4 { font-size: 13px; color: var(--muted); letter-spacing: .5px; text-transform: uppercase; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    font-size: 12.5px; padding: 5px 11px; border-radius: 8px;
+    border: 1px solid var(--line); color: var(--ink-2); background: var(--bg-soft);
+  }
+  .chip b { font-weight: 700; }
+
+  /* ============ 快速开始 ============ */
+  .start-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; margin-top: 28px; align-items: start; }
+  .code-card { position: relative; overflow: hidden; }
+  .code-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--bg-soft);
+    font-size: 12px; color: var(--muted); font-family: var(--mono);
+  }
+  .copy {
+    border: 1px solid var(--line); background: var(--card); color: var(--ink-2);
+    font-size: 11.5px; padding: 4px 10px; border-radius: 7px; cursor: pointer; font-family: inherit;
+  }
+  .copy:hover { border-color: var(--brand); color: var(--brand); }
+  .code-card pre {
+    margin: 0; padding: 16px; overflow-x: auto; font-size: 12.8px; line-height: 1.85;
+    color: var(--ink-2); background: transparent;
+  }
+  .code-card pre .c { color: var(--muted); }
+  .code-card pre .k { color: var(--brand); font-weight: 600; }
+  .api { padding: 20px; }
+  .api pre { margin: 10px 0 0; font-size: 12.5px; line-height: 1.8; color: var(--ink-2); overflow-x: auto; }
+
+  /* ============ 页脚 ============ */
+  footer { padding: 40px 0 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; }
+
+  /* ============ 灯箱 ============ */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 100; display: none;
+    background: rgba(8, 14, 26, .88); padding: 30px; cursor: zoom-out;
+    align-items: center; justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 100%; max-height: 92vh; border-radius: 10px; background: #fff; }
+
+  /* ============ 滚动显现 ============ */
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .5s ease, transform .5s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ============ 响应式 ============ */
+  @media (max-width: 960px) {
+    .hero-grid, .start-grid, .cards, .stack-groups { grid-template-columns: 1fr; }
+    .opt-grid { grid-template-columns: repeat(2, 1fr); }
+    .lane-grid, .next-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 34px; }
+    .h2 { font-size: 25px; }
+    .nav { display: none; }
+  }
+  @media (max-width: 620px) {
+    .wrap { width: calc(100% - 32px); }
+    section { padding: 52px 0; }
+    .opt-grid { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: 1fr; }
+    .hero { padding: 56px 0 44px; }
+  }
+  @media print {
+    .topbar, .progress, .cta, .tabs, .copy, footer { display: none !important; }
+    body { background: #fff; }
+    section { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand"><span class="brand-mark">EDU</span> EduRAG 集成问答系统</div>
+    <nav class="nav" id="nav">
+      <a href="#what">能力</a>
+      <a href="#arch">架构</a>
+      <a href="#how">机制</a>
+      <a href="#perf">优化</a>
+      <a href="#cache">缓存</a>
+      <a href="#next">后续</a>
+      <a href="#stack">技术栈</a>
+      <a href="#start">启动</a>
+    </nav>
+    <button class="icon-btn" id="themeBtn" title="切换深色 / 浅色">◐</button>
+  </div>
+</header>
+
+<main>
+  <!-- ================= Hero ================= -->
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Education RAG · FAQ + RAG</span>
+        <h1>一个入口，<br /><span>两条知识链路</span></h1>
+        <p class="lead">
+          面向教育领域的问答系统：先用 <b>FAQ 精确检索</b> 命中人工维护的标准答案，未命中再自动转
+          <b>RAG 语义检索 + 大模型生成</b>。对外只暴露一套页面、一个接口。
+        </p>
+        <div class="pills">
+          <span class="pill">Flask 同步服务</span>
+          <span class="pill">FastAPI 异步服务</span>
+          <span class="pill">BM25 + Milvus 混合检索</span>
+          <span class="pill">BGE-M3 · BGE-Reranker</span>
+          <span class="pill">DashScope 生成</span>
+        </div>
+        <div class="cta">
+          <a class="btn primary" href="#arch">查看架构图</a>
+          <a class="btn" href="#start">快速启动</a>
+        </div>
+      </div>
+
+      <div class="card hero-panel reveal">
+        <h4>系统概况</h4>
+        <div class="stat-grid">
+          <div class="stat"><b><em>2</em> 条</b><span>问答链路（FAQ / RAG）</span></div>
+          <div class="stat"><b>1</b><span>统一接口 POST /query</span></div>
+          <div class="stat"><b>3</b><span>并发闸门（FAQ / RAG / DB）</span></div>
+          <div class="stat"><b>5.4</b><span>GB 本地模型（BGE + BERT）</span></div>
+        </div>
+        <div class="metric" style="margin-top:16px;font-size:12.5px;color:var(--muted)">
+          默认路由：<b style="color:var(--ink)">auto</b> —— FAQ 优先，未命中或异常自动转 RAG
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 两条链路 ================= -->
+  <section id="what">
+    <div class="wrap">
+      <span class="eyebrow">Capabilities</span>
+      <h2 class="h2">两条链路，各解决一类问题</h2>
+      <p class="lead">固定问答不该每次都让大模型重新生成，开放型问题又无法靠字面匹配命中——因此把两种检索范式并列，用统一路由决定走哪条。</p>
+
+      <div class="lane-grid">
+        <article class="card lane faq reveal">
+          <h3>FAQ 链路 <span class="tag faq">精确 · 毫秒级</span></h3>
+          <ul>
+            <li>jieba 分词 → BM25Okapi 打分 → softmax 归一化 → 最高分 &gt; 0.85 判定命中</li>
+            <li>命中后用最相似的历史问题去 MySQL <code>jpkb</code> 表取标准答案</li>
+            <li>答案写回 Redis <code>answer:{query}</code>，同字符串下次直接返回</li>
+            <li>索引常驻内存，daemon 线程每 30 分钟以 MySQL 为准同步一次</li>
+          </ul>
+          <div class="metric">答案来源：<b>人工维护</b> · 不经过大模型，天然无生成式幻觉</div>
+        </article>
+
+        <article class="card lane rag reveal">
+          <h3>RAG 链路 <span class="tag rag">语义 · 秒级</span></h3>
+          <ul>
+            <li>BERT 意图分流：通用知识不检索直接作答，专业咨询才进检索</li>
+            <li>LLM 选策略 → 分派到回溯 / 子查询 / HyDE / 直接检索（不匹配则退化为直接检索）</li>
+            <li>BGE-M3 编码 query，dense(0.7) + sparse(0.3) 混合检索，召回 k=3</li>
+            <li>子块命中后按 <code>parent_content</code> 去重还原父块，bge-reranker 精排取 Top2</li>
+            <li>DashScope 生成答案，附带来源说明与“信息不足请联系人工”的兜底句</li>
+          </ul>
+          <div class="metric">答案来源：<b>检索 + 生成</b> · 支持按学科（source）过滤</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 架构 / 流程 ================= -->
+  <section id="arch">
+    <div class="wrap">
+      <span class="eyebrow">Architecture</span>
+      <h2 class="h2">结构与请求路径</h2>
+      <p class="lead">自上而下四层：入口层 → 路由层 → 能力层（FAQ / RAG 并列）→ 存储与基础层。离线建库是独立链路，不在请求路径上。</p>
+
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-panel="pArch">项目结构图</button>
+        <button class="tab" data-panel="pFlow">请求流程图</button>
+      </div>
+
+      <div class="card figure" id="pArch">
+        <img id="imgArch" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjQwIiBoZWlnaHQ9IjEwNDAiIHZpZXdCb3g9IjAgMCAxMjQwIDEwNDAiIGZvbnQtZmFtaWx5PSInTWljcm9zb2Z0IFlhSGVpJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bWFya2VyIGlkPSJhcnIiIHZpZXdCb3g9IjAgMCAxMCAxMCIgcmVmWD0iOSIgcmVmWT0iNSIgbWFya2VyV2lkdGg9IjciIG1hcmtlckhlaWdodD0iNyIgb3JpZW50PSJhdXRvLXN0YXJ0LXJldmVyc2UiPgogICAgICA8cGF0aCBkPSJNIDAgMCBMIDEwIDUgTCAwIDEwIHoiIGZpbGw9IiM4ZWEyYmYiLz4KICAgIDwvbWFya2VyPgogICAgPHN0eWxlPgogICAgICAudGl0bGUgeyBmb250LXNpemU6IDI0cHg7IGZvbnQtd2VpZ2h0OiA3MDA7IGZpbGw6ICMxNjIzM2E7IH0KICAgICAgLnN1YnRpdGxlIHsgZm9udC1zaXplOiAxM3B4OyBmaWxsOiAjNjY3ODhmOyB9CiAgICAgIC5iYW5kIHsgZm9udC1zaXplOiAxMnB4OyBmb250LXdlaWdodDogNzAwOyBmaWxsOiAjNGY3Y2ZmOyBsZXR0ZXItc3BhY2luZzogMXB4OyB9CiAgICAgIC5ub2RlLXRpdGxlIHsgZm9udC1zaXplOiAxMy41cHg7IGZvbnQtd2VpZ2h0OiA2MDA7IGZpbGw6ICMxNjIzM2E7IH0KICAgICAgLm5vZGUtc3ViIHsgZm9udC1zaXplOiAxMS41cHg7IGZpbGw6ICM1YjZiODU7IH0KICAgICAgLm5vZGUtZmlsZSB7IGZvbnQtc2l6ZTogMTIuNXB4OyBmb250LXdlaWdodDogNjAwOyBmaWxsOiAjMWUzYTZiOyB9CiAgICAgIC5sYW5lLXRpdGxlIHsgZm9udC1zaXplOiAxNHB4OyBmb250LXdlaWdodDogNzAwOyB9CiAgICAgIC5sYW5lLXN1YiB7IGZvbnQtc2l6ZTogMTEuNXB4OyB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KCiAgPHJlY3Qgd2lkdGg9IjEyNDAiIGhlaWdodD0iMTA0MCIgZmlsbD0iI2Y2ZjhmYyIvPgogIDx0ZXh0IHg9IjQwIiB5PSI0OCIgY2xhc3M9InRpdGxlIj5FZHVSQUcg6ZuG5oiQ6Zeu562U57O757ufIMK3IOmhueebrue7k+aehOWbvjwvdGV4dD4KICA8dGV4dCB4PSI0MCIgeT0iNzIiIGNsYXNzPSJzdWJ0aXRsZSI+5LiA5Liq5pyN5Yqh44CB5Lik5p2h6Zeu562U6ZO+6Lev77yaRkFR77yITXlTUUwgKyBCTTI1ICsgUmVkaXPvvInkvJjlhYjvvIzmnKrlkb3kuK3ovawgUkFH77yITWlsdnVzICsgQkdFIOeyvuaOkiArIOWkp+aooeWei+eUn+aIkO+8iTwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSDmjqXlhaXlsYIgPT09PT09PT09PT09PT09PT0gLS0+CiAgPHRleHQgeD0iNDAiIHk9IjEwNiIgY2xhc3M9ImJhbmQiPuaOpeWFpeWxgiBsIOWFpeWPoyAvIOWJjeerrzwvdGV4dD4KICA8cmVjdCB4PSI0MCIgeT0iMTE4IiB3aWR0aD0iMjYwIiBoZWlnaHQ9IjkyIiByeD0iMTIiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2NmZDhlNiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8dGV4dCB4PSI1OCIgeT0iMTQ2IiBjbGFzcz0ibm9kZS1maWxlIj5hcHAucHk8L3RleHQ+CiAgPHRleHQgeD0iNTgiIHk9IjE2OCIgY2xhc3M9Im5vZGUtc3ViIj5GbGFzayDlkIzmraXlhaXlj6MgwrcgMTI3LjAuMC4xOjUwMDA8L3RleHQ+CiAgPHRleHQgeD0iNTgiIHk9IjE4OCIgY2xhc3M9Im5vZGUtc3ViIj7or7fmsYLlhoXnm7TmjqXpmLvloZ7miafooYw8L3RleHQ+CgogIDxyZWN0IHg9IjM0MCIgeT0iMTE4IiB3aWR0aD0iMjYwIiBoZWlnaHQ9IjkyIiByeD0iMTIiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2NmZDhlNiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8dGV4dCB4PSIzNTgiIHk9IjE0NiIgY2xhc3M9Im5vZGUtZmlsZSI+YXBwX2FzeW5jLnB5PC90ZXh0PgogIDx0ZXh0IHg9IjM1OCIgeT0iMTY4IiBjbGFzcz0ibm9kZS1zdWIiPkZhc3RBUEkg5byC5q2l5YWl5Y+jIMK3IDo4MDAwPC90ZXh0PgogIDx0ZXh0IHg9IjM1OCIgeT0iMTg4IiBjbGFzcz0ibm9kZS1zdWIiPue6v+eoi+axoCArIOmZkOa1gSArIOWNlemjnuWOu+mHjTwvdGV4dD4KCiAgPHJlY3QgeD0iNjQwIiB5PSIxMTgiIHdpZHRoPSIyNjAiIGhlaWdodD0iOTIiIHJ4PSIxMiIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjY2ZkOGU2IiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDx0ZXh0IHg9IjY1OCIgeT0iMTQ2IiBjbGFzcz0ibm9kZS1maWxlIj50ZW1wbGF0ZXMvaW5kZXguaHRtbDwvdGV4dD4KICA8dGV4dCB4PSI2NTgiIHk9IjE2OCIgY2xhc3M9Im5vZGUtc3ViIj7llK/kuIDliY3nq6/pobXpnaLvvIhGQVEgLyBSQUcg5YWx55So77yJPC90ZXh0PgogIDx0ZXh0IHg9IjY1OCIgeT0iMTg4IiBjbGFzcz0ibm9kZS1zdWIiPuS8muivneWIl+ihqCDCtyDmtojmga/ljLogwrcg6L6T5YWl5Yy6PC90ZXh0PgoKICA8cmVjdCB4PSI5NDAiIHk9IjExOCIgd2lkdGg9IjI2MCIgaGVpZ2h0PSI5MiIgcng9IjEyIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjZmQ4ZTYiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPHRleHQgeD0iOTU4IiB5PSIxNDYiIGNsYXNzPSJub2RlLWZpbGUiPnN0YXRpYy9zdHlsZS5jc3MgwrcgYXBwLmpzPC90ZXh0PgogIDx0ZXh0IHg9Ijk1OCIgeT0iMTY4IiBjbGFzcz0ibm9kZS1zdWIiPua3seiJsueOu+eSg+aLn+aAgSDCtyDmqKHlvI/liIfmjaI8L3RleHQ+CiAgPHRleHQgeD0iOTU4IiB5PSIxODgiIGNsYXNzPSJub2RlLXN1YiI+5byV5pOO5b695qCHIMK3IOS7o+eggeWdl+WkjeWItjwvdGV4dD4KCiAgPCEtLSA9PT09PT09PT09PT09PT09PSDot6/nlLHlsYIgPT09PT09PT09PT09PT09PT0gLS0+CiAgPHRleHQgeD0iNDAiIHk9IjI0MiIgY2xhc3M9ImJhbmQiPui3r+eUseWxgiBsIOe7n+S4gOiwg+W6pjwvdGV4dD4KICA8cmVjdCB4PSI0MCIgeT0iMjU0IiB3aWR0aD0iMTE2MCIgaGVpZ2h0PSI5NiIgcng9IjE0IiBmaWxsPSIjZWVmM2ZmIiBzdHJva2U9IiM5ZGI2ZmYiIHN0cm9rZS13aWR0aD0iMS40Ii8+CiAgPHRleHQgeD0iNjIiIHk9IjI4MiIgY2xhc3M9Im5vZGUtZmlsZSI+cWFfcm91dGVyLnB5IOKAlOKAlCDllK/kuIDnmoTot6/nlLHliKTlrprvvIzkuKTkuKrlhaXlj6PlhbHnlKg8L3RleHQ+CiAgPHRleHQgeD0iNjIiIHk9IjMwNiIgY2xhc3M9Im5vZGUtc3ViIj5hbnN3ZXJfcXVlcnkocXVlc3Rpb24sIG1vZGUsIHNvdXJjZV9maWx0ZXIpIOKGkiB7YW5zd2VyLCBlbmdpbmUsIGZvdW5kLCBlbGFwc2VkLCBub3RlfTwvdGV4dD4KICA8dGV4dCB4PSI2MiIgeT0iMzI4IiBjbGFzcz0ibm9kZS1zdWIiPmF1dG/vvJpGQVEg5ZG95Lit5Y2z6L+U5Zue77yM5pyq5ZG95LitL+W8guW4uOi9rCBSQUfjgIB844CAZmFxIC8gcmFn77ya5by65Yi25Y2V6ZO+6Lev44CAfOOAgG1ha2VfcmVzdWx0IC8gd2FybV91cF9mYXEgLyB3YXJtX3VwX3JhZyAvIGRlc2NyaWJlPC90ZXh0PgoKICA8IS0tIOi3r+eUseWIsOS4pOadoemTvui3r+eahOeureWktCAtLT4KICA8bGluZSB4MT0iMzMwIiB5MT0iMzUwIiB4Mj0iMzMwIiB5Mj0iMzg0IiBzdHJva2U9IiM4ZWEyYmYiIHN0cm9rZS13aWR0aD0iMS42IiBzdHJva2UtZGFzaGFycmF5PSI1IDQiIG1hcmtlci1lbmQ9InVybCgjYXJyKSIvPgogIDxsaW5lIHgxPSI5MzAiIHkxPSIzNTAiIHgyPSI5MzAiIHkyPSIzODQiIHN0cm9rZT0iIzhlYTJiZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1kYXNoYXJyYXk9IjUgNCIgbWFya2VyLWVuZD0idXJsKCNhcnIpIi8+CgogIDwhLS0gPT09PT09PT09PT09PT09PT0gRkFRIOmTvui3ryA9PT09PT09PT09PT09PT09PSAtLT4KICA8cmVjdCB4PSI0MCIgeT0iMzg2IiB3aWR0aD0iNTcwIiBoZWlnaHQ9IjM3MiIgcng9IjE2IiBmaWxsPSIjZWVmYWY0IiBzdHJva2U9IiM4ZWRjYmEiIHN0cm9rZS13aWR0aD0iMS40Ii8+CiAgPHRleHQgeD0iNjIiIHk9IjQxNCIgY2xhc3M9ImxhbmUtdGl0bGUiIGZpbGw9IiMxNThhNWMiPkZBUSDpk77ot68gwrcgbXlzcWxfcWHvvIjmr6vnp5LnuqfvvIk8L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSI0MTQiIGNsYXNzPSJsYW5lLXN1YiIgZmlsbD0iIzNhOGE2YyI+57K+56Gu5Yy56YWN5Z6L6Zeu562U77yM6LWw5LiN6YCa5omN6L2sIFJBRzwvdGV4dD4KCiAgPHJlY3QgeD0iNjAiIHk9IjQyOCIgd2lkdGg9IjUzMCIgaGVpZ2h0PSI1NCIgcng9IjEwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjM2U4ZDciLz4KICA8dGV4dCB4PSI3OCIgeT0iNDUxIiBjbGFzcz0ibm9kZS1maWxlIj51dGlscy9xYV9zZXJ2aWNlLnB5PC90ZXh0PgogIDx0ZXh0IHg9Ijc4IiB5PSI0NzAiIGNsYXNzPSJub2RlLXN1YiI+57q/56iL5a6J5YWo5Y2V5L6LIMK3IGppZWJhIC8gQk0yNSDpooTng63lhaXlj6MgZW5zdXJlX3JlYWR5KCk8L3RleHQ+CgogIDxyZWN0IHg9IjYwIiB5PSI0OTIiIHdpZHRoPSI1MzAiIGhlaWdodD0iNTQiIHJ4PSIxMCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjYzNlOGQ3Ii8+CiAgPHRleHQgeD0iNzgiIHk9IjUxNSIgY2xhc3M9Im5vZGUtZmlsZSI+dXRpbHMvbXlzcWxfcWFfc3lzdGVtLnB5PC90ZXh0PgogIDx0ZXh0IHg9Ijc4IiB5PSI1MzQiIGNsYXNzPSJub2RlLXN1YiI+TXlTUUxRQVN5c3RlbS5xdWVyeSgp77ya57uE5ZCIIE15U1FMICsgUmVkaXMgKyBCTTI1PC90ZXh0PgoKICA8cmVjdCB4PSI2MCIgeT0iNTU2IiB3aWR0aD0iNTMwIiBoZWlnaHQ9IjU0IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2MzZThkNyIvPgogIDx0ZXh0IHg9Ijc4IiB5PSI1NzkiIGNsYXNzPSJub2RlLWZpbGUiPnJldHJpZXZhbC9ibTI1X3NlYXJjaC5weTwvdGV4dD4KICA8dGV4dCB4PSI3OCIgeT0iNTk4IiBjbGFzcz0ibm9kZS1zdWIiPmppZWJhIOWIhuivjSDihpIgQk0yNU9rYXBpIOKGkiBzb2Z0bWF4IOKGkiDmnIDpq5jliIYgJmd0OyAwLjg1IOaJjeeul+WRveS4re+8iDMwIOWIhumSn+WumuaXtuWQjOatpe+8iTwvdGV4dD4KCiAgPHJlY3QgeD0iNjAiIHk9IjYyMCIgd2lkdGg9IjI1NSIgaGVpZ2h0PSI1NCIgcng9IjEwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjM2U4ZDciLz4KICA8dGV4dCB4PSI3OCIgeT0iNjQzIiBjbGFzcz0ibm9kZS1maWxlIj5jYWNoZS9SZWRpc0NsaWVudC5weTwvdGV4dD4KICA8dGV4dCB4PSI3OCIgeT0iNjYyIiBjbGFzcz0ibm9kZS1zdWIiPmFuc3dlcjp7cXVlcnl9IOe8k+WtmDwvdGV4dD4KCiAgPHJlY3QgeD0iMzM1IiB5PSI2MjAiIHdpZHRoPSIyNTUiIGhlaWdodD0iNTQiIHJ4PSIxMCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjYzNlOGQ3Ii8+CiAgPHRleHQgeD0iMzUzIiB5PSI2NDMiIGNsYXNzPSJub2RlLWZpbGUiPmRiL015U1FMQ2xpZW50LnB5PC90ZXh0PgogIDx0ZXh0IHg9IjM1MyIgeT0iNjYyIiBjbGFzcz0ibm9kZS1zdWIiPmpwa2Ig6KGo5Y+W562U5qGIIMK3IOWNlei/nuaOpeWKoOmUgTwvdGV4dD4KCiAgPHJlY3QgeD0iNjAiIHk9IjY4NCIgd2lkdGg9IjUzMCIgaGVpZ2h0PSI1NCIgcng9IjEwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjM2U4ZDciLz4KICA8dGV4dCB4PSI3OCIgeT0iNzA3IiBjbGFzcz0ibm9kZS1maWxlIj51dGlscy9wcmVwcm9jZXNzLnB5ICsgYmFzZS9sb2dnZXIucHk8L3RleHQ+CiAgPHRleHQgeD0iNzgiIHk9IjcyNiIgY2xhc3M9Im5vZGUtc3ViIj7mlofmnKzpooTlpITnkIbvvIhqaWViYS5sY3V0ICsgbG93ZXLvvInCtyDlhajpk77ot6/ml6Xlv5fokL3liLAgbG9ncy9hcHAubG9nPC90ZXh0PgoKICA8IS0tID09PT09PT09PT09PT09PT09IFJBRyDpk77ot68gPT09PT09PT09PT09PT09PT0gLS0+CiAgPHJlY3QgeD0iNjMwIiB5PSIzODYiIHdpZHRoPSI2MTAiIGhlaWdodD0iMzcyIiByeD0iMTYiIGZpbGw9IiNmNGYwZmYiIHN0cm9rZT0iI2MwYWVmZiIgc3Ryb2tlLXdpZHRoPSIxLjQiLz4KICA8dGV4dCB4PSI2NTIiIHk9IjQxNCIgY2xhc3M9ImxhbmUtdGl0bGUiIGZpbGw9IiM1YTNlYzgiPlJBRyDpk77ot68gwrcgcmFnX3Fh77yI56eS57qn77yJPC90ZXh0PgogIDx0ZXh0IHg9IjkwNiIgeT0iNDE0IiBjbGFzcz0ibGFuZS1zdWIiIGZpbGw9IiM2YjU3YzAiPuivreS5ieajgOe0oiArIOeyvuaOkiArIOWkp+aooeWei+eUn+aIkDwvdGV4dD4KCiAgPHJlY3QgeD0iNjUwIiB5PSI0MjgiIHdpZHRoPSI1NzAiIGhlaWdodD0iNTQiIHJ4PSIxMCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZDhjY2ZmIi8+CiAgPHRleHQgeD0iNjY4IiB5PSI0NTEiIGNsYXNzPSJub2RlLWZpbGUiPnJhZ19xYS9yYWdfc2VydmljZS5weTwvdGV4dD4KICA8dGV4dCB4PSI2NjgiIHk9IjQ3MCIgY2xhc3M9Im5vZGUtc3ViIj7ljZXkvovvvIjmg7DmgKfliJ3lp4vljJYgwrcg57q/56iL5a6J5YWoIMK3IOWksei0peWQjiA2MHMg5Ya35Y2077yJwrcg6aKE54Ot5pe25by65Yi25Yqg6L29IEJHRSDmqKHlnos8L3RleHQ+CgogIDxyZWN0IHg9IjY1MCIgeT0iNDkyIiB3aWR0aD0iNTcwIiBoZWlnaHQ9IjU0IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2Q4Y2NmZiIvPgogIDx0ZXh0IHg9IjY2OCIgeT0iNTE1IiBjbGFzcz0ibm9kZS1maWxlIj5jb3JlL3JhZ19zeXN0ZW0ucHk8L3RleHQ+CiAgPHRleHQgeD0iNjY4IiB5PSI1MzQiIGNsYXNzPSJub2RlLXN1YiI+UkFHU3lzdGVtLmdlbmVyYXRlX2Fuc3dlcihxdWVyeSwgc291cmNlX2ZpbHRlcinvvJrliIbnsbsg4oaSIOmAieetlueVpSDihpIg5qOA57SiIOKGkiDnlJ/miJA8L3RleHQ+CgogIDxyZWN0IHg9IjY1MCIgeT0iNTU2IiB3aWR0aD0iNTcwIiBoZWlnaHQ9IjU0IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2Q4Y2NmZiIvPgogIDx0ZXh0IHg9IjY2OCIgeT0iNTc5IiBjbGFzcz0ibm9kZS1maWxlIj5jb3JlL3F1ZXJ5X2NsYXNzaWZpZXIucHkg77yLIGNvcmUvc3RyYXRlZ3lfc2VsZWN0b3IucHk8L3RleHQ+CiAgPHRleHQgeD0iNjY4IiB5PSI1OTgiIGNsYXNzPSJub2RlLXN1YiI+QkVSVCDmhI/lm77liIbnsbvvvIjlvZPliY3ooqvlvLrliLbkuLrjgIzkuJPkuJrnn6Xor4bjgI3vvInCtyBMTE0g5LuOIDQg56eN5qOA57Si562W55Wl5Lit6YCJIDEg56eNPC90ZXh0PgoKICA8cmVjdCB4PSI2NTAiIHk9IjYyMCIgd2lkdGg9IjU3MCIgaGVpZ2h0PSI1NCIgcng9IjEwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNkOGNjZmYiLz4KICA8dGV4dCB4PSI2NjgiIHk9IjY0MyIgY2xhc3M9Im5vZGUtZmlsZSI+Y29yZS92ZWN0b3Jfc3RvcmUucHk8L3RleHQ+CiAgPHRleHQgeD0iNjY4IiB5PSI2NjIiIGNsYXNzPSJub2RlLXN1YiI+QkdFLU0zIGRlbnNlKDAuNykrc3BhcnNlKDAuMykg5re35ZCI5qOA57SiIGs9MyDihpIg54i25Z2X5Y676YeNIOKGkiBiZ2UtcmVyYW5rZXIg5Y+WIFRvcDI8L3RleHQ+CgogIDxyZWN0IHg9IjY1MCIgeT0iNjg0IiB3aWR0aD0iNTcwIiBoZWlnaHQ9IjU0IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2Q4Y2NmZiIvPgogIDx0ZXh0IHg9IjY2OCIgeT0iNzA3IiBjbGFzcz0ibm9kZS1maWxlIj5jb3JlL3Byb21wdHMucHkg77yLIERhc2hTY29wZe+8iHF3ZW4tcGx1cyDlhbzlrrnmjqXlj6PvvIk8L3RleHQ+CiAgPHRleHQgeD0iNjY4IiB5PSI3MjYiIGNsYXNzPSJub2RlLXN1YiI+5ou8IGNvbnRleHQgKyBxdWVzdGlvbiArIOWuouacjeeUteivnSDihpIg55Sf5oiQ562U5qGI77yb5peg5Y+v6Z2g5LiK5LiL5paH5pe25YWc5bqV6K+d5pyvPC90ZXh0PgoKICA8IS0tID09PT09PT09PT09PT09PT09IOemu+e6v+aehOW7uiA9PT09PT09PT09PT09PT09PSAtLT4KICA8dGV4dCB4PSI0MCIgeT0iNzkyIiBjbGFzcz0iYmFuZCI+56a757q/5p6E5bu6IGwg5LiA5qyh5oCn5YWl5bqT77yI5LiN5Zyo6K+35rGC6ZO+6Lev5LiK77yJPC90ZXh0PgogIDxyZWN0IHg9IjQwIiB5PSI4MDQiIHdpZHRoPSIxMTYwIiBoZWlnaHQ9IjkyIiByeD0iMTQiIGZpbGw9IiNmZmZhZjAiIHN0cm9rZT0iI2U4Y2Y5NCIgc3Ryb2tlLXdpZHRoPSIxLjQiLz4KICA8cmVjdCB4PSI2MCIgeT0iODIyIiB3aWR0aD0iMTk2IiBoZWlnaHQ9IjU4IiByeD0iOSIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZWNkOWFkIi8+CiAgPHRleHQgeD0iNzIiIHk9Ijg0MyIgY2xhc3M9Im5vZGUtc3ViIiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjOGE2YTFmIj5jb3JlL2RvY3VtZW50X3Byb2Nlc3Nvci5weTwvdGV4dD4KICA8dGV4dCB4PSI3MiIgeT0iODYyIiBjbGFzcz0ibm9kZS1zdWIiPuebruW9lea4heWNlSDihpIg6Kej5p6QIOKGkiDniLblrZDliIflnZc8L3RleHQ+CgogIDxyZWN0IHg9IjI5MiIgeT0iODIyIiB3aWR0aD0iMTk2IiBoZWlnaHQ9IjU4IiByeD0iOSIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjZWNkOWFkIi8+CiAgPHRleHQgeD0iMzA0IiB5PSI4NDMiIGNsYXNzPSJub2RlLXN1YiIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzhhNmExZiI+ZWR1X2RvY3VtZW50X2xvYWRlcnMvPC90ZXh0PgogIDx0ZXh0IHg9IjMwNCIgeT0iODYyIiBjbGFzcz0ibm9kZS1zdWIiPlBERi9ET0NYL1BQVFgv5Zu+54mHIMK3IE9DUjwvdGV4dD4KCiAgPHJlY3QgeD0iNTI0IiB5PSI4MjIiIHdpZHRoPSIxOTYiIGhlaWdodD0iNTgiIHJ4PSI5IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlY2Q5YWQiLz4KICA8dGV4dCB4PSI1MzYiIHk9Ijg0MyIgY2xhc3M9Im5vZGUtc3ViIiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjOGE2YTFmIj5lZHVfdGV4dF9zcGxpdGVyLzwvdGV4dD4KICA8dGV4dCB4PSI1MzYiIHk9Ijg2MiIgY2xhc3M9Im5vZGUtc3ViIj7kuK3mlofpgJLlvZLliIfliIYgMTIwMCAvIDMwMDwvdGV4dD4KCiAgPHJlY3QgeD0iNzU2IiB5PSI4MjIiIHdpZHRoPSIxOTYiIGhlaWdodD0iNTgiIHJ4PSI5IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlY2Q5YWQiLz4KICA8dGV4dCB4PSI3NjgiIHk9Ijg0MyIgY2xhc3M9Im5vZGUtc3ViIiBmb250LXdlaWdodD0iNjAwIiBmaWxsPSIjOGE2YTFmIj5jb3JlL2pzb25fY2FjaGUucHk8L3RleHQ+CiAgPHRleHQgeD0iNzY4IiB5PSI4NjIiIGNsYXNzPSJub2RlLXN1YiI+Y2F0YWxvZyAvIGRvY3VtZW50cyAvIGNodW5rczwvdGV4dD4KCiAgPHJlY3QgeD0iOTg4IiB5PSI4MjIiIHdpZHRoPSIxOTIiIGhlaWdodD0iNTgiIHJ4PSI5IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlY2Q5YWQiLz4KICA8dGV4dCB4PSIxMDAwIiB5PSI4NDMiIGNsYXNzPSJub2RlLXN1YiIgZm9udC13ZWlnaHQ9IjYwMCIgZmlsbD0iIzhhNmExZiI+VmVjdG9yU3RvcmUuYWRkX2RvY3VtZW50czwvdGV4dD4KICA8dGV4dCB4PSIxMDAwIiB5PSI4NjIiIGNsYXNzPSJub2RlLXN1YiI+5om56YeP57yW56CBIOKGkiB1cHNlcnQ8L3RleHQ+CgogIDxsaW5lIHgxPSIyNTYiIHkxPSI4NTEiIHgyPSIyODgiIHkyPSI4NTEiIHN0cm9rZT0iI2M5YTk0ZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYXJyKSIvPgogIDxsaW5lIHgxPSI0ODgiIHkxPSI4NTEiIHgyPSI1MjAiIHkyPSI4NTEiIHN0cm9rZT0iI2M5YTk0ZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYXJyKSIvPgogIDxsaW5lIHgxPSI3MjAiIHkxPSI4NTEiIHgyPSI3NTIiIHkyPSI4NTEiIHN0cm9rZT0iI2M5YTk0ZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYXJyKSIvPgogIDxsaW5lIHgxPSI5NTIiIHkxPSI4NTEiIHgyPSI5ODQiIHkyPSI4NTEiIHN0cm9rZT0iI2M5YTk0ZiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYXJyKSIvPgoKICA8IS0tID09PT09PT09PT09PT09PT09IOWtmOWCqOS4juWfuuehgCA9PT09PT09PT09PT09PT09PSAtLT4KICA8dGV4dCB4PSI0MCIgeT0iOTI0IiBjbGFzcz0iYmFuZCI+5a2Y5YKo5LiO5Z+656GAIGwg5aSW6YOo5L6d6LWWIC8g6YWN572uPC90ZXh0PgogIDxyZWN0IHg9IjQwIiB5PSI5MzYiIHdpZHRoPSIyNzUiIGhlaWdodD0iNzYiIHJ4PSIxMiIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjY2ZkOGU2Ii8+CiAgPHRleHQgeD0iNTgiIHk9Ijk2MyIgY2xhc3M9Im5vZGUtZmlsZSI+TWlsdnVzIMK3IGVkdXJhZ19maW5hbDwvdGV4dD4KICA8dGV4dCB4PSI1OCIgeT0iOTg0IiBjbGFzcz0ibm9kZS1zdWIiPmRlbnNlIEZMT0FUMTYgKyBzcGFyc2XvvIxJUDwvdGV4dD4KICA8dGV4dCB4PSI1OCIgeT0iMTAwMiIgY2xhc3M9Im5vZGUtc3ViIj5JVkZfRkxBVChubGlzdCAxMjgpIC8g5YCS5o6S57Si5byVPC90ZXh0PgoKICA8cmVjdCB4PSIzMzUiIHk9IjkzNiIgd2lkdGg9IjI3NSIgaGVpZ2h0PSI3NiIgcng9IjEyIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjZmQ4ZTYiLz4KICA8dGV4dCB4PSIzNTMiIHk9Ijk2MyIgY2xhc3M9Im5vZGUtZmlsZSI+TXlTUUwganBrYiDvvIsgUmVkaXM8L3RleHQ+CiAgPHRleHQgeD0iMzUzIiB5PSI5ODQiIGNsYXNzPSJub2RlLXN1YiI+6Zeu562U5a+5IC8g6Zeu6aKY5YiX6KGoIC8g562U5qGI57yT5a2YPC90ZXh0PgogIDx0ZXh0IHg9IjM1MyIgeT0iMTAwMiIgY2xhc3M9Im5vZGUtc3ViIj5zdWJqZWN0c19rZyDlupMgwrcgZGIgMDwvdGV4dD4KCiAgPHJlY3QgeD0iNjMwIiB5PSI5MzYiIHdpZHRoPSIyNzUiIGhlaWdodD0iNzYiIHJ4PSIxMiIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjY2ZkOGU2Ii8+CiAgPHRleHQgeD0iNjQ4IiB5PSI5NjMiIGNsYXNzPSJub2RlLWZpbGUiPlNRTGl0ZSBjaGF0X2hpc3RvcnkuZGI8L3RleHQ+CiAgPHRleHQgeD0iNjQ4IiB5PSI5ODQiIGNsYXNzPSJub2RlLXN1YiI+Y29udmVyc2F0aW9ucyAvIG1lc3NhZ2VzPC90ZXh0PgogIDx0ZXh0IHg9IjY0OCIgeT0iMTAwMiIgY2xhc3M9Im5vZGUtc3ViIj5XQUwgwrcg57q/56iL5pys5Zyw6L+e5o6lPC90ZXh0PgoKICA8cmVjdCB4PSI5MjUiIHk9IjkzNiIgd2lkdGg9IjI3NSIgaGVpZ2h0PSI3NiIgcng9IjEyIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjZmQ4ZTYiLz4KICA8dGV4dCB4PSI5NDMiIHk9Ijk2MyIgY2xhc3M9Im5vZGUtZmlsZSI+YmFzZS9jb25maWcucHkgwrcgbG9nZ2VyLnB5PC90ZXh0PgogIDx0ZXh0IHg9Ijk0MyIgeT0iOTg0IiBjbGFzcz0ibm9kZS1zdWIiPmNvbmZpZy5pbmkg6ZuG5Lit6YWN572uPC90ZXh0PgogIDx0ZXh0IHg9Ijk0MyIgeT0iMTAwMiIgY2xhc3M9Im5vZGUtc3ViIj7ml6Xlv5cg4oaSIGxvZ3MvYXBwLmxvZzwvdGV4dD4KPC9zdmc+Cg==" alt="EduRAG 项目结构图" />
+        <div class="figcap"><span><b>项目结构图</b> · 接入 / 路由 / 双链路 / 离线构建 / 存储</span><span>点击图片放大</span></div>
+      </div>
+
+      <div class="card figure" id="pFlow" style="display:none">
+        <img id="imgFlow" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjQwIiBoZWlnaHQ9IjEyMTAiIHZpZXdCb3g9IjAgMCAxMjQwIDEyMTAiIGZvbnQtZmFtaWx5PSInTWljcm9zb2Z0IFlhSGVpJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bWFya2VyIGlkPSJhIiB2aWV3Qm94PSIwIDAgMTAgMTAiIHJlZlg9IjkiIHJlZlk9IjUiIG1hcmtlcldpZHRoPSI3IiBtYXJrZXJIZWlnaHQ9IjciIG9yaWVudD0iYXV0by1zdGFydC1yZXZlcnNlIj4KICAgICAgPHBhdGggZD0iTSAwIDAgTCAxMCA1IEwgMCAxMCB6IiBmaWxsPSIjOGVhMmJmIi8+CiAgICA8L21hcmtlcj4KICAgIDxtYXJrZXIgaWQ9ImFmIiB2aWV3Qm94PSIwIDAgMTAgMTAiIHJlZlg9IjkiIHJlZlk9IjUiIG1hcmtlcldpZHRoPSI3IiBtYXJrZXJIZWlnaHQ9IjciIG9yaWVudD0iYXV0by1zdGFydC1yZXZlcnNlIj4KICAgICAgPHBhdGggZD0iTSAwIDAgTCAxMCA1IEwgMCAxMCB6IiBmaWxsPSIjNGE5Yzc4Ii8+CiAgICA8L21hcmtlcj4KICAgIDxtYXJrZXIgaWQ9ImFyIiB2aWV3Qm94PSIwIDAgMTAgMTAiIHJlZlg9IjkiIHJlZlk9IjUiIG1hcmtlcldpZHRoPSI3IiBtYXJrZXJIZWlnaHQ9IjciIG9yaWVudD0iYXV0by1zdGFydC1yZXZlcnNlIj4KICAgICAgPHBhdGggZD0iTSAwIDAgTCAxMCA1IEwgMCAxMCB6IiBmaWxsPSIjN2E1ZmQwIi8+CiAgICA8L21hcmtlcj4KICAgIDxzdHlsZT4KICAgICAgLnRpdGxlIHsgZm9udC1zaXplOiAyNHB4OyBmb250LXdlaWdodDogNzAwOyBmaWxsOiAjMTYyMzNhOyB9CiAgICAgIC5zdWJ0aXRsZSB7IGZvbnQtc2l6ZTogMTNweDsgZmlsbDogIzY2Nzg4ZjsgfQogICAgICAudCB7IGZvbnQtc2l6ZTogMTMuNXB4OyBmb250LXdlaWdodDogNjAwOyBmaWxsOiAjMTYyMzNhOyB9CiAgICAgIC5zIHsgZm9udC1zaXplOiAxMS41cHg7IGZpbGw6ICM1YjZiODU7IH0KICAgICAgLm5vdGUgeyBmb250LXNpemU6IDExLjVweDsgZmlsbDogIzZiNWEyZjsgfQogICAgICAubm90ZVQgeyBmb250LXNpemU6IDEycHg7IGZvbnQtd2VpZ2h0OiA3MDA7IGZpbGw6ICM4YTZhMWY7IH0KICAgIDwvc3R5bGU+CiAgPC9kZWZzPgoKICA8cmVjdCB3aWR0aD0iMTI0MCIgaGVpZ2h0PSIxMjEwIiBmaWxsPSIjZjZmOGZjIi8+CiAgPHRleHQgeD0iNDAiIHk9IjQyIiBjbGFzcz0idGl0bGUiPkVkdVJBRyDpm4bmiJDpl67nrZTns7vnu58gwrcg6K+35rGC5rWB56iL5Zu+PC90ZXh0PgogIDx0ZXh0IHg9IjQwIiB5PSI2NCIgY2xhc3M9InN1YnRpdGxlIj7kuIDmrKHmj5Dpl67ku47ov5vlhaXmnI3liqHliLDov5Tlm57nrZTmoYjnmoTlrozmlbTot6/lvoTvvIjlkIzmraXniYjpgJDmraXvvJvlvILmraXniYjnmoTlt67lvILlnKjlj7PkvqfmoIfms6jvvIk8L3RleHQ+CgogIDwhLS0g6L+e57q/77ya5Li76ISKIC0tPgogIDxsaW5lIHgxPSI2MjAiIHkxPSIxMjIiIHgyPSI2MjAiIHkyPSIxNDQiIHN0cm9rZT0iIzhlYTJiZiIgc3Ryb2tlLXdpZHRoPSIxLjgiIG1hcmtlci1lbmQ9InVybCgjYSkiLz4KICA8bGluZSB4MT0iNjIwIiB5MT0iMjAwIiB4Mj0iNjIwIiB5Mj0iMjIyIiBzdHJva2U9IiM4ZWEyYmYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI2EpIi8+CiAgPGxpbmUgeDE9IjYyMCIgeTE9IjI3OCIgeDI9IjYyMCIgeTI9IjMwMCIgc3Ryb2tlPSIjOGVhMmJmIiBzdHJva2Utd2lkdGg9IjEuOCIgbWFya2VyLWVuZD0idXJsKCNhKSIvPgogIDxsaW5lIHgxPSI2MjAiIHkxPSIzNTYiIHgyPSI2MjAiIHkyPSIzNzgiIHN0cm9rZT0iIzhlYTJiZiIgc3Ryb2tlLXdpZHRoPSIxLjgiIG1hcmtlci1lbmQ9InVybCgjYSkiLz4KICA8bGluZSB4MT0iNjIwIiB5MT0iNDM0IiB4Mj0iNjIwIiB5Mj0iNDU2IiBzdHJva2U9IiM0YTljNzgiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI2FmKSIvPgogIDxsaW5lIHgxPSI2MjAiIHkxPSI1MTIiIHgyPSI2MjAiIHkyPSI1MzQiIHN0cm9rZT0iIzRhOWM3OCIgc3Ryb2tlLXdpZHRoPSIxLjgiIG1hcmtlci1lbmQ9InVybCgjYWYpIi8+CiAgPGxpbmUgeDE9IjYyMCIgeTE9IjU5MCIgeDI9IjYyMCIgeTI9IjYxMiIgc3Ryb2tlPSIjNGE5Yzc4IiBzdHJva2Utd2lkdGg9IjEuOCIgbWFya2VyLWVuZD0idXJsKCNhZikiLz4KICA8bGluZSB4MT0iNjIwIiB5MT0iNjY4IiB4Mj0iNjIwIiB5Mj0iNjkwIiBzdHJva2U9IiM3YTVmZDAiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI2FyKSIvPgogIDxsaW5lIHgxPSI2MjAiIHkxPSI3NDYiIHgyPSI2MjAiIHkyPSI3NjgiIHN0cm9rZT0iIzdhNWZkMCIgc3Ryb2tlLXdpZHRoPSIxLjgiIG1hcmtlci1lbmQ9InVybCgjYXIpIi8+CiAgPGxpbmUgeDE9IjYyMCIgeTE9IjgyNCIgeDI9IjYyMCIgeTI9Ijg0NiIgc3Ryb2tlPSIjN2E1ZmQwIiBzdHJva2Utd2lkdGg9IjEuOCIgbWFya2VyLWVuZD0idXJsKCNhcikiLz4KICA8bGluZSB4MT0iNjIwIiB5MT0iOTAyIiB4Mj0iNjIwIiB5Mj0iOTI0IiBzdHJva2U9IiM3YTVmZDAiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI2FyKSIvPgogIDxsaW5lIHgxPSI2MjAiIHkxPSI5ODAiIHgyPSI2MjAiIHkyPSIxMDAyIiBzdHJva2U9IiM4ZWEyYmYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI2EpIi8+CiAgPGxpbmUgeDE9IjYyMCIgeTE9IjEwNTgiIHgyPSI2MjAiIHkyPSIxMDgwIiBzdHJva2U9IiM4ZWEyYmYiIHN0cm9rZS13aWR0aD0iMS44IiBtYXJrZXItZW5kPSJ1cmwoI2EpIi8+CgogIDwhLS0gMSDlj5HotbcgLS0+CiAgPHJlY3QgeD0iNDIwIiB5PSI3MCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI1MiIgcng9IjI2IiBmaWxsPSIjZWVmM2ZmIiBzdHJva2U9IiM5ZGI2ZmYiIHN0cm9rZS13aWR0aD0iMS40Ii8+CiAgPHRleHQgeD0iNjIwIiB5PSIxMDEiIGNsYXNzPSJ0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7nlKjmiLflnKjliY3nq6/ovpPlhaXpl67popjlubblj5HpgIE8L3RleHQ+CgogIDwhLS0gMiDor7fmsYIgLS0+CiAgPHJlY3QgeD0iNDIwIiB5PSIxNDgiIHdpZHRoPSI0MDAiIGhlaWdodD0iNTIiIHJ4PSIxMCIgZmlsbD0iI2ZmZmZmZiIgc3Ryb2tlPSIjY2ZkOGU2IiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDx0ZXh0IHg9IjQ0MiIgeT0iMTcwIiBjbGFzcz0idCI+UE9TVCAvcXVlcnk8L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSIxODkiIGNsYXNzPSJzIj57cXVlcnksIHNlc3Npb25faWQsIG1vZGU6IGF1dG98ZmFxfHJhZywgc291cmNlfTwvdGV4dD4KCiAgPCEtLSAzIOagoemqjCAtLT4KICA8cmVjdCB4PSI0MjAiIHk9IjIyNiIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI1MiIgcng9IjEwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjZmQ4ZTYiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPHRleHQgeD0iNDQyIiB5PSIyNDgiIGNsYXNzPSJ0Ij7lj4LmlbDmoKHpqozvvJpxdWVyeSDmmK/lkKbkuLrnqbrvvJ88L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSIyNjciIGNsYXNzPSJzIj7kuLrnqbog4oaSIDQwMO+8m21vZGUg6Z2e5rOVIOKGkiDlm57pgIAgYXV0bzwvdGV4dD4KCiAgPCEtLSA0IOS8muivnSAtLT4KICA8cmVjdCB4PSI0MjAiIHk9IjMwNCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI1MiIgcng9IjEwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNjZmQ4ZTYiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPHRleHQgeD0iNDQyIiB5PSIzMjYiIGNsYXNzPSJ0Ij7op6PmnpDkvJror53vvIhTUUxpdGXvvIk8L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSIzNDUiIGNsYXNzPSJzIj7ml6Agc2Vzc2lvbl9pZCAvIOS4jeWtmOWcqCDihpIg5paw5bu65Lya6K+d77yM5Zue5aGrIGNpZDwvdGV4dD4KCiAgPCEtLSA1IOi3r+eUsSAtLT4KICA8cmVjdCB4PSI0MjAiIHk9IjM4MiIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI1MiIgcng9IjEwIiBmaWxsPSIjZWVmM2ZmIiBzdHJva2U9IiM5ZGI2ZmYiIHN0cm9rZS13aWR0aD0iMS40Ii8+CiAgPHRleHQgeD0iNDQyIiB5PSI0MDQiIGNsYXNzPSJ0Ij5xYV9yb3V0ZXIg5Yik5a6aIG1vZGU8L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSI0MjMiIGNsYXNzPSJzIj5hdXRv77ya5YWIIEZBUSDlho0gUkFH44CAfOOAgGZhcSAvIHJhZ++8muW8uuWItuWNlemTvui3rzwvdGV4dD4KCiAgPCEtLSA2IEZBUSDnvJPlrZggLS0+CiAgPHJlY3QgeD0iNDIwIiB5PSI0NjAiIHdpZHRoPSI0MDAiIGhlaWdodD0iNTIiIHJ4PSIxMCIgZmlsbD0iI2VlZmFmNCIgc3Ryb2tlPSIjOGVkY2JhIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDx0ZXh0IHg9IjQ0MiIgeT0iNDgyIiBjbGFzcz0idCI+RkFRIOKRoCBSZWRpcyDmnIkgYW5zd2VyOntxdWVyeX3vvJ88L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSI1MDEiIGNsYXNzPSJzIj7lkb3kuK3liJnnm7TmjqXov5Tlm57nvJPlrZjnrZTmoYjvvIzkuI3op6blj5Hmo4DntKI8L3RleHQ+CgogIDwhLS0gNyBCTTI1IC0tPgogIDxyZWN0IHg9IjQyMCIgeT0iNTM4IiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUyIiByeD0iMTAiIGZpbGw9IiNlZWZhZjQiIHN0cm9rZT0iIzhlZGNiYSIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8dGV4dCB4PSI0NDIiIHk9IjU2MCIgY2xhc3M9InQiPkZBUSDikaEg5YiG6K+NIOKGkiBCTTI1IOKGkiBzb2Z0bWF4PC90ZXh0PgogIDx0ZXh0IHg9IjQ0MiIgeT0iNTc5IiBjbGFzcz0icyI+5pyA6auY5YiGICZndDsgMC44NSDmiY3orqTkuLrlkb3kuK3vvIjlkKbliJnovawgUkFH77yJPC90ZXh0PgoKICA8IS0tIDggTXlTUUwgLS0+CiAgPHJlY3QgeD0iNDIwIiB5PSI2MTYiIHdpZHRoPSI0MDAiIGhlaWdodD0iNTIiIHJ4PSIxMCIgZmlsbD0iI2VlZmFmNCIgc3Ryb2tlPSIjOGVkY2JhIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDx0ZXh0IHg9IjQ0MiIgeT0iNjM4IiBjbGFzcz0idCI+RkFRIOKRoiBNeVNRTCBqcGtiIOWPluagh+WHhuetlOahiDwvdGV4dD4KICA8dGV4dCB4PSI0NDIiIHk9IjY1NyIgY2xhc3M9InMiPuWGmeWbniBSZWRpcyDihpIgZW5naW5lPWZhcTwvdGV4dD4KCiAgPCEtLSA5IOWIhuexuyAtLT4KICA8cmVjdCB4PSI0MjAiIHk9IjY5NCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI1MiIgcng9IjEwIiBmaWxsPSIjZjRmMGZmIiBzdHJva2U9IiNjMGFlZmYiIHN0cm9rZS13aWR0aD0iMS4yIi8+CiAgPHRleHQgeD0iNDQyIiB5PSI3MTYiIGNsYXNzPSJ0Ij5SQUcg4pGgIOaEj+WbvuWIhuexuyArIExMTSDpgInmo4DntKLnrZbnlaU8L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSI3MzUiIGNsYXNzPSJzIj7lvZPliY3lrp7njrDvvJrliIbnsbvnu5Pmnpzooqvlm7rlrprkuLrjgIzkuJPkuJrnn6Xor4bjgI3vvIzlhbbkvZnnrZbnlaXmnKrlkK/nlKg8L3RleHQ+CgogIDwhLS0gMTAg5qOA57SiIC0tPgogIDxyZWN0IHg9IjQyMCIgeT0iNzcyIiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUyIiByeD0iMTAiIGZpbGw9IiNmNGYwZmYiIHN0cm9rZT0iI2MwYWVmZiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8dGV4dCB4PSI0NDIiIHk9Ijc5NCIgY2xhc3M9InQiPlJBRyDikaEgQkdFLU0zIOa3t+WQiOajgOe0oiBrPTM8L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSI4MTMiIGNsYXNzPSJzIj5kZW5zZSAwLjcgKyBzcGFyc2UgMC4z77yM5Y+v5oyJIHNvdXJjZSDov4fmu6Qg4oaSIOeItuWdl+WOu+mHjTwvdGV4dD4KCiAgPCEtLSAxMSByZXJhbmsgLS0+CiAgPHJlY3QgeD0iNDIwIiB5PSI4NTAiIHdpZHRoPSI0MDAiIGhlaWdodD0iNTIiIHJ4PSIxMCIgZmlsbD0iI2Y0ZjBmZiIgc3Ryb2tlPSIjYzBhZWZmIiBzdHJva2Utd2lkdGg9IjEuMiIvPgogIDx0ZXh0IHg9IjQ0MiIgeT0iODcyIiBjbGFzcz0idCI+UkFHIOKRoiBiZ2UtcmVyYW5rZXIg57K+5o6SIOKGkiBUb3AyPC90ZXh0PgogIDx0ZXh0IHg9IjQ0MiIgeT0iODkxIiBjbGFzcz0icyI+55So54i25Z2X5q2j5paH5ou8IGNvbnRleHTvvIzpgb/lhY3lrZDlnZfor63kuYnnoo7niYfljJY8L3RleHQ+CgogIDwhLS0gMTIg55Sf5oiQIC0tPgogIDxyZWN0IHg9IjQyMCIgeT0iOTI4IiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUyIiByeD0iMTAiIGZpbGw9IiNmNGYwZmYiIHN0cm9rZT0iI2MwYWVmZiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8dGV4dCB4PSI0NDIiIHk9Ijk1MCIgY2xhc3M9InQiPlJBRyDikaMgRGFzaFNjb3BlIOeUn+aIkOetlOahiDwvdGV4dD4KICA8dGV4dCB4PSI0NDIiIHk9Ijk2OSIgY2xhc3M9InMiPnJhZ19wcm9tcHQoY29udGV4dCwgcXVlc3Rpb24sIHBob25lKTwvdGV4dD4KCiAgPCEtLSAxMyDlvZLkuIDljJYgLS0+CiAgPHJlY3QgeD0iNDIwIiB5PSIxMDA2IiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUyIiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2NmZDhlNiIgc3Ryb2tlLXdpZHRoPSIxLjIiLz4KICA8dGV4dCB4PSI0NDIiIHk9IjEwMjgiIGNsYXNzPSJ0Ij7nu5PmnpzlvZLkuIDljJYgKyDlhpnlhaXkvJror53lupM8L3RleHQ+CiAgPHRleHQgeD0iNDQyIiB5PSIxMDQ3IiBjbGFzcz0icyI+YW5zd2VyIC8gZW5naW5lIC8gZm91bmQgLyBlbGFwc2Vk77yb5Y2V5LqL5Yqh5YaZ5LiA6Zeu5LiA562UPC90ZXh0PgoKICA8IS0tIDE0IOi/lOWbniAtLT4KICA8cmVjdCB4PSI0MjAiIHk9IjEwODQiIHdpZHRoPSI0MDAiIGhlaWdodD0iNTIiIHJ4PSIyNiIgZmlsbD0iI2VlZjNmZiIgc3Ryb2tlPSIjOWRiNmZmIiBzdHJva2Utd2lkdGg9IjEuNCIvPgogIDx0ZXh0IHg9IjYyMCIgeT0iMTExNSIgY2xhc3M9InQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPui/lOWbniBKU09OIOKGkiDliY3nq6/muLLmn5PlvJXmk47lvr3moIfkuI7ogJfml7Y8L3RleHQ+CgogIDwhLS0gPT09PT09PT09PT09IOW3puS+p+WIhuaUryA9PT09PT09PT09PT0gLS0+CiAgPGxpbmUgeDE9IjQxNiIgeTE9IjI1MiIgeDI9IjM2NiIgeTI9IjI1MiIgc3Ryb2tlPSIjOGVhMmJmIiBzdHJva2Utd2lkdGg9IjEuNSIgbWFya2VyLWVuZD0idXJsKCNhKSIvPgogIDxyZWN0IHg9IjYwIiB5PSIyMjgiIHdpZHRoPSIzMDAiIGhlaWdodD0iNDgiIHJ4PSI5IiBmaWxsPSIjZmZmNGY2IiBzdHJva2U9IiNmM2JjYzYiLz4KICA8dGV4dCB4PSI3OCIgeT0iMjQ5IiBjbGFzcz0idCIgZm9udC1zaXplPSIxMiI+6L+U5ZueIDQwMO+8mnF1ZXJ5IOS4jeiDveS4uuepujwvdGV4dD4KICA8dGV4dCB4PSI3OCIgeT0iMjY3IiBjbGFzcz0icyI+5pel5b+XIHdhcm5pbmfvvIzkuI3okL3lupM8L3RleHQ+CgogIDxsaW5lIHgxPSI0MTYiIHkxPSI0ODYiIHgyPSIzNjYiIHkyPSI0ODYiIHN0cm9rZT0iIzRhOWM3OCIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYWYpIi8+CiAgPHJlY3QgeD0iNjAiIHk9IjQ2MiIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI0OCIgcng9IjkiIGZpbGw9IiNlZWZhZjQiIHN0cm9rZT0iIzhlZGNiYSIvPgogIDx0ZXh0IHg9Ijc4IiB5PSI0ODMiIGNsYXNzPSJ0IiBmb250LXNpemU9IjEyIj7lkb3kuK3vvJrnm7TmjqXov5Tlm57nrZTmoYg8L3RleHQ+CiAgPHRleHQgeD0iNzgiIHk9IjUwMSIgY2xhc3M9InMiPmVuZ2luZT1mYXHvvIzmr6vnp5Lnuqc8L3RleHQ+CgogIDxsaW5lIHgxPSI0MTYiIHkxPSI1NjQiIHgyPSIzNjYiIHkyPSI1NjQiIHN0cm9rZT0iIzRhOWM3OCIgc3Ryb2tlLXdpZHRoPSIxLjUiIG1hcmtlci1lbmQ9InVybCgjYWYpIi8+CiAgPHJlY3QgeD0iNjAiIHk9IjU0MCIgd2lkdGg9IjMwMCIgaGVpZ2h0PSI0OCIgcng9IjkiIGZpbGw9IiNmZmZhZjAiIHN0cm9rZT0iI2U4Y2Y5NCIvPgogIDx0ZXh0IHg9Ijc4IiB5PSI1NjEiIGNsYXNzPSJ0IiBmb250LXNpemU9IjEyIj7mnKrlkb3kuK0gLyBGQVEg5byC5bi4PC90ZXh0PgogIDx0ZXh0IHg9Ijc4IiB5PSI1NzkiIGNsYXNzPSJzIj5hdXRvIOaooeW8j+e7p+e7rei1sCBSQUfvvIxub3RlIOiusOW9leWOn+WboDwvdGV4dD4KCiAgPCEtLSDmnKrlkb3kuK0g4oaSIOi3s+WIsCBSQUcgLS0+CiAgPHBhdGggZD0iTSAyMTAgNTg4IEwgMjEwIDcyMCBMIDQxNCA3MjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M5YTk0ZiIgc3Ryb2tlLXdpZHRoPSIxLjYiIHN0cm9rZS1kYXNoYXJyYXk9IjYgNCIgbWFya2VyLWVuZD0idXJsKCNhKSIvPgoKICA8IS0tID09PT09PT09PT09PSDlj7Pkvqfor7TmmI4gPT09PT09PT09PT09IC0tPgogIDxsaW5lIHgxPSI4MjQiIHkxPSIxNzQiIHgyPSI4NzIiIHkyPSIxNzQiIHN0cm9rZT0iI2M5ZDNlMyIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1kYXNoYXJyYXk9IjQgMyIvPgogIDxyZWN0IHg9Ijg3NiIgeT0iMTM4IiB3aWR0aD0iMzI0IiBoZWlnaHQ9Ijc2IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2RiZTNlZiIvPgogIDx0ZXh0IHg9Ijg5NCIgeT0iMTYwIiBjbGFzcz0ibm90ZVQiPuW8guatpeeJiO+8iGFwcF9hc3luYy5wee+8iTwvdGV4dD4KICA8dGV4dCB4PSI4OTQiIHk9IjE3OSIgY2xhc3M9Im5vdGUiPkZBUSAvIFJBRyAvIERCIOS4ieWllyBDYXBhY2l0eUxpbWl0ZXIg6ZmQ5rWBPC90ZXh0PgogIDx0ZXh0IHg9Ijg5NCIgeT0iMTk2IiBjbGFzcz0ibm90ZSI+6LaF5pe2IDMwcyAvIDE4MHPvvJvlkIzpopggc2luZ2xlLWZsaWdodCDljrvph408L3RleHQ+CgogIDxsaW5lIHgxPSI4MjQiIHkxPSI3MjAiIHgyPSI4NzIiIHkyPSI3MjAiIHN0cm9rZT0iI2M5ZDNlMyIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1kYXNoYXJyYXk9IjQgMyIvPgogIDxyZWN0IHg9Ijg3NiIgeT0iNjgyIiB3aWR0aD0iMzI0IiBoZWlnaHQ9Ijc2IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2RiZTNlZiIvPgogIDx0ZXh0IHg9Ijg5NCIgeT0iNzA0IiBjbGFzcz0ibm90ZVQiPuWQr+WKqOmihOeDrTwvdGV4dD4KICA8dGV4dCB4PSI4OTQiIHk9IjcyMyIgY2xhc3M9Im5vdGUiPkZBUe+8muWQjOatpeWKoOi9vSBqaWViYSArIOaehOW7uiBCTTI1IOe0ouW8lTwvdGV4dD4KICA8dGV4dCB4PSI4OTQiIHk9Ijc0MCIgY2xhc3M9Im5vdGUiPlJBR++8muWQjuWPsOWKoOi9vSBCR0UtTTMgLyByZXJhbmtlcu+8jOWksei0pSA2MHMg5Ya35Y20PC90ZXh0PgoKICA8bGluZSB4MT0iODI0IiB5MT0iMTAzMiIgeDI9Ijg3MiIgeTI9IjEwMzIiIHN0cm9rZT0iI2M5ZDNlMyIgc3Ryb2tlLXdpZHRoPSIxLjMiIHN0cm9rZS1kYXNoYXJyYXk9IjQgMyIvPgogIDxyZWN0IHg9Ijg3NiIgeT0iOTk0IiB3aWR0aD0iMzI0IiBoZWlnaHQ9Ijc2IiByeD0iMTAiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2RiZTNlZiIvPgogIDx0ZXh0IHg9Ijg5NCIgeT0iMTAxNiIgY2xhc3M9Im5vdGVUIj7pmY3nuqfkuI7lhZzlupU8L3RleHQ+CiAgPHRleHQgeD0iODk0IiB5PSIxMDM1IiBjbGFzcz0ibm90ZSI+6JC95bqT5aSx6LSl5Y+q6K6w5pel5b+X77yM5LiN5b2x5ZON5Zue562UPC90ZXh0PgogIDx0ZXh0IHg9Ijg5NCIgeT0iMTA1MiIgY2xhc3M9Im5vdGUiPuWFqOmTvui3r+aXoOetlOahiCDihpIg44CM5pyq5ZG95Lit44CNKyDlhZzlupXmlofmoYg8L3RleHQ+CgogIDwhLS0g5Zu+5L6LIC0tPgogIDxyZWN0IHg9IjQwIiB5PSIxMTYwIiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjZWVmYWY0IiBzdHJva2U9IiM4ZWRjYmEiLz4KICA8dGV4dCB4PSI2MCIgeT0iMTE3MSIgY2xhc3M9InMiPkZBUSDpk77ot688L3RleHQ+CiAgPHJlY3QgeD0iMTQwIiB5PSIxMTYwIiB3aWR0aD0iMTIiIGhlaWdodD0iMTIiIHJ4PSIzIiBmaWxsPSIjZjRmMGZmIiBzdHJva2U9IiNjMGFlZmYiLz4KICA8dGV4dCB4PSIxNjAiIHk9IjExNzEiIGNsYXNzPSJzIj5SQUcg6ZO+6LevPC90ZXh0PgogIDxyZWN0IHg9IjI0MCIgeT0iMTE2MCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiByeD0iMyIgZmlsbD0iI2VlZjNmZiIgc3Ryb2tlPSIjOWRiNmZmIi8+CiAgPHRleHQgeD0iMjYwIiB5PSIxMTcxIiBjbGFzcz0icyI+5YWl5Y+jIC8g5Ye65Y+jPC90ZXh0PgogIDxyZWN0IHg9IjM1MCIgeT0iMTE2MCIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiByeD0iMyIgZmlsbD0iI2ZmZmFmMCIgc3Ryb2tlPSIjZThjZjk0Ii8+CiAgPHRleHQgeD0iMzcwIiB5PSIxMTcxIiBjbGFzcz0icyI+5YiG5pSv5LiO5byC5bi4PC90ZXh0Pgo8L3N2Zz4K" alt="EduRAG 请求流程图" />
+        <div class="figcap"><span><b>请求流程图</b> · 14 步主脊 + 分支 + 异步版差异</span><span>点击图片放大</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 核心机制 ================= -->
+  <section id="how">
+    <div class="wrap">
+      <span class="eyebrow">Mechanisms</span>
+      <h2 class="h2">五个关键实现</h2>
+      <p class="lead">路由判定只写一份，两个入口共用；检索、生成、存储各自独立可降级。</p>
+
+      <div class="cards">
+        <article class="card mech reveal">
+          <h3><span class="num">01</span> 统一路由 qa_router</h3>
+          <p><code>answer_query(question, mode, source_filter)</code> 是唯一判定入口。两个服务只负责协议转换、会话与落库，避免同步版与异步版行为漂移。</p>
+          <div class="kv">
+            <div><span>auto</span><span>FAQ 命中即返回，未命中/异常转 RAG</span></div>
+            <div><span>faq / rag</span><span>强制单链路，便于压测与效果对照</span></div>
+            <div><span>返回值</span><span>answer / engine / found / elapsed / note</span></div>
+          </div>
+        </article>
+
+        <article class="card mech reveal">
+          <h3><span class="num">02</span> 父子块 + 混合检索</h3>
+          <p>子块负责“检索准”，父块负责“上下文全”。命中子块后按父块正文去重还原，再用 CrossEncoder 精排。</p>
+          <div class="kv">
+            <div><span>切块</span><span>父 1200 / 子 300 / 重叠 50</span></div>
+            <div><span>融合</span><span>WeightedRanker(0.7 dense, 0.3 sparse)</span></div>
+            <div><span>精排</span><span>reranker 取 Top2，候选 &lt; 2 时跳过</span></div>
+          </div>
+        </article>
+
+        <article class="card mech reveal">
+          <h3><span class="num">03</span> 幻觉四道闸</h3>
+          <p>按请求顺序逐层收窄：能精确回答的不生成，要生成时压缩上下文，答不出时明确拒答。</p>
+          <div class="kv">
+            <div><span>入口闸</span><span>BM25 阈值 0.85，直返人工答案</span></div>
+            <div><span>上下文闸</span><span>混合检索 k=3 → 父块去重 → Top2</span></div>
+            <div><span>提示闸</span><span>要求基于上下文、说明来源、内置兜底句</span></div>
+            <div><span>出口闸</span><span>空答案统一兜底，found=false</span></div>
+          </div>
+        </article>
+
+        <article class="card mech reveal">
+          <h3><span class="num">04</span> 异步并发模型</h3>
+          <p>事件循环只做编排，阻塞调用全部下沉线程池；三条链路各自限流，互不拖累。</p>
+          <div class="kv">
+            <div><span>闸门</span><span>FAQ = max(4, CPU) · RAG = 2 · DB = 32</span></div>
+            <div><span>超时</span><span>FAQ 30 s · RAG 180 s · 整体 +10 s</span></div>
+            <div><span>去重</span><span>single-flight，同刻相同 key 只算一次</span></div>
+            <div><span>进程</span><span>workers=1，模型与索引进程内共享</span></div>
+          </div>
+        </article>
+
+        <article class="card mech reveal">
+          <h3><span class="num">05</span> 意图分流 + 四策略分派</h3>
+          <p>先判断问题类型，再决定检索方式：通用知识直接作答，专业咨询由 LLM 选策略后分派到对应检索器。</p>
+          <div class="kv">
+            <div><span>分类器</span><span>models/bert_query_classifier 微调权重</span></div>
+            <div><span>四策略</span><span>回溯 / 子查询 / HyDE / 直接检索</span></div>
+            <div><span>容错</span><span>策略名不匹配时退化为直接检索</span></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="table-wrap reveal" style="margin-top:26px">
+        <table class="data">
+          <thead>
+            <tr><th>阶段</th><th>耗时量级</th><th>已落地的处理</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>FAQ 缓存命中</td><td>亚毫秒</td><td>Redis <code>answer:{query}</code></td></tr>
+            <tr><td>FAQ BM25 打分</td><td>几毫秒</td><td>索引常驻内存</td></tr>
+            <tr><td>BGE-M3 编码 query</td><td>10 ~ 40 ms</td><td>模型常驻 + 启动预热</td></tr>
+            <tr><td>Milvus 混合检索</td><td>50 ~ 300 ms</td><td>连接复用 + segment 常驻</td></tr>
+            <tr><td>bge-reranker 精排</td><td>20 ~ 100 ms</td><td>候选 &lt; 2 时跳过</td></tr>
+            <tr><td>LLM 生成</td><td>1 ~ 10 s</td><td>同刻重复请求由 single-flight 合并</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 已落地优化 ================= -->
+  <section id="perf">
+    <div class="wrap">
+      <span class="eyebrow">Optimization</span>
+      <h2 class="h2">已落地的优化</h2>
+      <p class="lead">只列出代码中真实存在的优化，按类别分组。每项都能在源码里找到对应位置。</p>
+
+      <div class="opt-grid">
+        <div class="opt reveal"><span class="k">STARTUP</span><h4>重库延迟加载</h4><p>torch / pymilvus / milvus-model / sentence-transformers 全部移到函数内 import，只 import 模块几乎零开销。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">STARTUP</span><h4>启动预热 + 单例</h4><p>FAQ 同步预热（jieba + BM25）；RAG 后台线程加载，并主动触发 BGE / reranker 权重进显存。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">BUILD</span><h4>离线三级缓存</h4><p>catalog / documents / chunks 三层 JSON，配 mtime+size 校验、原子写与版本号，二次建库不再全量 OCR。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">LATENCY</span><h4>FAQ 响应缓存</h4><p>命中 BM25 后写入 Redis <code>answer:{query}</code>，同字符串请求降到亚毫秒。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">LATENCY</span><h4>索引常驻 + 定时同步</h4><p>BM25 索引常驻内存，30 分钟 daemon 线程以 MySQL 为准覆盖同步，知识库更新不必重启。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">CONCURRENCY</span><h4>三闸门 + 分层超时</h4><p>CPU 密集型、GPU/模型、SQLite 各自限流；线程池容量与闸门对齐，避免假排队。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">CONCURRENCY</span><h4>single-flight 去重</h4><p>同刻相同 (question, mode, source) 只算一次，其余请求共享同一个 Future。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">RETRIEVAL</span><h4>意图分流 + 四策略</h4><p>分类器加载微调权重：通用知识直接作答；专业咨询由 LLM 选策略后分派到回溯 / 子查询 / HyDE / 直接检索。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">QUALITY</span><h4>父子块 + 精排</h4><p>子块 300 检索、父块 1200 喂模型，父块去重后 reranker 取 Top2，压缩噪声。</p><span class="badge">已落地</span></div>
+        <div class="opt reveal"><span class="k">ENGINEERING</span><h4>判定收口 + 失败降级</h4><p>路由逻辑只写一份；两条链路各自吞异常并返回 (answer, error)，单链路故障不导致 5xx。</p><span class="badge">已落地</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 缓存现状 ================= -->
+  <section id="cache">
+    <div class="wrap">
+      <span class="eyebrow">Cache</span>
+      <h2 class="h2">四级缓存，实际用了哪一层</h2>
+      <p class="lead">标准 RAG 流水线的四级缓存中，本项目只落地了第一层，且只覆盖 FAQ 链路。</p>
+
+      <div class="table-wrap reveal">
+        <table class="data">
+          <thead>
+            <tr><th>层级</th><th>状态</th><th>实现位置</th><th>命中后跳过</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>响应缓存</b><br /><span style="color:var(--muted)">Response Cache</span></td>
+              <td><span class="dot on"></span>部分实现（仅 FAQ）</td>
+              <td>Redis <code>answer:{query}</code><br />读写均在 <code>BM25Search.search</code></td>
+              <td>jieba 分词 + BM25 打分 + MySQL 查询</td>
+            </tr>
+            <tr>
+              <td><b>语义缓存</b><br /><span style="color:var(--muted)">Semantic Cache</span></td>
+              <td><span class="dot off"></span>未实现</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><b>检索缓存</b><br /><span style="color:var(--muted)">Retrieval Cache</span></td>
+              <td><span class="dot off"></span>未实现</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><b>嵌入缓存</b><br /><span style="color:var(--muted)">Embedding Cache</span></td>
+              <td><span class="dot off"></span>未实现</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note reveal">
+        <b>两个容易混淆的点：</b>① <code>rag_qa/data/.cache/</code> 下的 catalog / documents / chunks 属于<b>离线建库缓存</b>（省 OCR 与切块），不在请求链路上；
+        ② 异步版的 single-flight 只合并<b>同一时刻</b>的并发请求，请求结束即释放，不能跨时间复用，因此不构成响应缓存。
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 后续 ================= -->
+  <section id="next">
+    <div class="wrap">
+      <span class="eyebrow">Roadmap</span>
+      <h2 class="h2">后续可添加 / 可修改</h2>
+      <p class="lead">以下均为代码中已存在的改动入口，每条都标注了当前状态与可改动的位置。</p>
+
+      <div class="next-grid">
+        <div class="next reveal"><span class="idx">01</span><div><h4>FAQ 命中阈值</h4><p>固定 0.85 与语料规模耦合；<em>可改 min-max 或 top1-top2 间隔</em>，阈值移入配置。</p></div></div>
+        <div class="next reveal"><span class="idx">02</span><div><h4>MySQL 连接</h4><p>单连接 + 锁，无重连；<em>可加 ping(reconnect=True) 或连接池</em>。</p></div></div>
+        <div class="next reveal"><span class="idx">03</span><div><h4>LLM 客户端封装</h4><p>两处封装参数不一致；<em>可抽公共 llm_client</em>，统一 temperature / 超时 / 重试。</p></div></div>
+        <div class="next reveal"><span class="idx">04</span><div><h4>调试输出与旧分派</h4><p><code>print</code>、两处 <code>pass</code>、旧 if/elif 分派均已注释停用；<em>确认后可删除</em>。</p></div></div>
+        <div class="next reveal"><span class="idx">05</span><div><h4>学科配置与语料</h4><p>valid_sources 含 ops 但无语料；<em>可补 ops_data/ 或从配置移除</em>。</p></div></div>
+        <div class="next reveal"><span class="idx">06</span><div><h4>密钥管理</h4><p>config.ini 明文存 API Key；<em>可改为环境变量注入</em>。</p></div></div>
+        <div class="next reveal"><span class="idx">07</span><div><h4>观测字段</h4><p>当前只返回 engine / elapsed / note；<em>可补 cached、分段耗时与 trace id</em>。</p></div></div>
+        <div class="next reveal"><span class="idx">08</span><div><h4>子查询结果清洗</h4><p>直接 <code>split('\n')</code> 未过滤空行与编号，<code>is None</code> 判断恒假；<em>可清洗后再检索</em>。</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 技术栈 ================= -->
+  <section id="stack">
+    <div class="wrap">
+      <span class="eyebrow">Stack</span>
+      <h2 class="h2">技术栈</h2>
+      <p class="lead">服务层双框架并存，检索层 BM25 与向量混合互补，生成层走 OpenAI 兼容协议。</p>
+
+      <div class="stack-groups">
+        <div class="card stack reveal">
+          <h4>服务与运行时</h4>
+          <div class="chips">
+            <span class="chip"><b>Python</b> 3.12</span>
+            <span class="chip"><b>Flask</b> 3.1</span>
+            <span class="chip"><b>FastAPI</b> 0.143</span>
+            <span class="chip"><b>Uvicorn</b></span>
+            <span class="chip"><b>anyio</b> 线程池</span>
+            <span class="chip"><b>Jinja2</b></span>
+            <span class="chip"><b>SQLite</b> WAL</span>
+          </div>
+        </div>
+
+        <div class="card stack reveal">
+          <h4>检索与模型</h4>
+          <div class="chips">
+            <span class="chip"><b>jieba</b> 0.42</span>
+            <span class="chip"><b>rank-bm25</b> 0.2</span>
+            <span class="chip"><b>pymilvus</b> 3.0</span>
+            <span class="chip"><b>milvus-model</b> BGE-M3</span>
+            <span class="chip"><b>sentence-transformers</b> reranker</span>
+            <span class="chip"><b>torch</b> 2.7</span>
+            <span class="chip"><b>transformers</b> BERT</span>
+          </div>
+        </div>
+
+        <div class="card stack reveal">
+          <h4>LangChain（基础抽象层）</h4>
+          <div class="chips">
+            <span class="chip"><b>langchain</b> 1.4.4</span>
+            <span class="chip"><b>langchain-core</b> 1.6.9</span>
+            <span class="chip"><b>langchain-community</b> 0.4.2</span>
+            <span class="chip"><b>PromptTemplate</b> 提示词模板</span>
+            <span class="chip"><b>Document / BaseLoader</b> 文档对象 · 加载器基类</span>
+            <span class="chip"><b>RecursiveCharacterTextSplitter</b> 中文切分</span>
+            <span class="chip"><b>TextLoader</b> .txt 读取</span>
+          </div>
+          <p style="margin-top:12px;font-size:12.5px;color:var(--muted)">
+            仅用于提示词、文档对象、加载器与切分；检索、重排、生成与路由均为自研代码，未使用 LCEL / Chain / Agent / Retriever。
+          </p>
+        </div>
+
+        <div class="card stack reveal">
+          <h4>存储</h4>
+          <div class="chips">
+            <span class="chip"><b>MySQL</b> 8 · jpkb 表</span>
+            <span class="chip"><b>Redis</b> 缓存</span>
+            <span class="chip"><b>Milvus</b> edurag_final</span>
+            <span class="chip"><b>SQLite</b> chat_history.db</span>
+          </div>
+        </div>
+
+        <div class="card stack reveal">
+          <h4>文档解析与生成</h4>
+          <div class="chips">
+            <span class="chip"><b>RapidOCR</b> PDF/图片</span>
+            <span class="chip"><b>pymupdf</b></span>
+            <span class="chip"><b>python-docx / pptx</b></span>
+            <span class="chip"><b>langchain-text-splitters</b></span>
+            <span class="chip"><b>openai SDK</b> → DashScope</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 快速开始 ================= -->
+  <section id="start">
+    <div class="wrap">
+      <span class="eyebrow">Get started</span>
+      <h2 class="h2">快速启动</h2>
+      <p class="lead">前置依赖：MySQL、Redis、Milvus 已就绪，且 <code>rag_qa/models/</code> 下模型齐全。</p>
+
+      <div class="start-grid">
+        <div class="card code-card reveal">
+          <div class="code-head">
+            <span>terminal</span>
+            <button class="copy" data-copy="cmd1">复制</button>
+          </div>
+<pre id="cmd1">pip install -r requirements.txt
+
+<span class="c"># Flask 同步版</span>
+python app.py            <span class="c"># → http://127.0.0.1:5000</span>
+
+<span class="c"># FastAPI 异步版</span>
+python app_async.py      <span class="c"># → http://127.0.0.1:8000</span></pre>
+        </div>
+
+        <div class="card api reveal">
+          <div class="code-head" style="margin:-20px -20px 0;border-radius:16px 16px 0 0">
+            <span>POST /query</span>
+            <button class="copy" data-copy="cmd2">复制</button>
+          </div>
+<pre id="cmd2">{
+  "query": "AI 学科的课程大纲是什么",
+  "session_id": 3,
+  "mode": "auto",
+  "source": "ai"
+}
+
+<span class="c">// 响应</span>
+{
+  "answer": "……",
+  "found": true,
+  "engine": "rag",
+  "elapsed": 3.2145,
+  "note": "FAQ 未命中，已转 RAG"
+}</pre>
+        </div>
+      </div>
+
+      <div class="table-wrap reveal" style="margin-top:22px">
+        <table class="data">
+          <thead><tr><th>接口</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td><code>GET /</code></td><td>唯一前端页面（FAQ / RAG 共用）</td></tr>
+            <tr><td><code>POST /query</code></td><td>统一问答：mode = auto / faq / rag，source 仅对 RAG 生效</td></tr>
+            <tr><td><code>GET /api/meta</code></td><td>可选模式、学科列表、引擎说明</td></tr>
+            <tr><td><code>GET|POST /api/conversations</code></td><td>会话列表 / 新建会话</td></tr>
+            <tr><td><code>GET|PATCH|DELETE /api/conversations/{id}</code></td><td>读取、重命名、删除会话</td></tr>
+            <tr><td><code>GET /health</code></td><td>健康检查；异步版额外返回各闸门占用</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>EduRAG 集成问答系统 · 项目介绍（单文件离线版）</span>
+    <span>完整文档见 readme/ 目录 · 2026-10</span>
+  </div>
+</footer>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" alt="放大查看" /></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- 主题切换（file:// 下 localStorage 可能受限，做兜底） ---------- */
+  var root = document.documentElement;
+  var themeBtn = document.getElementById("themeBtn");
+  try {
+    var saved = localStorage.getItem("edurag-intro-theme");
+    if (saved === "dark") root.setAttribute("data-theme", "dark");
+  } catch (e) {}
+
+  themeBtn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("edurag-intro-theme", next); } catch (e) {}
+  });
+
+  /* ---------- 图表 Tab ---------- */
+  var tabs = document.querySelectorAll(".tab");
+  for (var i = 0; i < tabs.length; i++) {
+    tabs[i].addEventListener("click", function () {
+      var panels = document.querySelectorAll(".figure");
+      for (var j = 0; j < panels.length; j++) panels[j].style.display = "none";
+      for (var k = 0; k < tabs.length; k++) tabs[k].classList.remove("active");
+      this.classList.add("active");
+      var target = document.getElementById(this.getAttribute("data-panel"));
+      if (target) target.style.display = "block";
+    });
+  }
+
+  /* ---------- 图片灯箱 ---------- */
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightboxImg");
+  var figures = document.querySelectorAll(".figure img");
+  for (var f = 0; f < figures.length; f++) {
+    figures[f].addEventListener("click", function () {
+      lightboxImg.src = this.src;
+      lightbox.classList.add("open");
+    });
+  }
+  lightbox.addEventListener("click", function () { lightbox.classList.remove("open"); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") lightbox.classList.remove("open");
+  });
+
+  /* ---------- 复制（优先 clipboard API，失败降级 textarea） ---------- */
+  function copyText(text, done) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallback()); });
+    } else {
+      done(fallback());
+    }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;top:-1000px;left:-1000px;opacity:0;";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      return ok;
+    }
+  }
+
+  var copyBtns = document.querySelectorAll(".copy");
+  for (var c = 0; c < copyBtns.length; c++) {
+    copyBtns[c].addEventListener("click", function () {
+      var btn = this;
+      var el = document.getElementById(btn.getAttribute("data-copy"));
+      if (!el) return;
+      var origin = btn.textContent;
+      copyText(el.innerText, function (ok) {
+        btn.textContent = ok ? "已复制" : "复制失败";
+        setTimeout(function () { btn.textContent = origin; }, 1400);
+      });
+    });
+  }
+
+  /* ---------- 滚动显现 ---------- */
+  var reveals = document.querySelectorAll(".reveal");
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    for (var r = 0; r < reveals.length; r++) io.observe(reveals[r]);
+  } else {
+    for (var q = 0; q < reveals.length; q++) reveals[q].classList.add("in");
+  }
+
+  /* ---------- 顶部进度条 + 导航高亮 ---------- */
+  var progress = document.getElementById("progress");
+  var navLinks = document.querySelectorAll("#nav a");
+  var sections = [];
+  for (var n = 0; n < navLinks.length; n++) {
+    var id = navLinks[n].getAttribute("href").slice(1);
+    var sec = document.getElementById(id);
+    if (sec) sections.push({ el: sec, link: navLinks[n] });
+  }
+
+  function onScroll() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - doc.clientHeight;
+    progress.style.width = (max > 0 ? (doc.scrollTop / max) * 100 : 0) + "%";
+
+    var pos = doc.scrollTop + 120;
+    var current = null;
+    for (var s = 0; s < sections.length; s++) {
+      if (sections[s].el.offsetTop <= pos) current = sections[s];
+    }
+    for (var t = 0; t < navLinks.length; t++) navLinks[t].classList.remove("active");
+    if (current) current.link.classList.add("active");
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  onScroll();
+})();
+</script>
+</body>
+</html>

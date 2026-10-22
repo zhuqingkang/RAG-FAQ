@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>教育知识问答 · FAQ + RAG</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+  <div class="app" id="app">
+    <!-- ============ 左侧：会话列表 ============ -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <div class="logo">EDU</div>
+        <div class="sidebar-title">
+          <strong>教育知识问答</strong>
+          <span>FAQ + RAG 双引擎</span>
+        </div>
+      </div>
+
+      <button id="newChat" class="new-chat" type="button">
+        <span class="plus">+</span> 新建对话
+      </button>
+
+      <div class="conv-list" id="convList"></div>
+
+      <div class="sidebar-foot">双击标题可重命名 · 双击 ✕ 删除</div>
+    </aside>
+
+    <!-- ============ 右侧：对话主区 ============ -->
+    <div class="main">
+      <header class="app-header">
+        <button id="sidebarToggle" class="icon-btn" type="button" aria-label="打开会话列表">☰</button>
+        <div class="titles">
+          <h1 id="convTitle">新对话</h1>
+          <p>FAQ 精确检索 · RAG 语义生成 · Flask 服务</p>
+        </div>
+        <span class="status" id="status">
+          <i class="dot"></i><span id="statusText">就绪</span>
+        </span>
+      </header>
+
+      <main class="chat" id="chat">
+        <div class="msg bot">
+          <div class="avatar">AI</div>
+          <div class="bubble rich">
+            你好，我是教育知识问答助手，后端接了两套知识库：<br />
+            <span class="badge faq">FAQ</span> 命中率优先，检索常见问题的标准答案；<br />
+            <span class="badge rag">RAG</span> 语义检索 + 大模型生成，回答需要推理与综述的问题。<br />
+            默认「自动」模式：先查 FAQ，未命中自动转 RAG。
+          </div>
+        </div>
+      </main>
+
+      <!-- ============ 检索模式 / 学科过滤 ============ -->
+      <div class="toolbar" id="toolbar">
+        <div class="segmented" id="modeSwitch" role="group" aria-label="检索模式">
+          <button type="button" data-mode="auto" class="active">自动</button>
+          <button type="button" data-mode="faq">仅 FAQ</button>
+          <button type="button" data-mode="rag">仅 RAG</button>
+        </div>
+
+        <label class="select-wrap" title="学科过滤仅对 RAG 生效">
+          <span>学科</span>
+          <select id="sourceSelect">
+            <option value="">不过滤</option>
+          </select>
+        </label>
+
+        <span class="toolbar-hint" id="modeHint">FAQ 优先，未命中自动转 RAG</span>
+      </div>
+
+      <footer class="composer">
+        <textarea id="input" rows="1" placeholder="输入问题，Enter 发送，Shift + Enter 换行"></textarea>
+        <button id="send" type="button">
+          <span class="btn-text">发送</span>
+          <span class="spinner"></span>
+        </button>
+      </footer>
+
+      <p class="hint">
+        接口：<code>POST /query</code> · 请求体
+        <code>{"query": "...", "session_id": 1, "mode": "auto", "source": "ai"}</code>
+      </p>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+
+</html>
