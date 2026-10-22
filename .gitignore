@@ -32,3 +32,6 @@ rag_qa/core/tmp_trainer/
 # ===== 本地重复/备份文件 =====
 *空.py
 rag_qa/core/rag_system-2.py
+
+# ===== docker compose 数据卷（本地运行产物）=====
+milvus_redis/volumes/

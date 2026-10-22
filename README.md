@@ -20,7 +20,10 @@ pip install -r requirements.txt --extra-index-url https://download.pytorch.org/w
 # 2) 生成本地配置，并把 DashScope API Key 填进 config.ini
 cp config.example.ini config.ini        # PowerShell: Copy-Item config.example.ini config.ini
 
-# 3) 前置服务：MySQL / Redis / Milvus 已启动
+# 3) 前置服务：Milvus + Redis 可一键起（见 milvus_redis/README.md），MySQL 需自行安装
+cd milvus_redis && docker compose up -d && cd ..
+curl http://localhost:9091/healthz     # 返回 OK 表示 Milvus 就绪
+
 # 4) 模型：按下方「模型准备」下载后放到 rag_qa/models/
 
 python app.py            # Flask   → http://127.0.0.1:5000
@@ -121,7 +124,8 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | `base/` | `Config`（读 config.ini）+ 单例 `logger` |
 | `mysql_qa/` | FAQ 能力包：`utils`（单例/组合器/会话存储）、`retrieval`、`db`、`cache` |
 | `rag_qa/` | RAG 能力包：`rag_service`、`core`（检索/生成/切块/缓存）、`edu_*` 加载与切分 |
-| `readme/` | 详细版、简略版、结构图、流程图 |
+| `readme/` | 详细版、简略版、结构图、流程图、实测对比截图 |
+| `milvus_redis/` | Milvus + Redis 的 `docker-compose.yml` 与部署说明（含可修改项清单） |
 
 ---
 

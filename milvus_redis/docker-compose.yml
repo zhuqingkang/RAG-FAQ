@@ -1,0 +1,83 @@
+# ==========================================================
+# 本地开发用：Milvus standalone + etcd + MinIO + Redis
+# ----------------------------------------------------------
+# 适用：Docker Desktop on Windows / WSL2，x86_64
+# 启动：docker compose up -d        （在 milvus_redis/ 目录下执行）
+# 停止：docker compose down         （加 -v 会同时删除容器，数据卷保留在 ./volumes）
+#
+# 说明：
+# 1) 默认镜像走阿里云个人版加速仓库（国内拉取更快）。若提示无权限或拉不到，
+#    把对应 image 换成注释里的官方镜像即可，两者内容一致：
+#      etcd   → quay.io/coreos/etcd:v3.5.5
+#      minio  → minio/minio:RELEASE.2023-03-20T20-16-18Z
+#      milvus → milvusdb/milvus:v2.4.4
+#      redis  → redis:7
+# 2) 所有数据落在 ./volumes/ 下，删掉该目录即彻底重置。
+# 3) Redis 密码 1234、MinIO 账号 minioadmin/minioadmin 仅用于本地开发，
+#    请勿直接用于生产环境。
+# ==========================================================
+version: '3.5'
+
+services:
+  etcd:
+    container_name: milvus-etcd
+    image: crpi-pakm1z61vqp8x59k.cn-hangzhou.personal.cr.aliyuncs.com/nilpotenter/etcd:v3.5.5
+    # image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+      - ETCD_ENABLE_V2=true
+    volumes:
+      - ./volumes/etcd:/etcd/data
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd/data
+
+  minio:
+    container_name: milvus-minio
+    image: crpi-pakm1z61vqp8x59k.cn-hangzhou.personal.cr.aliyuncs.com/nilpotenter/minio:RELEASE.2023-03-20T20-16-18Z
+    # image: minio/minio:RELEASE.2023-03-20T20-16-18Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    volumes:
+      - ./volumes/minio:/minio/data
+    command: minio server /minio/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  standalone:
+    container_name: milvus-standalone
+    # 多架构镜像，Docker on Windows 会自动拉取 x86_64 版本
+    image: crpi-pakm1z61vqp8x59k.cn-hangzhou.personal.cr.aliyuncs.com/nilpotenter/milvus:v2.4.4
+    # image: milvusdb/milvus:v2.4.4
+    command: ["milvus", "run", "standalone"]
+    environment:
+      - ETCD_ENDPOINTS=etcd:2379
+      - MINIO_ADDRESS=minio:9000
+    volumes:
+      - ./volumes/milvus:/var/lib/milvus
+    ports:
+      - "19530:19530"   # SDK / pymilvus 连接端口
+      - "9091:9091"     # 健康检查与指标端口
+    depends_on:
+      - "etcd"
+      - "minio"
+
+  redis:
+    container_name: milvus-redis
+    image: crpi-pakm1z61vqp8x59k.cn-hangzhou.personal.cr.aliyuncs.com/nilpotenter/redis
+    # image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./volumes/redis:/data
+    # 密码需与项目 config.ini 的 [redis] password 保持一致
+    command: redis-server --requirepass 1234
+
+networks:
+  default:
+    name: milvus-network
