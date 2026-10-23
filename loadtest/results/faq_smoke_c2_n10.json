@@ -1,0 +1,152 @@
+{
+  "scenario": "faq",
+  "mode": "faq",
+  "tag": "smoke",
+  "base_url": "http://127.0.0.1:5000",
+  "concurrency": 2,
+  "requests": 10,
+  "wall_time_s": 0.156,
+  "qps": 63.93,
+  "success": 10,
+  "errors": 0,
+  "hit_rate": 1.0,
+  "rtt_all": {
+    "count": 10,
+    "mean": 0.0303,
+    "std": 0.0099,
+    "min": 0.0184,
+    "p50": 0.028,
+    "p90": 0.0438,
+    "p95": 0.0474,
+    "p99": 0.0504,
+    "max": 0.0511
+  },
+  "rtt_found": {
+    "count": 10,
+    "mean": 0.0303,
+    "std": 0.0099,
+    "min": 0.0184,
+    "p50": 0.028,
+    "p90": 0.0438,
+    "p95": 0.0474,
+    "p99": 0.0504,
+    "max": 0.0511
+  },
+  "server_elapsed_all": {
+    "count": 10,
+    "mean": 0.0055,
+    "std": 0.0038,
+    "min": 0.0014,
+    "p50": 0.0057,
+    "p90": 0.0093,
+    "p95": 0.0112,
+    "p99": 0.0126,
+    "max": 0.013
+  },
+  "error_samples": [],
+  "engine_mix": {
+    "faq": 10
+  },
+  "raw": [
+    {
+      "index": 0,
+      "question": "用上下文管理器实现函数运行时间的计算?",
+      "rtt": 0.0274874999995518,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 1,
+      "question": "有字典{'a':1,'b':2,'c':3},现在有一个需求\n装饰器练习题",
+      "rtt": 0.025338299998111324,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 2,
+      "question": "两个人开发项目,我push到github上后\n别人直接pull可以看到我的代码吗\n为什么我要pull request 他才能看到我提交的代码",
+      "rtt": 0.031110399999306537,
+      "status": 200,
+      "server_elapsed": 0.013,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 3,
+      "question": "关联子查询的执行顺序是什么",
+      "rtt": 0.03153380000003381,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 4,
+      "question": "定义类字典对象(继承于dict类)，如何修改读写字典元素方法",
+      "rtt": 0.028507400002126815,
+      "status": 200,
+      "server_elapsed": 0.0089,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 5,
+      "question": "Ubuntu上Navicat for MySQL 显示乱码",
+      "rtt": 0.04294250000020838,
+      "status": 200,
+      "server_elapsed": 0.0079,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 6,
+      "question": "为什么isalnum函数会通过中文",
+      "rtt": 0.018393999998806976,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 7,
+      "question": "pycharm资源管理区域文件的显示更新",
+      "rtt": 0.02096479999818257,
+      "status": 200,
+      "server_elapsed": 0.0056,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 8,
+      "question": "如何在 Ubuntu 中快速创建Pycharm桌面快捷方式？",
+      "rtt": 0.05113290000008419,
+      "status": 200,
+      "server_elapsed": 0.0065,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 9,
+      "question": "VMware安装VMware Tools时显示灰色如何解决",
+      "rtt": 0.025867500000458676,
+      "status": 200,
+      "server_elapsed": 0.0059,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    }
+  ]
+}

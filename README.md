@@ -4,6 +4,7 @@
 
 - 详细开发文档：[readme/开发文档-详细版.md](readme/开发文档-详细版.md)
 - 简略版副本：[readme/开发文档-简略版.md](readme/开发文档-简略版.md)
+- 压测报告（P95 / P99）：[readme/压测报告.md](readme/压测报告.md)　｜　可视化版：`readme/压测报告.html`
 - 项目介绍页（单文件离线版，双击即可打开）：`readme/project-intro.html`（仅本地保留，未纳入版本库）
 - 项目结构图：[readme/architecture.svg](readme/architecture.svg)　｜　请求流程图：[readme/flow.svg](readme/flow.svg)
 
@@ -115,6 +116,23 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 两者相差约 4 个数量级。26.701 s 为单次样本（五段串行调用，属偏慢的一次），RAG 耗时会随问题复杂度与生成长度波动，不宜当作平均值。
 
+### 压测分位数（更可信的口径）
+
+单次样本容易失真，下面是固定并发、批量样本下的分位数（详见 [readme/压测报告.md](readme/压测报告.md)）：
+
+| 链路 | 口径 | 并发 | 样本 | P50 | P95 | P99 |
+|---|---|---|---|---|---|---|
+| FAQ | 冷缓存 · 端到端 | 8 | 300 | 80.2 ms | **117.5 ms** | **130.6 ms** |
+| FAQ | 冷缓存 · 服务端处理 | 8 | 300 | 4.7 ms | 7.2 ms | 9.7 ms |
+| FAQ | 热缓存 · 服务端处理 | 8 | 200 | 1.7 ms | 2.6 ms | 2.9 ms |
+| RAG | 端到端（LLM 直答） | 2 | 44 | 29.47 s | **40.07 s** | **49.68 s** |
+
+- 上方截图的 0.0026 s 与热缓存 P95（2.6 ms）一致，**不是**冷检索口径；冷检索的服务端 P95 为 7.2 ms。
+- FAQ 端到端 117 ms 中，约 110 ms 是单进程 Flask 与每请求日志写盘的开销，检索本身只占几毫秒；换 `waitress` 多 worker 可大幅回落。
+- RAG 的 P95/P99 反映的是大模型生成耗时，与系统自身处理能力基本无关。
+
+> 注意：本次压测时意图分类器全部输出「通用知识」，RAG 实际走的是「大模型直答」分支，未触发 Milvus 检索与 BGE 精排，故上表 RAG 数字不含检索开销。
+
 ---
 
 ## 目录速查
@@ -127,7 +145,8 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | `base/` | `Config`（读 config.ini）+ 单例 `logger` |
 | `mysql_qa/` | FAQ 能力包：`utils`（单例/组合器/会话存储）、`retrieval`、`db`、`cache` |
 | `rag_qa/` | RAG 能力包：`rag_service`、`core`（检索/生成/切块/缓存）、`edu_*` 加载与切分 |
-| `readme/` | 详细版、简略版、结构图、流程图、实测对比截图 |
+| `readme/` | 详细版、简略版、压测报告、结构图、流程图、实测对比截图 |
+| `loadtest/` | 压测脚本 `bench_qa.py` 与原始明细 `results/*.json` |
 | `milvus_redis/` | Milvus + Redis 的 `docker-compose.yml` 与部署说明（含可修改项清单） |
 
 ---

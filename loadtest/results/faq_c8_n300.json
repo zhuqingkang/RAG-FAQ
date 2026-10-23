@@ -1,0 +1,3053 @@
+{
+  "scenario": "faq",
+  "mode": "faq",
+  "tag": "",
+  "base_url": "http://127.0.0.1:5000",
+  "concurrency": 8,
+  "requests": 300,
+  "wall_time_s": 3.43,
+  "qps": 87.46,
+  "success": 300,
+  "errors": 0,
+  "hit_rate": 0.9833,
+  "rtt_all": {
+    "count": 300,
+    "mean": 0.091,
+    "std": 0.0126,
+    "min": 0.0437,
+    "p50": 0.089,
+    "p90": 0.1095,
+    "p95": 0.1172,
+    "p99": 0.1234,
+    "max": 0.1308
+  },
+  "rtt_found": {
+    "count": 295,
+    "mean": 0.091,
+    "std": 0.0127,
+    "min": 0.0437,
+    "p50": 0.0889,
+    "p90": 0.1101,
+    "p95": 0.1173,
+    "p99": 0.1235,
+    "max": 0.1308
+  },
+  "server_elapsed_all": {
+    "count": 300,
+    "mean": 0.002,
+    "std": 0.0005,
+    "min": 0.0012,
+    "p50": 0.0019,
+    "p90": 0.0026,
+    "p95": 0.0031,
+    "p99": 0.0037,
+    "max": 0.0041
+  },
+  "error_samples": [],
+  "engine_mix": {
+    "faq": 295,
+    "none": 5
+  },
+  "raw": [
+    {
+      "index": 0,
+      "question": "用上下文管理器实现函数运行时间的计算?",
+      "rtt": 0.08484150000003865,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 1,
+      "question": "有字典{'a':1,'b':2,'c':3},现在有一个需求\n装饰器练习题",
+      "rtt": 0.08650029999989783,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 2,
+      "question": "两个人开发项目,我push到github上后\n别人直接pull可以看到我的代码吗\n为什么我要pull request 他才能看到我提交的代码",
+      "rtt": 0.09244760000001406,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 3,
+      "question": "关联子查询的执行顺序是什么",
+      "rtt": 0.08832239999901503,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 4,
+      "question": "定义类字典对象(继承于dict类)，如何修改读写字典元素方法",
+      "rtt": 0.0847317000007024,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 5,
+      "question": "Ubuntu上Navicat for MySQL 显示乱码",
+      "rtt": 0.08774009999979171,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 6,
+      "question": "为什么isalnum函数会通过中文",
+      "rtt": 0.09470430000146735,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 7,
+      "question": "pycharm资源管理区域文件的显示更新",
+      "rtt": 0.09120629999961238,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 8,
+      "question": "如何在 Ubuntu 中快速创建Pycharm桌面快捷方式？",
+      "rtt": 0.0841751000007207,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 9,
+      "question": "VMware安装VMware Tools时显示灰色如何解决",
+      "rtt": 0.08287669999845093,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 10,
+      "question": "faild to load module canberra\n-gtk-module 报错",
+      "rtt": 0.08487779999995837,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 11,
+      "question": "PyCharm使用中文版本还是英文版本",
+      "rtt": 0.08510219999880064,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 12,
+      "question": "python3.7 64位版本pygame安装报错",
+      "rtt": 0.08718230000158655,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 13,
+      "question": "找不到可以连接的有效对等进程\nCould not open /dev/vmmon",
+      "rtt": 0.08460660000127973,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 14,
+      "question": "lxml的tree报错",
+      "rtt": 0.08412999999927706,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 15,
+      "question": "redis存储类型里面提到的“string类型是二进制安全的",
+      "rtt": 0.08560450000004494,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 16,
+      "question": "如何创建线程安全的单例对象",
+      "rtt": 0.08696169999893755,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 17,
+      "question": "selenium使用chrome无头浏览器执行js代码",
+      "rtt": 0.10109780000129831,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 18,
+      "question": "怎么获取MongoDB中某个集合中所有文档的键的名字",
+      "rtt": 0.08455099999991944,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 19,
+      "question": "PyCharm只能以单元测试方式运行python代码怎么解决",
+      "rtt": 0.08367050000015297,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 20,
+      "question": "如何给某个特定的Python版本安装pip",
+      "rtt": 0.08258459999706247,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 21,
+      "question": "crawler spider中如何处理url返回respon",
+      "rtt": 0.08414040000207024,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 22,
+      "question": "Screenshot: available via scre",
+      "rtt": 0.08559880000029807,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 23,
+      "question": "使用crawlspider爬取aqi历史数据请求多",
+      "rtt": 0.08495169999878271,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 24,
+      "question": "爬虫处理返回的是gzip格式数据",
+      "rtt": 0.08768979999877047,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 25,
+      "question": "windows如何安装redis",
+      "rtt": 0.08798070000193547,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 26,
+      "question": "Pycharm不能动态获取用户设置的环境变量，需要设置",
+      "rtt": 0.0879973000010068,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 27,
+      "question": "win10如何安装python虚拟环境以及爬虫环境",
+      "rtt": 0.08894190000137314,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 28,
+      "question": "pycharm专业版如何激活",
+      "rtt": 0.08873719999974128,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 29,
+      "question": "os.path.dirname() 方法有什么作用？",
+      "rtt": 0.09324519999790937,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 30,
+      "question": "cssrem设置的时候提示“系统找不到指定路径”如何解决？",
+      "rtt": 0.08497399999760091,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 31,
+      "question": "Python中GC的垃圾回收算法是什么？",
+      "rtt": 0.08428599999751896,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 32,
+      "question": "mongod.service not found 怎么解决",
+      "rtt": 0.08924819999811007,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 33,
+      "question": "Missing scheme in request url:",
+      "rtt": 0.07825969999976223,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 34,
+      "question": "Tesseract OCR 中文库如何安装？",
+      "rtt": 0.08695129999978235,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 35,
+      "question": "win7 fiddler4 安装https证书失败如何解决",
+      "rtt": 0.08798319999914384,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 36,
+      "question": "scrapy genspider name domain\n创建spider有哪些注意点",
+      "rtt": 0.10386010000001988,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 37,
+      "question": "spider爬取图片后重命名不能创建新目录",
+      "rtt": 0.08369259999744827,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 38,
+      "question": "Phantom虚拟机默认访问127.0.0.1不能获取到数据",
+      "rtt": 0.08437310000226717,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 39,
+      "question": "scrapy中item使用'.'点号的方式赋值出现错误",
+      "rtt": 0.08656699999846751,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 40,
+      "question": "chrome中xpath能提百度贴吧帖子链接，使用代码提不到",
+      "rtt": 0.08984380000038072,
+      "status": 200,
+      "server_elapsed": 0.0029,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 41,
+      "question": "urllib2.HTTPError:HTTP Error",
+      "rtt": 0.09067180000056396,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 42,
+      "question": "爬虫爬取下来的数据写入文件有哪些方式",
+      "rtt": 0.09169330000077025,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 43,
+      "question": "ubuntu 中如何安装Selenium",
+      "rtt": 0.09119250000003376,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 44,
+      "question": "xpath中的 position 方法怎么理解",
+      "rtt": 0.09311000000161584,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 45,
+      "question": "not 运算符什么时候使用，有什么作用",
+      "rtt": 0.09457839999959106,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 46,
+      "question": "is 运算符在iPython3中和PyCharm中结果不一致",
+      "rtt": 0.09116380000341451,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 47,
+      "question": "用mkvirtualenv命令创建虚拟环境提示找不到命令",
+      "rtt": 0.0927890999992087,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 48,
+      "question": "网络调试助手无法收到 ubuntu发送的包",
+      "rtt": 0.09113019999858807,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 49,
+      "question": "字符串类型和数字类型怎么比较大小",
+      "rtt": 0.08256120000078226,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 50,
+      "question": "mv命令系统如何判断命令是改名字还是移动",
+      "rtt": 0.0929651999977068,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 51,
+      "question": "为什么可以用2个对象接收一个函数",
+      "rtt": 0.10368480000033742,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 52,
+      "question": "为什么不在同一网段的ip不能直接通信",
+      "rtt": 0.10240469999916968,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 53,
+      "question": "docker 创建容器的参数",
+      "rtt": 0.1010628000003635,
+      "status": 200,
+      "server_elapsed": 0.0027,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 54,
+      "question": "归一化算法问题",
+      "rtt": 0.11247919999732403,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 55,
+      "question": "关于vim 退出",
+      "rtt": 0.12231679999968037,
+      "status": 200,
+      "server_elapsed": 0.003,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 56,
+      "question": "怎么让一个用python写的服务器.py程序一直运行呢",
+      "rtt": 0.09748490000129095,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 57,
+      "question": "def 末尾return None",
+      "rtt": 0.10649889999695006,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 58,
+      "question": "全局变量可以在函数中定义么",
+      "rtt": 0.09509729999990668,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 59,
+      "question": "绑定端口时为什么不需要写具体的ip地址呢",
+      "rtt": 0.09409830000004149,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 60,
+      "question": "./run.sh 是什么意思",
+      "rtt": 0.09403760000350303,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 61,
+      "question": "pycharm导入模块的快捷键是什么",
+      "rtt": 0.09394550000070012,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 62,
+      "question": "在方法中的局部变量，是不是无法被其他方法调用",
+      "rtt": 0.09184299999833456,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 63,
+      "question": "数据库,明明关联会降低查询性能，为什么还会分出这么多表",
+      "rtt": 0.09059909999996307,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 64,
+      "question": "mac 安装mysql无配置文件",
+      "rtt": 0.09130230000300799,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 65,
+      "question": "live-server安装失败",
+      "rtt": 0.09060640000097919,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 66,
+      "question": "windows环境中验证码不显示\nOSError: cannot open resource",
+      "rtt": 0.0917981000020518,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 67,
+      "question": "axis 的问题",
+      "rtt": 0.09029589999772725,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 68,
+      "question": "vmWare三种网络模式：桥连接、net模式、仅主机模式区别",
+      "rtt": 0.09019889999763109,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 69,
+      "question": "arrary切片, data[:,-1]",
+      "rtt": 0.0902962000000116,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 70,
+      "question": "没有middleware.py文件",
+      "rtt": 0.08993779999946128,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 71,
+      "question": "服务器uwsgi运行不起来",
+      "rtt": 0.08071969999946305,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 72,
+      "question": "熵的解释",
+      "rtt": 0.07734809999965364,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 73,
+      "question": "jQuery中关于$符号的规则",
+      "rtt": 0.08539400000154274,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 74,
+      "question": "cls.pokes前为什么要加cls?不可以直接pokes.",
+      "rtt": 0.08588729999974021,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 75,
+      "question": "Flask mysqldb Library not load",
+      "rtt": 0.07465729999967152,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 76,
+      "question": "“浮点型”转换成“整型”的问题",
+      "rtt": 0.08766639999885228,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 77,
+      "question": "app = Flask(__name__) name路径\n__name__所在的路径是否就是静态文件所在路径",
+      "rtt": 0.09772560000055819,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 78,
+      "question": "select模块里只有poll()方法没有epoll()方法",
+      "rtt": 0.08542820000002393,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 79,
+      "question": "大数字除法不精准问题",
+      "rtt": 0.10440539999763132,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 80,
+      "question": "虚拟机桥接模式后不能上网",
+      "rtt": 0.0867763999995077,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 81,
+      "question": "什么是SerializeToString",
+      "rtt": 0.0809880000015255,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 82,
+      "question": "Flask routing BaseConverter\nFlask 类属性weight代表什么？",
+      "rtt": 0.08103669999763952,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 83,
+      "question": "getattr作用",
+      "rtt": 0.09261169999808772,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 84,
+      "question": "实例变量/实例方法怎么理解",
+      "rtt": 0.08993240000199876,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 85,
+      "question": "python -m ",
+      "rtt": 0.08915360000173678,
+      "status": 200,
+      "server_elapsed": 0.0033,
+      "engine": "none",
+      "found": false,
+      "note": "FAQ 未命中"
+    },
+    {
+      "index": 86,
+      "question": "sys模块中的exit与pygame中的exit方法的区别",
+      "rtt": 0.09813569999823812,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 87,
+      "question": "如何实现在一段字符串中显示某个字符串多次出现的位置",
+      "rtt": 0.09007699999710894,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 88,
+      "question": "pycharm拖动静态文件到templates文件夹",
+      "rtt": 0.09021990000110236,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 89,
+      "question": "父进程会不会等待子进程结束才结束",
+      "rtt": 0.09962180000002263,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 90,
+      "question": "jinja2模板没有自动补全",
+      "rtt": 0.08627189999970142,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 91,
+      "question": "__name__\t与__qualname__的区别",
+      "rtt": 0.08441579999998794,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 92,
+      "question": "write()方法覆盖问题",
+      "rtt": 0.08458359999713139,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 93,
+      "question": "无法CD到var/log下的redis文件夹中",
+      "rtt": 0.08993800000098418,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 94,
+      "question": "如何判断字符串中含有特殊字符",
+      "rtt": 0.09526940000068862,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 95,
+      "question": "实例方法、类方法和静态方法",
+      "rtt": 0.09067610000056447,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 96,
+      "question": "把一个元素全为数字的列表中的所有偶数加1",
+      "rtt": 0.09149450000040815,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 97,
+      "question": "redis端口和连接",
+      "rtt": 0.10285279999880004,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 98,
+      "question": "SQLAlchemy 多对多中间表 操作命令",
+      "rtt": 0.12337290000141365,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 99,
+      "question": "使用循环手工输入5个整数，将其存入列表，打印出最大值和最小值",
+      "rtt": 0.101677100003144,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 100,
+      "question": "解释器与集成开发环境的本质区别",
+      "rtt": 0.09363160000066273,
+      "status": 200,
+      "server_elapsed": 0.0033,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 101,
+      "question": "递归调用最大层级1000次是只有python这样吗",
+      "rtt": 0.09720369999922696,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 102,
+      "question": "如何查看python里函数的帮助",
+      "rtt": 0.09231519999957527,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 103,
+      "question": "MAC地址是指的什么",
+      "rtt": 0.09511589999965508,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 104,
+      "question": "变量可以私有化",
+      "rtt": 0.0836343000009947,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 105,
+      "question": "如何利用径向神经网络解决异或问题",
+      "rtt": 0.08132759999716654,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 106,
+      "question": "使用celery报错 ModuleNotFoundError",
+      "rtt": 0.07305469999846537,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 107,
+      "question": "激活码从哪里获得",
+      "rtt": 0.08131420000063372,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 108,
+      "question": "什么是cart算法",
+      "rtt": 0.08067930000106571,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 109,
+      "question": "函数和类区别",
+      "rtt": 0.08222740000201156,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 110,
+      "question": "虚拟环境使用",
+      "rtt": 0.09083910000117612,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 111,
+      "question": "python 单引号的使用",
+      "rtt": 0.08224890000201412,
+      "status": 200,
+      "server_elapsed": 0.0012,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 112,
+      "question": "Non-ASCII character '\\xe5' in ",
+      "rtt": 0.08197080000172718,
+      "status": 200,
+      "server_elapsed": 0.0035,
+      "engine": "none",
+      "found": false,
+      "note": "FAQ 未命中"
+    },
+    {
+      "index": 113,
+      "question": "特征值、目标值占位符的作用是什么",
+      "rtt": 0.07271430000037071,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 114,
+      "question": "什么是张量",
+      "rtt": 0.07252510000034817,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 115,
+      "question": "fit_transform, fit",
+      "rtt": 0.08109029999832273,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 116,
+      "question": "deepcody",
+      "rtt": 0.07308780000312254,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 117,
+      "question": "print(0 and False)得到的结果怎么是0",
+      "rtt": 0.09903880000274512,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 118,
+      "question": "Django的前端页面显示不出来",
+      "rtt": 0.08115689999976894,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 119,
+      "question": "加载html网页时，如果出现html是汉字命名",
+      "rtt": 0.09372200000143494,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 120,
+      "question": "pycharm导包时出于灰色状态",
+      "rtt": 0.07992409999860683,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 121,
+      "question": "process.queue()和manger().queue",
+      "rtt": 0.07012120000217692,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 122,
+      "question": "[None,28*28,1]28*28是一张图片的像素吗",
+      "rtt": 0.0709190999987186,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 123,
+      "question": "代码上方会表明编码格式 # coding:utf-8",
+      "rtt": 0.08139070000106585,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 124,
+      "question": "进程通信为什不用全局变量来实现",
+      "rtt": 0.0976234999980079,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 125,
+      "question": "if else 能返回上一级继续判断吗",
+      "rtt": 0.07979419999901438,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 126,
+      "question": "print和return在打印和接收数据的区别",
+      "rtt": 0.07981129999825498,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 127,
+      "question": "使用 变量 += 元组 时，为什么会自动对元组进行拆包",
+      "rtt": 0.07172960000025341,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 128,
+      "question": "使用more命令时，按f可以向下翻，按b不会往回走，没反应",
+      "rtt": 0.08028149999881862,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 129,
+      "question": "K-means算法中，求的是谁的平均值",
+      "rtt": 0.07999550000022282,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 130,
+      "question": "python私有属性/方法中单下划线和双下划线区别",
+      "rtt": 0.07866769999964163,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 131,
+      "question": "列表中那么多的数，我想实现相邻两个数只差怎么办",
+      "rtt": 0.0878365999997186,
+      "status": 200,
+      "server_elapsed": 0.0027,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 132,
+      "question": "Linux高级编程中ubantu可以换成centos吗",
+      "rtt": 0.09014419999948586,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 133,
+      "question": "为什么要在vim模式下写python",
+      "rtt": 0.08996639999895706,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 134,
+      "question": "已经commit了还能rollback吗",
+      "rtt": 0.088101800000004,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 135,
+      "question": "移动设备也有固定的IP地址吗",
+      "rtt": 0.08912770000097225,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 136,
+      "question": "在 vim 状态怎么进入编辑模式",
+      "rtt": 0.0904225000012957,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 137,
+      "question": "gevent中的join()",
+      "rtt": 0.08908090000113589,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 138,
+      "question": "CTRL +c 是中断什么的",
+      "rtt": 0.08229969999956666,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 139,
+      "question": "init的变量设置时，什么时候需要使用None",
+      "rtt": 0.0916590000015276,
+      "status": 200,
+      "server_elapsed": 0.0025,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 140,
+      "question": "用什么方法计算selenium通过chrome下载文件的速度",
+      "rtt": 0.09184580000146525,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 141,
+      "question": "桥接后怎么就没有了ipv4 的地址",
+      "rtt": 0.0833310000016354,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 142,
+      "question": "tuple index out of range",
+      "rtt": 0.07998100000259001,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 143,
+      "question": "xshell中,scp不是内部或外部命令",
+      "rtt": 0.08142029999726219,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 144,
+      "question": "vim中在行前加入“# ”号的快捷键是什么？即单行注释快捷键",
+      "rtt": 0.07482919999893056,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 145,
+      "question": "python里的多态是什么意思",
+      "rtt": 0.07578739999735262,
+      "status": 200,
+      "server_elapsed": 0.0013,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 146,
+      "question": "请问有没有什么函数或内置属性可以用来查看某个类的父类是谁",
+      "rtt": 0.08422840000275755,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 147,
+      "question": "tcp服务器和客户端是什么意思",
+      "rtt": 0.09262970000054338,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 148,
+      "question": "多种内置属性的含义",
+      "rtt": 0.08453089999966323,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 149,
+      "question": "飞机大战内存释放\n在while true里面一直贴图片, 怎么释放的内存",
+      "rtt": 0.08342869999978575,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 150,
+      "question": "mac的PyCharm是不是不能用epoll",
+      "rtt": 0.08367829999770038,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 151,
+      "question": "为什么说python是一种胶水语言",
+      "rtt": 0.08358059999955003,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 152,
+      "question": "做tcp,绑定的端口老是会提示呗占用",
+      "rtt": 0.08162080000329297,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 153,
+      "question": "如何用公有方法获取在类里面定义的私有属性",
+      "rtt": 0.08644690000073751,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 154,
+      "question": "公有属性和公有方法不明白",
+      "rtt": 0.07395520000136457,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 155,
+      "question": "遇到python内置类型使用错误",
+      "rtt": 0.09676200000103563,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 156,
+      "question": "正则匹配密码强度",
+      "rtt": 0.07698180000079446,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 157,
+      "question": "input 函数解释",
+      "rtt": 0.08879769999839482,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 158,
+      "question": "MySQL 全局变量查询",
+      "rtt": 0.08885540000119363,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 159,
+      "question": "空字符串匹配正则问题",
+      "rtt": 0.0891105000009702,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 160,
+      "question": "re  findall取消分组",
+      "rtt": 0.08983450000232551,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 161,
+      "question": "scrapy 同一个进程同时运行多个爬虫示例",
+      "rtt": 0.11312750000070082,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 162,
+      "question": "MYSQL 导入数据出现外键引用",
+      "rtt": 0.08543400000053225,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 163,
+      "question": "xpath 中如何使用正则",
+      "rtt": 0.10092319999967003,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 164,
+      "question": "Mysql如何查询一个表的所有字段",
+      "rtt": 0.10086080000110087,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 165,
+      "question": "linux下面批量停止同一类进程",
+      "rtt": 0.1019678999982716,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 166,
+      "question": "xpath – 如何匹配包含某个字符串的属性？",
+      "rtt": 0.10115479999876698,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 167,
+      "question": "linux下面查看端口占用",
+      "rtt": 0.10255740000138758,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 168,
+      "question": "重置vmware虚拟机网络",
+      "rtt": 0.10230439999941154,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 169,
+      "question": "typora 中markdown插入视频",
+      "rtt": 0.10196419999920181,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 170,
+      "question": "linux 查看指定进程的资源占用情况",
+      "rtt": 0.10071909999896889,
+      "status": 200,
+      "server_elapsed": 0.0029,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 171,
+      "question": "no module name \"MySQLdb\"",
+      "rtt": 0.09940869999991264,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 172,
+      "question": "虚安环境安装flask成功，找不到",
+      "rtt": 0.0998719000017445,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 173,
+      "question": "OSError:mysql_config not found",
+      "rtt": 0.1008546999983082,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 174,
+      "question": "error keyword argument 'method",
+      "rtt": 0.10067049999997835,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 175,
+      "question": "python中的条件语句",
+      "rtt": 0.10095700000238139,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 176,
+      "question": "面向对象类名字命名规则",
+      "rtt": 0.09930499999973108,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 177,
+      "question": "获取修改密码的token的时候报错",
+      "rtt": 0.10174750000078348,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 178,
+      "question": "celery 启动任务添加不成功",
+      "rtt": 0.10687000000325497,
+      "status": 200,
+      "server_elapsed": 0.0031,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 179,
+      "question": "点击run 的话 不会运行django服务器，而运行帮助文档",
+      "rtt": 0.11434050000025309,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 180,
+      "question": "pymysql.err.InterfaceError",
+      "rtt": 0.11566599999787286,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 181,
+      "question": "{'172001': '网络错误'}云通讯失败",
+      "rtt": 0.11694680000073276,
+      "status": 200,
+      "server_elapsed": 0.0027,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 182,
+      "question": "docker pull elastisearch 不成功",
+      "rtt": 0.11721559999932651,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 183,
+      "question": "manage.py  No such file or ...",
+      "rtt": 0.11995139999999083,
+      "status": 200,
+      "server_elapsed": 0.0025,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 184,
+      "question": "chrome无法访问本地6000端口服务",
+      "rtt": 0.12045579999903566,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 185,
+      "question": "python socket 异常一览表",
+      "rtt": 0.11895189999995637,
+      "status": 200,
+      "server_elapsed": 0.0041,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 186,
+      "question": "f-string表达式",
+      "rtt": 0.12284550000185845,
+      "status": 200,
+      "server_elapsed": 0.0034,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 187,
+      "question": "datetime与字符串相互转化",
+      "rtt": 0.12601770000037504,
+      "status": 200,
+      "server_elapsed": 0.0028,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 188,
+      "question": "python 进程 jion方法",
+      "rtt": 0.12573990000237245,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 189,
+      "question": "xhsell or CRT 进行远程文件传输",
+      "rtt": 0.13083329999790294,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 190,
+      "question": "PEP 484规则，解释器自动进行类型判断",
+      "rtt": 0.1214843000016117,
+      "status": 200,
+      "server_elapsed": 0.0037,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 191,
+      "question": "http中GET与POST请求区别",
+      "rtt": 0.1171228000021074,
+      "status": 200,
+      "server_elapsed": 0.0033,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 192,
+      "question": "mysql5.7 忘记 root密码怎么办？",
+      "rtt": 0.11844249999921885,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 193,
+      "question": "redis 设置密码访问",
+      "rtt": 0.11792579999746522,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 194,
+      "question": "哪些元素 可以设置 z-index 样式",
+      "rtt": 0.11736329999985173,
+      "status": 200,
+      "server_elapsed": 0.0031,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 195,
+      "question": "redis 如何开启 远程访问？",
+      "rtt": 0.11490720000074361,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 196,
+      "question": "通过apt仓库 安装最新版mysql",
+      "rtt": 0.11458029999994324,
+      "status": 200,
+      "server_elapsed": 0.0031,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 197,
+      "question": "pip ：cannot import name 'main'",
+      "rtt": 0.11561500000243541,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 198,
+      "question": "pip 使用 豆瓣源 安装 python包",
+      "rtt": 0.11737209999773768,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 199,
+      "question": "高版本 jquery 入口函数 报错",
+      "rtt": 0.11508230000254116,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 200,
+      "question": "win10 可以 ping同 乌班图虚拟机，反过来不行",
+      "rtt": 0.11612889999742038,
+      "status": 200,
+      "server_elapsed": 0.0025,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 201,
+      "question": "mac电脑 打不开乌班图 虚拟机",
+      "rtt": 0.11373259999891161,
+      "status": 200,
+      "server_elapsed": 0.0032,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 202,
+      "question": "vscode编辑器 相对路径 问题",
+      "rtt": 0.1105277999995451,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 203,
+      "question": "html 中如何解决 嵌套盒子 垂直外边距合并问题",
+      "rtt": 0.09747459999925923,
+      "status": 200,
+      "server_elapsed": 0.0032,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 204,
+      "question": "pip10 工具bug",
+      "rtt": 0.0970433000002231,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 205,
+      "question": "python3 自带 的虚拟环境使用",
+      "rtt": 0.09468209999977262,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 206,
+      "question": "js中 dom元素的 offsetHeight 属性",
+      "rtt": 0.09280359999684151,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 207,
+      "question": "jinja2.exceptions.undefinederr",
+      "rtt": 0.09512650000033318,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 208,
+      "question": "pycharm运行app，启动找不到app",
+      "rtt": 0.091583500001434,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 209,
+      "question": "python manager.py db init 运行程序",
+      "rtt": 0.0928061999984493,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 210,
+      "question": "mac如何显示隐藏文件呀？",
+      "rtt": 0.0882050000000163,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 211,
+      "question": "live-server 运行失败  = async path",
+      "rtt": 0.07806239999990794,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 212,
+      "question": "docler pull elasticsearch 失败",
+      "rtt": 0.08787870000014664,
+      "status": 200,
+      "server_elapsed": 0.0025,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 213,
+      "question": "push rejected",
+      "rtt": 0.08662519999779761,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 214,
+      "question": "js 中因es5爆红",
+      "rtt": 0.08672610000212444,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 215,
+      "question": "远程链接云服务器中mysql,redis,docker等链接",
+      "rtt": 0.08723900000040885,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 216,
+      "question": "vue : cannot find element #app",
+      "rtt": 0.08638749999954598,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 217,
+      "question": "expected an indented block 缩进错",
+      "rtt": 0.09768229999826872,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 218,
+      "question": "前端引用了jquery 报$ undefined的错误",
+      "rtt": 0.0862831999984337,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 219,
+      "question": "linux系统中使用pip安装python模块包提示没有权限",
+      "rtt": 0.08795670000108657,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 220,
+      "question": "用weget apt 等安装出现https 40x错误的情况",
+      "rtt": 0.08911219999936293,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 221,
+      "question": "(admin.E403) A 'django.......",
+      "rtt": 0.0927895000022545,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 222,
+      "question": "StrictredisCluster 包导入不成功",
+      "rtt": 0.09271989999979269,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 223,
+      "question": "TypeError: 'ConfiguredStorage'",
+      "rtt": 0.09406210000088322,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 224,
+      "question": "centos下面安装开发相关的工具环境",
+      "rtt": 0.09639400000014575,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 225,
+      "question": "远程传输工具安装",
+      "rtt": 0.08681819999765139,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 226,
+      "question": "Ubuntu配置MySQL8.0 允许远程访问",
+      "rtt": 0.08698780000122497,
+      "status": 200,
+      "server_elapsed": 0.0037,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 227,
+      "question": "js 中 箭头函数 需要注意哪些问题",
+      "rtt": 0.11423680000007153,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 228,
+      "question": "npm 使用淘宝下载源",
+      "rtt": 0.09138619999794173,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 229,
+      "question": "live-server 服务器 配置 允许任意 ip 访问",
+      "rtt": 0.08940349999829778,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 230,
+      "question": "django配置 允许跨域请求",
+      "rtt": 0.09180639999976847,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 231,
+      "question": "python3 内建函数有哪些",
+      "rtt": 0.08839439999792376,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 232,
+      "question": "mac 系统下 安装了mysql，配置任意目录 访问",
+      "rtt": 0.08629410000139615,
+      "status": 200,
+      "server_elapsed": 0.0013,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 233,
+      "question": "远程连接mysql 不成功",
+      "rtt": 0.08685370000239345,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 234,
+      "question": "anaconda 在wiindows上面出现各种问题",
+      "rtt": 0.07694400000036694,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 235,
+      "question": "ubuntu pip 安装包 timeout ",
+      "rtt": 0.10843400000157999,
+      "status": 200,
+      "server_elapsed": 0.0032,
+      "engine": "none",
+      "found": false,
+      "note": "FAQ 未命中"
+    },
+    {
+      "index": 236,
+      "question": "python虚拟环境的目的",
+      "rtt": 0.07995849999861093,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 237,
+      "question": "出现包安装，导入失败的问题",
+      "rtt": 0.08152759999939008,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 238,
+      "question": "创建虚拟环境出现OSError: Command错误",
+      "rtt": 0.09012520000032964,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 239,
+      "question": "mysql不支持bool类型",
+      "rtt": 0.08787730000040028,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 240,
+      "question": "列表推导式单条件判断与2个条件判断使用",
+      "rtt": 0.08958159999747295,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 241,
+      "question": "django中使用celery出现不能发现任务的问题",
+      "rtt": 0.08810830000220449,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 242,
+      "question": "打包python程序为可执行程序",
+      "rtt": 0.10928229999990435,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 243,
+      "question": "float方法使用",
+      "rtt": 0.07391250000000582,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 244,
+      "question": "python中类的属性的查找顺序",
+      "rtt": 0.07381449999957113,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 245,
+      "question": "vscode配置成 sublime text3 风格 主题",
+      "rtt": 0.08256139999866718,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 246,
+      "question": "python3运算符 += 和 = 之间的区别",
+      "rtt": 0.0813598999993701,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 247,
+      "question": "回车和换行符 ",
+      "rtt": 0.08322860000043875,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "none",
+      "found": false,
+      "note": "FAQ 未命中"
+    },
+    {
+      "index": 248,
+      "question": "配置 vscode 字体",
+      "rtt": 0.08201539999936358,
+      "status": 200,
+      "server_elapsed": 0.0025,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 249,
+      "question": "Vue-devtools 安装成功但无法使用",
+      "rtt": 0.1007580000004964,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 250,
+      "question": "python中if表达式中表达真假",
+      "rtt": 0.07004130000132136,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 251,
+      "question": "linux 下面的普通用户与root用户",
+      "rtt": 0.0831049999978859,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 252,
+      "question": "正则中的^符号",
+      "rtt": 0.09233210000093095,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 253,
+      "question": "Windows上面修改myslql密码",
+      "rtt": 0.08444119999694522,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 254,
+      "question": "concurrent_log_handler 问题",
+      "rtt": 0.08547489999909885,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 255,
+      "question": "hmtl的url地址",
+      "rtt": 0.08287399999971967,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 256,
+      "question": "面向对象 私有属性",
+      "rtt": 0.08342009999978472,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 257,
+      "question": "ValueError: last_login",
+      "rtt": 0.08492159999877913,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 258,
+      "question": "lambda表达式",
+      "rtt": 0.07636560000173631,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 259,
+      "question": "try 异常传递",
+      "rtt": 0.07992139999987558,
+      "status": 200,
+      "server_elapsed": 0.003,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 260,
+      "question": "pycharm打开导航栏\nUbuntu里pycharm怎么打开导航条",
+      "rtt": 0.09936590000143042,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 261,
+      "question": "多继承 MRO 父类 属性查找\npython中多继承 继承问题",
+      "rtt": 0.08790489999955753,
+      "status": 200,
+      "server_elapsed": 0.0026,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 262,
+      "question": "ubuntu 创建Python虚拟环境 出现错误\nubuntu虚拟机创建虚拟环境一直报错，不知道什么原因",
+      "rtt": 0.08966870000222116,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 263,
+      "question": "ubuntu pip 安装包 timeout",
+      "rtt": 0.08927729999777512,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "none",
+      "found": false,
+      "note": "FAQ 未命中"
+    },
+    {
+      "index": 264,
+      "question": "IncompleteElementException",
+      "rtt": 0.10189449999961653,
+      "status": 200,
+      "server_elapsed": 0.0027,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 265,
+      "question": "套餐列表图片没有办法正常显示",
+      "rtt": 0.08692960000189487,
+      "status": 200,
+      "server_elapsed": 0.0015,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 266,
+      "question": "七牛云图片上传成功 图片不回显",
+      "rtt": 0.08555880000130855,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 267,
+      "question": "interface not allow null!",
+      "rtt": 0.07373749999896972,
+      "status": 200,
+      "server_elapsed": 0.0027,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 268,
+      "question": "表单校验语法报错 () => {}",
+      "rtt": 0.0765754999993078,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 269,
+      "question": "xls或者xlsx文件上传失败",
+      "rtt": 0.0761010999995051,
+      "status": 200,
+      "server_elapsed": 0.0013,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 270,
+      "question": "NoSuchMethodError",
+      "rtt": 0.08859089999896241,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 271,
+      "question": "体检预约成功后不显示预约信息",
+      "rtt": 0.07566159999987576,
+      "status": 200,
+      "server_elapsed": 0.0021,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 272,
+      "question": "FreeMarker生成html之后，中文乱码",
+      "rtt": 0.07500179999988177,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 273,
+      "question": "在传智健康的PDF报表生成的时候出现找不到华文宋体",
+      "rtt": 0.07579769999938435,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 274,
+      "question": "Timeout 连接zookeeper失败",
+      "rtt": 0.07395610000094166,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 275,
+      "question": "日历展示预约信息，样式出不来",
+      "rtt": 0.06386389999897801,
+      "status": 200,
+      "server_elapsed": 0.0022,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 276,
+      "question": "执行生成静态页面之后，页面报错",
+      "rtt": 0.06845160000011674,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 277,
+      "question": "getOrderSettingByMonth",
+      "rtt": 0.08379700000295998,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 278,
+      "question": "套餐详情页面中检查组和检查项的数据都是空的",
+      "rtt": 0.10942410000279779,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 279,
+      "question": "Spring-redis.xml文件配置报错",
+      "rtt": 0.07377639999685925,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 280,
+      "question": "Access is denied 拒绝访问 登陆失败",
+      "rtt": 0.07303070000125444,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 281,
+      "question": "做分页查询的时候报空指针异常 检查组分页查询空指针",
+      "rtt": 0.0864049999981944,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 282,
+      "question": "parameterType和resultType区别",
+      "rtt": 0.0858829999997397,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 283,
+      "question": "传智健康体检预约收不到短信验证码",
+      "rtt": 0.11901969999962603,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 284,
+      "question": "Spring Boot 请求访问URL页面显示404",
+      "rtt": 0.10363369999686256,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 285,
+      "question": "找不到文件: Cento 64位.vmdk",
+      "rtt": 0.10543320000215317,
+      "status": 200,
+      "server_elapsed": 0.0016,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 286,
+      "question": "SpringBoot无法使用@Runwith注解",
+      "rtt": 0.1059447999978147,
+      "status": 200,
+      "server_elapsed": 0.0036,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 287,
+      "question": "Spring Cloud 定义Feign 启动失败",
+      "rtt": 0.10773479999988922,
+      "status": 200,
+      "server_elapsed": 0.0023,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 288,
+      "question": "rabbitmq 路由模式",
+      "rtt": 0.10309090000009746,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 289,
+      "question": "input标签中的placeholder  与value的区\ninput中的name属性说明\ninput标签中的value属性理解\n为什么答案不是是placeholder这一个标签",
+      "rtt": 0.10305520000110846,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 290,
+      "question": "python中编码规范网址？\npep8 规范哪里有\n老师python的规范的网站多少呢",
+      "rtt": 0.10354060000099707,
+      "status": 200,
+      "server_elapsed": 0.0034,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 291,
+      "question": "python 中 in关键词用法\nin 怎么使用\nin怎么用？",
+      "rtt": 0.09171839999908116,
+      "status": 200,
+      "server_elapsed": 0.0024,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 292,
+      "question": "flask paginate 怎么使用",
+      "rtt": 0.08797760000015842,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 293,
+      "question": "实现购物车加1 减1 会出现数量累加的问题",
+      "rtt": 0.08015499999964959,
+      "status": 200,
+      "server_elapsed": 0.0014,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 294,
+      "question": "搜索模块批量导入数据到ES",
+      "rtt": 0.07972049999807496,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 295,
+      "question": "UnsupportedEncodingException",
+      "rtt": 0.0786286000002292,
+      "status": 200,
+      "server_elapsed": 0.0018,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 296,
+      "question": "consul启动指定错盘符问题",
+      "rtt": 0.07033940000110306,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 297,
+      "question": "consul服务启动报错",
+      "rtt": 0.07047699999748147,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 298,
+      "question": "充吧项目 连接MySQL的10060错误",
+      "rtt": 0.06865919999836478,
+      "status": 200,
+      "server_elapsed": 0.0037,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 299,
+      "question": "Mysql驱动问题",
+      "rtt": 0.043655800000124145,
+      "status": 200,
+      "server_elapsed": 0.002,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    }
+  ]
+}
