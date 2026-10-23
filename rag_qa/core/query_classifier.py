@@ -3,21 +3,15 @@
 import json
 import os
 import torch
-import sys
 
 # 设置 TensorBoard 日志目录，请替换为你想要的路径
 
 os.environ["TENSORBOARD_LOGGING_DIR"] = "./bert_logs"
 
-# 获取当前文件所在目录的绝对路径
+# 模型目录要用到 rag_qa 包路径（只拼路径，不进 sys.path）
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# print(f' current_dir--》{current_dir} ')
-# 获取core文件所在的目录的绝对路径
 rag_qa_path = os.path.dirname(current_dir)
 
-# 获取根目录文件所在的绝对位置
-project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
 # 导入日志
 from base import logger
 # 导入numpy

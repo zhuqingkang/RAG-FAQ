@@ -1,26 +1,18 @@
-# utils/mysql_qa_system.py
+# mysql_qa/utils/mysql_qa_system.py
 # 问答系统核心：组合 MySQL 客户端、Redis 客户端与 BM25 检索
-import os.path
 import sys
 from pathlib import Path
 
-# ===== 路径处理：保证从任意目录导入/运行时都能找到 mysql_qa 与项目根 =====
-_UTILS_DIR = Path(__file__).resolve().parent
-_MYSQL_QA_DIR = _UTILS_DIR.parent
-_PROJECT_DIR = _MYSQL_QA_DIR.parent
-for _p in (str(_MYSQL_QA_DIR), str(_PROJECT_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+# 只保证项目根在 sys.path（支持直接运行本文件）；包内导入一律走 mysql_qa.xxx
+_PROJECT_DIR = Path(__file__).resolve().parents[2]
+if str(_PROJECT_DIR) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_DIR))
 
-from db.MySQLClient import MySQLClient
-# 导入 Redis 客户端
-from cache.RedisClient import RedisClient
-
-# 导入 BM25 搜索
-from retrieval.bm25_search import BM25Search
-
-# 导入日志
 from base import logger
+# 各子包都做了 re-export，按包名导入即可，不必记模块文件名
+from mysql_qa.db import MySQLClient
+from mysql_qa.cache import RedisClient
+from mysql_qa.retrieval import BM25Search
 
 # 导入时间库
 import time

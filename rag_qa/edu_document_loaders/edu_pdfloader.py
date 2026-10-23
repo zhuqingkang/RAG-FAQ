@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 from typing import Iterator
-from edu_ocr import get_ocr
+from .edu_ocr import get_ocr
 from langchain_core.documents import Document
 from langchain_core.document_loaders import BaseLoader
 # PDF OCR 控制：只对宽高超过页面一定比例（图片宽/页面宽，图片高/页面高）的图片进行 OCR。

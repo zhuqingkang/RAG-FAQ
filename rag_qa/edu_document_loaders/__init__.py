@@ -1,7 +1,6 @@
-import sys
-import os
-current_path = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, current_path)
+# rag_qa/edu_document_loaders/__init__.py
+# 各 loader 之间用相对导入（from .edu_ocr import get_ocr），不再需要改 sys.path。
+# 对外：from rag_qa.edu_document_loaders import OCRPDFLoader
 from .edu_docloader import OCRDOCLoader
 from .edu_pptloader import OCRPPTLoader
 from .edu_imgloader import OCRIMGLoader

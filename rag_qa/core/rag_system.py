@@ -1,21 +1,19 @@
 # -*-coding:utf-8-*-
-# core/rag_system-2.py 源码
-import sys, os
-# 获取当前文件所在目录的绝对路径
-current_dir = os.path.dirname(os.path.abspath(__file__))
-# 获取core文件所在的目录的绝对路径
-rag_qa_path = os.path.dirname(current_dir)
-sys.path.insert(0, rag_qa_path)
-# 获取根目录文件所在的绝对位置
-project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
-from prompts import RAGPrompts
+# core/rag_system.py
+import os
 #   导入 time 模块，用于计算时间
 import time
+
 from base import logger, Config
-from query_classifier import QueryClassifier  #   导入查询分类器
-from strategy_selector import StrategySelector  #   导入策略选择器
-from vector_store import VectorStore # 导入向量数据库对象
+# core 内部模块统一用相对导入，避免与顶层同名模块（prompts / vector_store）串包
+from .prompts import RAGPrompts
+from .query_classifier import QueryClassifier  #   导入查询分类器
+from .strategy_selector import StrategySelector  #   导入策略选择器
+from .vector_store import VectorStore  # 导入向量数据库对象
+
+# 模型权重目录要用到 rag_qa 包路径（不是 sys.path，只是拼路径）
+current_dir = os.path.dirname(os.path.abspath(__file__))
+rag_qa_path = os.path.dirname(current_dir)
 
 conf = Config()
 

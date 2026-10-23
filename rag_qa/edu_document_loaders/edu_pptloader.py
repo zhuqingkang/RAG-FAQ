@@ -1,5 +1,5 @@
 from typing import Iterator
-from edu_ocr import get_ocr
+from .edu_ocr import get_ocr
 from langchain_core.documents import Document
 from langchain_core.document_loaders import BaseLoader
 from pptx import Presentation

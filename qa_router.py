@@ -14,18 +14,16 @@ import threading
 import time
 from pathlib import Path
 
-# ===== 路径处理：保证从任意目录启动都能正确导入 mysql_qa 与 base =====
+# ===== 路径处理：只把项目根加入 sys.path，之后一律按包名导入 =====
 BASE_DIR = Path(__file__).resolve().parent              # .../integrated_qa_system
-MYSQL_QA_DIR = BASE_DIR / "mysql_qa"
-for _p in (str(BASE_DIR), str(MYSQL_QA_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
 
 from base import Config, logger
 
 # FAQ 侧与 RAG 侧各自的单例/预热入口
-from utils import chat_store
-from utils.qa_service import ensure_ready as faq_ensure_ready, get_qa_system
+from mysql_qa.utils import chat_store
+from mysql_qa.utils.qa_service import ensure_ready as faq_ensure_ready, get_qa_system
 from rag_qa.rag_service import answer as rag_answer
 from rag_qa.rag_service import ensure_ready as rag_ensure_ready
 

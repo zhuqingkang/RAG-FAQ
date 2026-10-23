@@ -1,4 +1,4 @@
-# db/mysql_client.py
+# mysql_qa/db/MySQLClient.py
 # 导入 MySQL 连接库
 import time
 import threading
@@ -10,8 +10,6 @@ import pandas as pd
 
 # 导入配置和日志
 from base import Config,logger
-
-logger.info(Config().MYSQL_HOST)
 
 class MySQLClient:
     def __init__(self):

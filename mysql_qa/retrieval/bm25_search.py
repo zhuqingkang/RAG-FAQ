@@ -1,4 +1,4 @@
-# retrieval/bm25_search.py
+# mysql_qa/retrieval/bm25_search.py
 # 导入 BM25 算法
 import time
 import threading
@@ -6,15 +6,13 @@ import threading
 from rank_bm25 import BM25Okapi
 # 导入数值计算库
 import numpy as np
-# 导入redis
-from mysql_qa.cache import RedisClient
-# 导入mysql
-from mysql_qa.db import MySQLClient
 # 导入日志
 from base import logger
-# 导入文本预处理
+# 导入分词
 import jieba
-from mysql_qa.utils import preprocess_text
+
+# 说明：RedisClient / MySQLClient 由构造函数注入，
+# 本模块不需要 import 它们——去掉后也顺带切断了 retrieval -> utils 的循环依赖。
 
 
 

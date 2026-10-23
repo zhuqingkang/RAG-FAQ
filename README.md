@@ -159,6 +159,12 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 ## 关键实现要点
 
+**包与导入**
+- 每层都有 `__init__.py`，统一「包内相对、跨包绝对」：`from .prompts import` / `from rag_qa.core.vector_store import` / `from base import`。
+- 只有入口层改 `sys.path`（且只插项目根）；库模块里不再出现 `sys.path.insert`。
+- 子包 re-export 常用类（`from mysql_qa.db import MySQLClient`、`from mysql_qa.retrieval import BM25Search`），但**包入口不做聚合导出**——否则轻量导入会被 torch / jieba / modelscope 拖慢。
+- 完整约定见 `readme/开发文档-详细版.md` §3.1。
+
 **FAQ 链路**
 - 单例 + 预热：`mysql_qa/utils/qa_service.get_qa_system()` / `ensure_ready()`。
 - 索引：启动时 `select question from jpkb` → jieba 分词 → BM25；daemon 线程每 30 分钟重新同步。

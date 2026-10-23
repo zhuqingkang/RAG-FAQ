@@ -1,21 +1,14 @@
-# utils/preprocess.py
-# 导入分词库
-import jieba
-# 导入日志
-# from pathlib import Path
-# import os
-# import sys
-# cur_dir = os.path.dirname(os.path.abspath(__file__))
-# mysql_dir =os.path.dirname(cur_dir)
-# project_dir =os.path.dirname(mysql_dir)
-# sys.path.insert(0,project_dir)
-# pro_dir = Path(__file__).parent.parent.parent
-
+# mysql_qa/utils/preprocess.py
+# 分词只在真正调用时才导入 jieba：
+# 这样 `from mysql_qa.utils import chat_store` 这类轻量导入不会被分词器拖慢。
 from base import logger
+
 
 def preprocess_text(text):
     # 预处理文本
     logger.info("开始预处理文本")
+    # 延迟导入 jieba（首次导入会加载词典，约数百毫秒）
+    import jieba
     try:
         # 分词并转换为小写
         return jieba.lcut(text.lower())

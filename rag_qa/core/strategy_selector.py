@@ -1,16 +1,6 @@
 # -*-coding:utf-8-*-
-# core/strategy_selector.py 源码
-import sys, os
-# 获取当前文件所在目录的绝对路径
-current_dir = os.path.dirname(os.path.abspath(__file__))
-# print(f'current_dir--》{current_dir}')
-# 获取core文件所在的目录的绝对路径
-rag_qa_path = os.path.dirname(current_dir)
-# print(f'rag_qa_path--》{rag_qa_path}')
-sys.path.insert(0, rag_qa_path)
-# 获取根目录文件所在的绝对位置
-project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
+# core/strategy_selector.py
+# base 是项目根下的顶层包，需要项目根在 sys.path（入口层负责、rag_service 也做了兜底）
 # 导入 LangChain 提示模板
 try:
     # 新版 langchain（>=0.2）中 PromptTemplate 位于 langchain_core

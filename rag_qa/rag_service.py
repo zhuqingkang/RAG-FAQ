@@ -6,13 +6,10 @@ import threading
 import time
 from pathlib import Path
 
-# ===== 路径处理：与 rag_main.py 完全一致，保证从任意目录导入/运行都能找到 core 与项目根 =====
-_RAG_DIR = Path(__file__).resolve().parent          # .../integrated_qa_system/rag_qa
-_CORE_DIR = _RAG_DIR / "core"                       # .../integrated_qa_system/rag_qa/core
-_PROJECT_DIR = _RAG_DIR.parent                      # .../integrated_qa_system
-for _p in (str(_RAG_DIR), str(_CORE_DIR), str(_PROJECT_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+# ===== 路径处理：只保证项目根在 sys.path，其余一律靠包导入（rag_qa.core.xxx） =====
+_PROJECT_DIR = Path(__file__).resolve().parent.parent      # .../integrated_qa_system
+if str(_PROJECT_DIR) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_DIR))
 
 from base import Config, logger
 
@@ -57,8 +54,8 @@ def _build_llm_client():
 def _build_rag_system():
     """真正耗时的初始化：连接 Milvus、加载 BGE 模型、加载意图分类器。"""
     # 重库在这里才 import，保证只 import 本模块时几乎没有开销
-    from core.vector_store import VectorStore
-    from core.rag_system import RAGSystem
+    from rag_qa.core.vector_store import VectorStore
+    from rag_qa.core.rag_system import RAGSystem
 
     vector_store = VectorStore(
         collection_name=conf.MILVUS_COLLECTION_NAME,

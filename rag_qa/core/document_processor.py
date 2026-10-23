@@ -6,26 +6,17 @@
 # 这样只 import 本文件时几毫秒就能完成，不会一启动就把这些依赖全拉起来。
 import importlib
 import os
-import sys
 import time
 from datetime import datetime
 
-# 获取当前文件所在目录的绝对路径
+# 本文件所在目录（core/）与 rag_qa 包目录，后面拼缓存与语料路径要用
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# print(f'current_dir--》{current_dir}')
-# 获取core文件所在的目录的绝对路径
 rag_qa_path = os.path.dirname(current_dir)
-# print(f'rag_qa_path--》{rag_qa_path}')
-sys.path.insert(0, rag_qa_path)
-# 获取根目录文件所在的绝对位置
-project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
 
+# base 是项目根下的顶层包，需要项目根在 sys.path（入口层负责、rag_service 也做了兜底）
 from base import logger, Config
-
-# core 目录本身也加入 sys.path，方便直接 import 同目录下的 json_cache
-sys.path.insert(0, current_dir)
-from json_cache import CACHE_VERSION, files_signature, load_catalog, normalize_source, read_json, write_json
+# core 内部模块用相对导入，不再靠把 core 目录塞进 sys.path
+from .json_cache import CACHE_VERSION, files_signature, load_catalog, normalize_source, read_json, write_json
 
 conf = Config()
 
@@ -51,17 +42,17 @@ LOADER_REGISTRY = {
     # 文本文件使用 TextLoader
     ".txt": ("langchain_community.document_loaders", "TextLoader"),
     # PDF 文件使用 OCRPDFLoader
-    ".pdf": ("edu_document_loaders", "OCRPDFLoader"),
+    ".pdf": ("rag_qa.edu_document_loaders", "OCRPDFLoader"),
     # Word 文件使用 OCRDOCLoader
-    ".docx": ("edu_document_loaders", "OCRDOCLoader"),
+    ".docx": ("rag_qa.edu_document_loaders", "OCRDOCLoader"),
     # PPT 文件使用 OCRPPTLoader
-    ".ppt": ("edu_document_loaders", "OCRPPTLoader"),
+    ".ppt": ("rag_qa.edu_document_loaders", "OCRPPTLoader"),
     # PPTX 文件使用 OCRPPTLoader
-    ".pptx": ("edu_document_loaders", "OCRPPTLoader"),
+    ".pptx": ("rag_qa.edu_document_loaders", "OCRPPTLoader"),
     # JPG 文件使用 OCRIMGLoader
-    ".jpg": ("edu_document_loaders", "OCRIMGLoader"),
+    ".jpg": ("rag_qa.edu_document_loaders", "OCRIMGLoader"),
     # PNG 文件使用 OCRIMGLoader
-    ".png": ("edu_document_loaders", "OCRIMGLoader"),
+    ".png": ("rag_qa.edu_document_loaders", "OCRIMGLoader"),
 }
 
 # 已经 import 过的加载器类缓存，同一种后缀只 import 一次
@@ -256,7 +247,7 @@ def process_documents(directory_path, parent_chunk_size=conf.PARENT_CHUNK_SIZE,
     # 记录加载的文档总数日志
     logger.info(f'文档总数为:{len(docs)}') # type: ignore
     # 切块器依赖 modelscope + transformers，很重，只有真正要切块时才 import
-    from edu_text_spliter import ChineseRecursiveTextSplitter
+    from ..edu_text_spliter import ChineseRecursiveTextSplitter
     # 初始化父块和子块分割器
     parent_spliter = ChineseRecursiveTextSplitter(chunk_size = parent_chunk_size,chunk_overlap = chunk_overlap)
     child_spliter = ChineseRecursiveTextSplitter(chunk_size = child_chunk_size,chunk_overlap = chunk_overlap)

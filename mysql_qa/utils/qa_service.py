@@ -1,25 +1,17 @@
-# utils/qa_service.py
+# mysql_qa/utils/qa_service.py
 # 问答系统单例：Flask 版和 FastAPI 异步版共用，保证只初始化一次
 import sys
 import threading
 from pathlib import Path
 
-# ===== 路径处理：允许直接运行/从任意目录导入 =====
-_UTILS_DIR = Path(__file__).resolve().parent
-_MYSQL_QA_DIR = _UTILS_DIR.parent
-_PROJECT_DIR = _MYSQL_QA_DIR.parent
-for _p in (str(_MYSQL_QA_DIR), str(_PROJECT_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+# 只保证项目根在 sys.path；包内导入用相对导入，外部一律用 mysql_qa.xxx
+_PROJECT_DIR = Path(__file__).resolve().parents[2]
+if str(_PROJECT_DIR) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_DIR))
 
 from base import logger
-
-try:
-    # 作为包导入时（from utils.qa_service import ...）
-    from .mysql_qa_system import MySQLQASystem
-except ImportError:
-    # 直接运行本文件时
-    from mysql_qa_system import MySQLQASystem
+# 同包模块直接用相对导入，不再需要 try/except 兼容「包导入 / 裸导入」两种方式
+from .mysql_qa_system import MySQLQASystem
 
 _qa_system = None
 _init_lock = threading.Lock()

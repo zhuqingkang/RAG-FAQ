@@ -1,8 +1,5 @@
-# cache/redis_client.py
+# mysql_qa/cache/RedisClient.py
 # 导入 Redis 客户端
-import os
-import sys
-
 import redis
 # 导入 JSON 处理
 import json

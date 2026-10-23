@@ -1,20 +1,17 @@
 # -*-coding:utf-8-*-
 import os
 import sys
-# 获取当前文件所在目录的绝对路径
-rag_qa_path  = os.path.dirname(os.path.abspath(__file__))
-# print(f'current_dir--》{rag_qa_path }')
-sys.path.insert(0, rag_qa_path)
-core_path = os.path.join(rag_qa_path, 'core')
-sys.path.insert(0, core_path)
-# 获取根目录文件所在的绝对位置
+
+# 允许 `python rag_qa/rag_main.py` 直接运行（更推荐 `python -m rag_qa.rag_main`）
+rag_qa_path = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 
 from base import Config, logger
-from core.document_processor import process_documents # 导入处理文档的函数
-from core.vector_store import VectorStore
-from core.rag_system import RAGSystem
+from rag_qa.core.document_processor import process_documents # 导入处理文档的函数
+from rag_qa.core.vector_store import VectorStore
+from rag_qa.core.rag_system import RAGSystem
 from openai import OpenAI # 使用 OpenAI 接口
 
 conf = Config()

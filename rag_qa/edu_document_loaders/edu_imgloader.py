@@ -1,17 +1,6 @@
-import os
-import sys
 from typing import Iterator
 
-# 获取当前文件所在目录的绝对路径
-current_dir = os.path.dirname(os.path.abspath(__file__))
-# 获取 rag_qa 目录的绝对路径（用于导入 edu_ocr）
-rag_qa_path = os.path.dirname(current_dir)
-sys.path.insert(0, rag_qa_path)
-# 获取项目根目录 integrated_qa_system 的绝对路径（用于导入 base）
-project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
-
-from edu_ocr import get_ocr
+from .edu_ocr import get_ocr
 from langchain_core.documents import Document
 from langchain_core.document_loaders import BaseLoader
 from base import Config

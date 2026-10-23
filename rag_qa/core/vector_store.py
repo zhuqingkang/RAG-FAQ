@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+# core/vector_store.py
 # 重库统一改成“用到时才 import”：
 #   torch / pymilvus / milvus_model(BGE-M3) / sentence-transformers(BGE-Reranker)
 #   / langchain_core(Document) / document_processor
@@ -6,18 +7,12 @@
 # 导入 hashlib 模块，用于生成唯一 ID 的哈希值
 import hashlib
 import os
-import sys
-# 获取当前文件所在目录的绝对路径
-current_dir = os.path.dirname(os.path.abspath(__file__))
-# print(f'current_dir--》{current_dir}')
-# 获取core文件所在的目录的绝对路径
-rag_qa_path = os.path.dirname(current_dir)
-# print(f'rag_qa_path--》{rag_qa_path}')
-sys.path.insert(0, rag_qa_path)
-# 获取根目录文件所在的绝对位置
-project_root = os.path.dirname(rag_qa_path)
-sys.path.insert(0, project_root)
+
 from base import logger, Config
+
+# 模型权重目录要用到 rag_qa 包路径（只拼路径，不进 sys.path）
+current_dir = os.path.dirname(os.path.abspath(__file__))
+rag_qa_path = os.path.dirname(current_dir)
 
 conf = Config()
 

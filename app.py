@@ -9,17 +9,15 @@ import sys
 import time
 from pathlib import Path
 
-# ===== 路径处理：无论从项目根目录还是本目录启动，都能正确导入模块 =====
+# ===== 路径处理：只把项目根加入 sys.path，之后一律按包名导入 =====
 CURRENT_DIR = Path(__file__).resolve().parent       # .../integrated_qa_system
-MYSQL_QA_DIR = CURRENT_DIR / "mysql_qa"
-for _p in (str(CURRENT_DIR), str(MYSQL_QA_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
 
 from flask import Flask, jsonify, render_template, request
 
 from base import logger
-from utils import chat_store
+from mysql_qa.utils import chat_store
 from qa_router import NO_ANSWER_TEXT, answer_query, describe, warm_up_faq, warm_up_rag
 
 app = Flask(

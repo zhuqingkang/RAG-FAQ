@@ -13,12 +13,10 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
-# ===== 路径处理：保证从任意目录启动都能正确导入模块 =====
+# ===== 路径处理：只把项目根加入 sys.path，之后一律按包名导入 =====
 CURRENT_DIR = Path(__file__).resolve().parent       # .../integrated_qa_system
-MYSQL_QA_DIR = CURRENT_DIR / "mysql_qa"
-for _p in (str(CURRENT_DIR), str(MYSQL_QA_DIR)):
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
 
 from anyio import CapacityLimiter
 from anyio.to_thread import current_default_thread_limiter, run_sync
@@ -28,7 +26,7 @@ from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from base import logger
-from utils import chat_store
+from mysql_qa.utils import chat_store
 from qa_router import (
     MODES,
     NO_ANSWER_TEXT,
