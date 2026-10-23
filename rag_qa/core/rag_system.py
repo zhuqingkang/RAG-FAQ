@@ -92,6 +92,7 @@ class RAGSystem:
         category = self.query_classifier.predict_category(query)
         #   如果查询属于“通用知识”类别，则直接使用 LLM 回答
         if category == '通用知识':
+            logger.info('查询为通用知识,不检索知识库,直接由大模型作答 ....')
             # 设置提示词,变量替换
             prompt = self.rag_prompt.format(context='', question=query, phone=conf.CUSTOMER_SERVICE_PHONE,
                                             history=history_context)

@@ -189,8 +189,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 **异步版差异**
 - 阻塞调用全部 `run_sync` 进线程池；三套 `CapacityLimiter`：FAQ=`max(4, CPU)`、RAG=2、DB=32。
 - 超时：FAQ 30 s、RAG 180 s（环境变量可覆盖）。
-- single-flight 去重的 key 含会话 id：历史随会话变化，同一问题跨会话不能共用结果。
-- single-flight：`(question, mode, source)` 相同则同刻只算一次。
+- single-flight 去重：key = `(question, mode, source, conversation_id)`，同刻相同 key 只算一次。会话必须进 key——历史随会话变化，同一问题跨会话不能共用结果。
 
 ---
 
@@ -253,7 +252,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | 离线三级缓存 | 建库 | `catalog` / `documents` / `chunks` + 三重校验 + 原子写 + 版本号 | 已落地 |
 | FAQ 响应缓存 | 延迟 | Redis `answer:{query}`，命中直接返回 | 已落地（精确匹配、无 TTL） |
 | 索引常驻 + 定时同步 | 延迟 | BM25 常驻内存；30 分钟同步 MySQL | 已落地 |
-| 并发去重 | 并发 | single-flight，同刻相同 key 只算一次 | 已落地 |
+| 并发去重 | 并发 | single-flight，key 含会话 id，同刻相同 key 只算一次 | 已落地 |
 | 线程池 + 三套闸门 | 并发 | FAQ / RAG / DB 分别限流 + 分层超时 | 已落地 |
 | 父子块 + 混合检索 + 精排 | 检索 | 子块 300 检索、父块 1200 喂 LLM；dense 0.7 + sparse 0.3；rerank Top2 | 已落地 |
 | 意图分类修正 | 检索 | 分类器指向 `models/bert_query_classifier`，加载微调权重 | 已落地 |
@@ -261,6 +260,9 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | 通用知识直答 | 检索 | 通用知识不检索，直接由 LLM 作答 | 已落地 |
 | 幻觉四道闸 | 答案质量 | FAQ 阈值直答 → 上下文收窄 → prompt 兜底句 → 出口空答案兜底 | 已落地 |
 | 问答判定收口 | 工程化 | Flask / FastAPI 共用 `qa_router` 一份判定 | 已落地 |
+| need_rag 调度契约 | 工程化 | FAQ 逐层返回 `(answer, need_rag)`；无效查询不启动 RAG | 已落地 |
+| 多轮对话历史 | 体验 | 转 RAG 时注入最近 5 轮问答，单条 200 字 / 整体 1500 字预算 | 已落地 |
+| 包结构与导入收敛 | 维护 | 每层 `__init__.py`；包内相对、跨包绝对；sys.path 只留入口层 | 已落地 |
 
 详见 [详细版 §19 开发难点与优化实践](readme/开发文档-详细版.md)。
 
