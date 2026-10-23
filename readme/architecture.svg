@@ -17,7 +17,7 @@
 
   <rect width="1240" height="1070" fill="#f6f8fc"/>
   <text x="40" y="48" class="title">EduRAG 集成问答系统 · 项目结构图</text>
-  <text x="40" y="72" class="subtitle">一个服务、两条问答链路：FAQ（MySQL + BM25 + Redis）优先，未命中转 RAG（Milvus + BGE 重排 + 大模型生成）；RAG 内含 4 种可路由的检索策略</text>
+  <text x="40" y="72" class="subtitle">一个服务、两条问答链路：FAQ（MySQL + BM25 + Redis）优先，need_rag 决定是否降级 RAG（Milvus + BGE 重排 + 大模型生成）；RAG 内含 4 种可路由的检索策略，并注入最近 5 轮对话历史</text>
 
   <!-- ================= 接入层 ================= -->
   <text x="40" y="106" class="band">接入层 · 入口 / 前端</text>
@@ -45,8 +45,8 @@
   <text x="40" y="242" class="band">路由层 · 统一调度</text>
   <rect x="40" y="254" width="1160" height="96" rx="14" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
   <text x="62" y="282" class="node-file">qa_router.py —— 唯一的路由判定，两个入口共用</text>
-  <text x="62" y="306" class="node-sub">answer_query(question, mode, source_filter) → {answer, engine, found, elapsed, note}</text>
-  <text x="62" y="328" class="node-sub">auto：FAQ 命中即返回，未命中/异常转 RAG　|　faq / rag：强制单链路　|　make_result / warm_up_faq / warm_up_rag / describe</text>
+  <text x="62" y="306" class="node-sub">answer_query(question, mode, source_filter, conversation_id) → {answer, engine, found, elapsed, note}</text>
+  <text x="62" y="328" class="node-sub">auto：FAQ 命中即返回；need_rag=false 不转 RAG　|　faq / rag：强制单链路　|　ask_faq / ask_rag / make_result / warm_up_* / describe</text>
 
   <!-- 路由到两条链路的箭头 -->
   <line x1="330" y1="350" x2="330" y2="384" stroke="#8ea2bf" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
@@ -59,15 +59,15 @@
 
   <rect x="60" y="428" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
   <text x="78" y="451" class="node-file">utils/qa_service.py</text>
-  <text x="78" y="470" class="node-sub">线程安全单例 · jieba / BM25 预热入口 ensure_ready()</text>
+  <text x="78" y="470" class="node-sub">线程安全单例 · 预热 ensure_ready() · BM25 每 30 分钟同步</text>
 
   <rect x="60" y="492" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
   <text x="78" y="515" class="node-file">utils/mysql_qa_system.py</text>
-  <text x="78" y="534" class="node-sub">MySQLQASystem.query()：组合 MySQL + Redis + BM25</text>
+  <text x="78" y="534" class="node-sub">MySQLQASystem.query() → (answer, need_rag) · 组合 MySQL/Redis/BM25</text>
 
   <rect x="60" y="556" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
   <text x="78" y="579" class="node-file">retrieval/bm25_search.py</text>
-  <text x="78" y="598" class="node-sub">jieba 分词 → BM25Okapi → softmax → 最高分 &gt; 0.85 才算命中（30 分钟定时同步）</text>
+  <text x="78" y="598" class="node-sub">jieba → BM25 → softmax &gt; 0.85 才命中 → (answer, need_rag)</text>
 
   <rect x="60" y="620" width="255" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
   <text x="78" y="643" class="node-file">cache/RedisClient.py</text>
@@ -92,7 +92,7 @@
 
   <rect x="650" y="492" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
   <text x="668" y="515" class="node-file">core/rag_system.py</text>
-  <text x="668" y="534" class="node-sub">generate_answer：意图分流 → 选策略 → self.tools 分派 → 拼 context 生成</text>
+  <text x="668" y="534" class="node-sub">generate_answer：注入历史 → 意图分流 → 选策略 → 拼 context 生成</text>
 
   <rect x="650" y="556" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
   <text x="668" y="579" class="node-file">core/query_classifier.py ＋ core/strategy_selector.py</text>
@@ -104,7 +104,7 @@
 
   <rect x="650" y="684" width="570" height="54" rx="10" fill="#ffffff" stroke="#d8ccff"/>
   <text x="668" y="707" class="node-file">core/prompts.py ＋ DashScope（qwen3.7-plus 兼容接口）</text>
-  <text x="668" y="726" class="node-sub">拼 context + question + 客服电话 → 生成；无可靠上下文时给出兜底话术</text>
+  <text x="668" y="726" class="node-sub">拼 history + context + question + 电话 → 生成；无上下文时兜底</text>
 
   <!-- ================= 离线构建 ================= -->
   <text x="40" y="792" class="band">离线构建 · 一次性入库（不在请求链路上）</text>
@@ -149,7 +149,7 @@
 
   <rect x="512" y="936" width="218" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
   <text x="530" y="961" class="node-file">SQLite chat_history.db</text>
-  <text x="530" y="981" class="node-sub">conversations / messages</text>
+  <text x="530" y="981" class="node-sub">messages · recent_history()</text>
   <text x="530" y="999" class="node-sub">WAL · 线程本地连接</text>
 
   <rect x="748" y="936" width="218" height="76" rx="12" fill="#eef7ff" stroke="#a9cdf0"/>

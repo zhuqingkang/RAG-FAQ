@@ -124,27 +124,40 @@ def _save_exchange(cid: int, question: str, answer: str, meta: str, fallback_tit
     return chat_store.add_exchange(cid, question, answer, meta=meta) or fallback_title
 
 
-def _rag_sync(question: str, source_filter: Optional[str]):
+def _rag_sync(question: str, source_filter: Optional[str], history):
     """run_sync 不支持关键字参数，这里包一层。"""
-    return ask_rag(question, source_filter=source_filter)
+    return ask_rag(question, source_filter=source_filter, history=history)
 
 
-async def _call_faq(question: str) -> Tuple[Optional[str], str]:
+async def _call_faq(question: str) -> Tuple[Optional[str], str, bool]:
     return await run_sync(ask_faq, question, limiter=faq_limiter, abandon_on_cancel=True)
 
 
-async def _call_rag(question: str, source_filter: Optional[str]) -> Tuple[Optional[str], str]:
+async def _call_rag(question: str, source_filter: Optional[str], history) -> Tuple[Optional[str], str]:
     return await run_sync(
-        _rag_sync, question, source_filter, limiter=rag_limiter, abandon_on_cancel=True
+        _rag_sync, question, source_filter, history, limiter=rag_limiter, abandon_on_cancel=True
     )
+
+
+async def _load_history(conversation_id):
+    """取最近几轮对话送给 RAG；读取失败按「无历史」降级，不影响问答。"""
+    if not conversation_id:
+        return None
+    try:
+        return await run_sync(chat_store.recent_history, int(conversation_id), limiter=db_limiter)
+    except Exception as e:
+        logger.warning(f"读取对话历史失败，本次不带历史: {e}")
+        return None
 
 
 # ===== 同一问题的并发请求合并（single-flight）=====
 # 并发请求往往集中在少数几个问题上，合并重复计算可以避免算力被同一道题反复占满。
-_inflight: Dict[Tuple[str, str, str], "asyncio.Future[Any]"] = {}
+_inflight: Dict[Tuple[str, str, str, int], "asyncio.Future[Any]"] = {}
 
 
-async def _route(question: str, mode: str, source_filter: Optional[str]) -> dict:
+async def _route(
+    question: str, mode: str, source_filter: Optional[str], conversation_id: Optional[int]
+) -> dict:
     """
     异步版路由：与 qa_router.answer_query 的判定顺序保持一致，
     区别只是每条链路各自走独立的并发闸门与超时。
@@ -156,22 +169,28 @@ async def _route(question: str, mode: str, source_filter: Optional[str]) -> dict
     # ---------- 1. FAQ 链路 ----------
     if mode in ("auto", "faq"):
         try:
-            answer, faq_error = await asyncio.wait_for(_call_faq(question), timeout=FAQ_TIMEOUT)
+            answer, faq_error, need_rag = await asyncio.wait_for(_call_faq(question), timeout=FAQ_TIMEOUT)
         except (asyncio.TimeoutError, TimeoutError):
-            answer, faq_error = None, f"FAQ 检索超时（>{FAQ_TIMEOUT}s）"
+            answer, faq_error, need_rag = None, f"FAQ 检索超时（>{FAQ_TIMEOUT}s）", True
             logger.error(faq_error)
 
         if answer:
             return make_result(answer, "faq", time.perf_counter() - start, "")
         if mode == "faq":
             return make_result(None, "none", time.perf_counter() - start, faq_error or "FAQ 未命中")
-        note = f"FAQ 未命中（{faq_error}），已转 RAG" if faq_error else "FAQ 未命中，已转 RAG"
+        # auto 模式：need_rag 为 False 只在无效查询时出现，不必为它启动 RAG
+        if not need_rag:
+            note = faq_error or "FAQ 判定该查询无需检索，未转 RAG"
+            logger.info(note)
+            return make_result(None, "none", time.perf_counter() - start, note)
+        note = f"FAQ 异常（{faq_error}），已转 RAG" if faq_error else "FAQ 无可靠答案，已转 RAG"
 
     # ---------- 2. RAG 链路 ----------
     if mode in ("auto", "rag"):
+        history = await _load_history(conversation_id)
         try:
             answer, rag_error = await asyncio.wait_for(
-                _call_rag(question, source_filter), timeout=RAG_TIMEOUT
+                _call_rag(question, source_filter, history), timeout=RAG_TIMEOUT
             )
         except (asyncio.TimeoutError, TimeoutError):
             answer, rag_error = None, f"RAG 生成超时（>{RAG_TIMEOUT}s）"
@@ -187,12 +206,17 @@ async def _route(question: str, mode: str, source_filter: Optional[str]) -> dict
     return make_result(None, "none", time.perf_counter() - start, note)
 
 
-async def route_with_dedup(question: str, mode: str, source_filter: Optional[str]) -> dict:
+async def route_with_dedup(
+    question: str, mode: str, source_filter: Optional[str], conversation_id: Optional[int] = None
+) -> dict:
     """
-    相同 (question, mode, source) 在同一时刻只真正执行一次，其余并发请求共享结果。
+    相同 (question, mode, source, 会话) 在同一时刻只真正执行一次，其余并发请求共享结果。
     请求被取消不会影响底层计算，计算结果仍会被其他等待者使用。
+
+    会话必须进 key：RAG 会按会话注入对话历史，
+    同一个问题在不同会话里的答案可能不同，跨会话复用会串味。
     """
-    key = (question, mode, source_filter or "")
+    key = (question, mode, source_filter or "", conversation_id or 0)
     loop = asyncio.get_running_loop()
     fut = _inflight.get(key)
 
@@ -200,7 +224,7 @@ async def route_with_dedup(question: str, mode: str, source_filter: Optional[str
         fut = loop.create_future()
         _inflight[key] = fut
 
-        task = loop.create_task(_route(question, mode, source_filter))
+        task = loop.create_task(_route(question, mode, source_filter, conversation_id))
 
         def _on_done(t: "asyncio.Task[Any]") -> None:
             _inflight.pop(key, None)
@@ -280,7 +304,7 @@ async def query(request: Request):
 
     # ---- 路由：FAQ 优先，未命中转 RAG ----
     try:
-        result = await route_with_dedup(question, mode, source)
+        result = await route_with_dedup(question, mode, source, cid)
     except Exception as e:
         logger.exception(e)
         return JSONResponse({

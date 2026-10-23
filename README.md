@@ -88,16 +88,19 @@ clf.save_model()                              # 输出到 models/bert_query_clas
         → app.py / app_async.py        入口层
         → qa_router.py                 路由层（唯一判定入口）
              ├─ FAQ  mysql_qa/  → BM25 → Redis 缓存 → MySQL jpkb
-             └─ RAG  rag_qa/    → 混合检索 → 父块去重 → rerank → LLM 生成
+             │       返回 (answer, need_rag)，need_rag 决定是否降级
+             └─ RAG  rag_qa/    → 混合检索 → 父块去重 → rerank → 注入历史 → LLM 生成
         → chat_store（SQLite）落库 → 返回 JSON
 ```
 
 | 链路 | 数据源 | 检索 | 生成 | 耗时 | 触发条件 |
 |---|---|---|---|---|---|
 | FAQ | MySQL `jpkb` | BM25 + softmax，最高分 > 0.85 | 直接取标准答案 | 毫秒 | `auto` 下永远先试 |
-| RAG | Milvus `edurag_final` | BGE-M3 dense(0.7)+sparse(0.3) → 父块去重 → reranker Top2 | DashScope 生成 | 秒 | FAQ 未命中或 `mode=rag` |
+| RAG | Milvus `edurag_final` | BGE-M3 dense(0.7)+sparse(0.3) → 父块去重 → reranker Top2 | DashScope 生成（带最近 5 轮历史） | 秒 | `need_rag=true` 或 `mode=rag` |
 
 `mode` 三态：`auto`（默认，FAQ 优先）/ `faq`（只查 FAQ）/ `rag`（只走 RAG）。
+
+`auto` 模式下的流转由 FAQ 返回的 `need_rag` 标志驱动：命中即返回；未命中、答案为空或 FAQ 自身异常时置 `true` 并转 RAG；仅当查询本身无效（`need_rag=false` 且无答案）时直接返回未命中，避免为空查询白跑一次 BGE + 大模型。
 
 ---
 
@@ -139,7 +142,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 // 响应
 {"code": 0, "session_id": 3, "title": "AI 学科的课程大纲", "answer": "……",
- "found": true, "engine": "rag", "elapsed": 3.2145, "note": "FAQ 未命中，已转 RAG"}
+ "found": true, "engine": "rag", "elapsed": 3.2145, "note": "FAQ 无可靠答案，已转 RAG"}
 ```
 
 | 字段 | 说明 |
@@ -160,6 +163,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 - 单例 + 预热：`mysql_qa/utils/qa_service.get_qa_system()` / `ensure_ready()`。
 - 索引：启动时 `select question from jpkb` → jieba 分词 → BM25；daemon 线程每 30 分钟重新同步。
 - 判定：Redis `answer:{query}` 命中即返回；否则 BM25 打分 → softmax → 最高分 > 0.85 才算命中。
+- 返回值契约：`BM25Search.search()` / `MySQLQASystem.query()` 统一返回 `(answer, need_rag)`。命中问题但 `fetch_answer` 为空时不写缓存，按「无可用答案」置 `need_rag=true`，避免空值污染 Redis。
 - 命中后用最相似的历史问题去 MySQL 取标准答案，并回写缓存。
 
 **RAG 链路**
@@ -167,16 +171,19 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 - 意图分流：BERT 分类器（`models/bert_query_classifier` 微调权重）判断问题类型，「通用知识」不检索直接作答，「专业咨询」才进检索。
 - 策略分派：LLM 选策略 → `strategy.strip()` → `retrieve_and_merge` 分派到回溯 / 子查询 / HyDE / 直接检索（不匹配时退化为直接检索）。
 - 混合检索：dense 0.7 + sparse 0.3（`IP`，`k=retrieval_k`）→ 子块按 `parent_content` 去重还原父块 → `bge-reranker` 精排取 `candidate_m` 条。
-- 生成：`rag_prompt(context, question, phone)` → DashScope；无可靠上下文时输出含客服电话的兜底句。
+- 对话历史：`generate_answer(query, source_filter, history)` 接收最近 5 轮问答，格式化为 `Q:…/A:…` 注入提示词；单条截断 200 字、整体预算 1500 字，超出时优先丢弃更早的轮次。
+- 生成：`rag_prompt(context, history, question, phone)` → DashScope；无可靠上下文时输出含客服电话的兜底句。
 
 **会话存储**
 - SQLite + WAL，库文件 `mysql_qa/data/chat_history.db`；线程本地连接 + 全局写锁。
 - `add_exchange` 单事务写"一问一答"，顺带把默认标题自动改成首个问题。
+- `recent_history(cid, turns=5)` 取最近 N 轮问答对，供 RAG 注入；只有真正转到 RAG 时才查这一次库。
 - `messages.meta` 形如 `FAQ · 耗时 0.0123 s`，前端据此还原引擎徽标。
 
 **异步版差异**
 - 阻塞调用全部 `run_sync` 进线程池；三套 `CapacityLimiter`：FAQ=`max(4, CPU)`、RAG=2、DB=32。
 - 超时：FAQ 30 s、RAG 180 s（环境变量可覆盖）。
+- single-flight 去重的 key 含会话 id：历史随会话变化，同一问题跨会话不能共用结果。
 - single-flight：`(question, mode, source)` 相同则同刻只算一次。
 
 ---

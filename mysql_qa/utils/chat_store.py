@@ -249,5 +249,36 @@ def list_messages(cid: int) -> List[Dict[str, Any]]:
     return [dict(r) for r in rows]
 
 
+def recent_history(cid: int, turns: int = 5) -> List[Dict[str, str]]:
+    """
+    取某个会话最近 N 轮的问答对，供 RAG 注入上下文。
+
+    :param cid:   会话 id
+    :param turns: 取最近多少轮（一轮 = 一问一答）
+    :return: [{"question": "...", "answer": "..."}, ...]，按时间正序
+    """
+    if turns <= 0:
+        return []
+
+    # 只取最后 turns*2 条消息，避免把整个会话读进内存
+    with _LOCK, _db() as conn:
+        rows = conn.execute(
+            "SELECT role, content FROM messages "
+            "WHERE conversation_id = ? ORDER BY id DESC LIMIT ?",
+            (cid, turns * 2),
+        ).fetchall()
+
+    pairs: List[Dict[str, str]] = []
+    pending_question = None
+    # 查询是倒序的，这里反过来还原成时间正序；截断处可能从 assistant 开始，直接跳过
+    for row in reversed(rows):
+        if row["role"] == "user":
+            pending_question = row["content"]
+        elif row["role"] == "assistant" and pending_question is not None:
+            pairs.append({"question": pending_question, "answer": row["content"]})
+            pending_question = None
+    return pairs
+
+
 # 模块导入时即建表
 init_db()

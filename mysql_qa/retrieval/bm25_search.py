@@ -87,23 +87,26 @@ class BM25Search:
         # 返回归一化分数
         return exp_scores / exp_scores.sum()
 
-    def search(self, query, threshold=0.85) -> str|None:
+    def search(self, query, threshold=0.85) -> tuple:
         """
-            :param query:用户的问题
-            :threshold ; 查询阈值
-            :return answer
+            :param query: 用户的问题
+            :param threshold: 置信度阈值（softmax 后的最高分占比）
+            :return: (answer, need_rag)
+                     answer 为 None 表示 FAQ 拿不到可用答案；
+                     need_rag 为 True 表示上层应当转 RAG 链路。
         """
+        #  增加 bool 来做判断如果为 True说明 FAQ 没有答案需要 RAG
         # 搜索查询 ->判断
         if not query:
             logger.info('查询为空,无效查询，请重新输入')
-            return None
+            return None , False
 
         # 检查 Redis 缓存:
         answer = self.redis_client.get_answer(query)
         # 返回缓存答案
         if answer:
             logger.info('redis 数据查询成功')
-            return answer
+            return answer , False
 
         # 查询-> 分词
         tokenizer = jieba.lcut(query)
@@ -113,7 +116,6 @@ class BM25Search:
         scores = self.__softmax(scores)
         # 获取最高分索引
         max_index = np.argmax(scores)
-        # print(max_index)
         # 获取最高分
         score_max = scores[max_index]
         # 检查是否超过阈值
@@ -122,18 +124,19 @@ class BM25Search:
             beast_query = self.original_questions[max_index]
             # 获取答案:mysql
             answer = self.mysql_client.fetch_answer(beast_query)
+            # 命中了问题但答案为空：仍视为「无可用答案」，需要转 RAG
+            # 注意必须在写缓存之前判断，否则空答案会被缓存下来，后续查询一直命中空值
+            if not answer:
+                logger.info('命中问题但答案为空，转 RAG')
+                return None , True
             # 缓存答案 key: answer:{query}
             self.redis_client.set_data(f'answer:{query}',answer)
             # 记录搜索成功
             logger.info('检索成功')
             # 返回答案
-            return answer
+            return answer ,False
 
         # 记录无可靠答案
         logger.info('无可靠答案，请重新查询！')
         # 返回 None
-        return None
-
-if __name__ == '__main__':
-    m25search = BM25Search(RedisClient(), MySQLClient())
-    m25search.search('为什么isalnum函数会通过中文呢？')
+        return None ,True

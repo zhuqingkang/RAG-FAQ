@@ -55,12 +55,12 @@
   <!-- 4 会话 -->
   <rect x="420" y="304" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
   <text x="442" y="326" class="t">解析会话（SQLite）</text>
-  <text x="442" y="345" class="s">无 session_id / 不存在 → 新建会话，回填 cid</text>
+  <text x="442" y="345" class="s">无 session_id → 新建会话；cid 供 RAG 取最近 5 轮历史</text>
 
   <!-- 5 路由 -->
   <rect x="420" y="382" width="400" height="52" rx="10" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
   <text x="442" y="404" class="t">qa_router 判定 mode</text>
-  <text x="442" y="423" class="s">auto：先 FAQ 再 RAG　|　faq / rag：强制单链路</text>
+  <text x="442" y="423" class="s">auto：FAQ 优先，need_rag=true 才转 RAG　|　faq / rag：单链路</text>
 
   <!-- 6 FAQ 缓存 -->
   <rect x="420" y="460" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
@@ -70,12 +70,12 @@
   <!-- 7 BM25 -->
   <rect x="420" y="538" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
   <text x="442" y="560" class="t">FAQ ② 分词 → BM25 → softmax</text>
-  <text x="442" y="579" class="s">最高分 &gt; 0.85 才认为命中（否则转 RAG）</text>
+  <text x="442" y="579" class="s">最高分 &gt; 0.85 才命中；否则返回 (None, need_rag=true)</text>
 
   <!-- 8 MySQL -->
   <rect x="420" y="616" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
   <text x="442" y="638" class="t">FAQ ③ MySQL jpkb 取标准答案</text>
-  <text x="442" y="657" class="s">写回 Redis → engine=faq</text>
+  <text x="442" y="657" class="s">答案非空才写回 Redis → (answer, need_rag=false)</text>
 
   <!-- 9 分类 -->
   <rect x="420" y="694" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
@@ -94,8 +94,8 @@
 
   <!-- 12 生成 -->
   <rect x="420" y="928" width="400" height="52" rx="10" fill="#f4f0ff" stroke="#c0aeff" stroke-width="1.2"/>
-  <text x="442" y="950" class="t">RAG ④ DashScope 生成答案</text>
-  <text x="442" y="969" class="s">rag_prompt(context, question, phone)</text>
+  <text x="442" y="950" class="t">RAG ④ 注入最近 5 轮历史 → 生成答案</text>
+  <text x="442" y="969" class="s">rag_prompt(context, history, question, phone)</text>
 
   <!-- 13 归一化 -->
   <rect x="420" y="1006" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
@@ -119,8 +119,8 @@
 
   <line x1="416" y1="564" x2="366" y2="564" stroke="#4a9c78" stroke-width="1.5" marker-end="url(#af)"/>
   <rect x="60" y="540" width="300" height="48" rx="9" fill="#fffaf0" stroke="#e8cf94"/>
-  <text x="78" y="561" class="t" font-size="12">未命中 / FAQ 异常</text>
-  <text x="78" y="579" class="s">auto 模式继续走 RAG，note 记录原因</text>
+  <text x="78" y="561" class="t" font-size="12">未命中 / 异常 → need_rag=true</text>
+  <text x="78" y="579" class="s">auto 转 RAG；need_rag=false 直接返回未命中</text>
 
   <!-- 未命中 → 跳到 RAG -->
   <path d="M 210 588 L 210 720 L 414 720" fill="none" stroke="#c9a94f" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#a)"/>
@@ -130,7 +130,7 @@
   <rect x="876" y="138" width="324" height="76" rx="10" fill="#ffffff" stroke="#dbe3ef"/>
   <text x="894" y="160" class="noteT">异步版（app_async.py）</text>
   <text x="894" y="179" class="note">FAQ / RAG / DB 三套 CapacityLimiter 限流</text>
-  <text x="894" y="196" class="note">超时 30s / 180s；同题 single-flight 去重</text>
+  <text x="894" y="196" class="note">超时 30s / 180s；single-flight 按会话去重</text>
 
   <line x1="824" y1="720" x2="872" y2="720" stroke="#c9d3e3" stroke-width="1.3" stroke-dasharray="4 3"/>
   <rect x="876" y="682" width="324" height="76" rx="10" fill="#ffffff" stroke="#dbe3ef"/>

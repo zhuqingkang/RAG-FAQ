@@ -19,6 +19,11 @@ from vector_store import VectorStore # 导入向量数据库对象
 
 conf = Config()
 
+# ===== 对话历史注入配置 =====
+HISTORY_TURNS = 5              # 最多带几轮问答
+HISTORY_ITEM_MAX_CHARS = 200   # 单条问题 / 答案最多保留多少字
+HISTORY_MAX_CHARS = 1500       # 历史整体预算，超出就丢弃更早的轮次
+
 #   定义 RAGSystem 类，封装 RAG 系统的核心逻辑
 class RAGSystem:
     #   初始化方法，设置 RAG 系统的基本参数
@@ -42,47 +47,93 @@ class RAGSystem:
             '直接检索': self.vector_store.hybrid_search_with_rerank,
         }
 
-     # 1. 生成答案
-    def generate_answer(self, query, source_filter=None):
-        # pass
+    # 把单条文本压成一行并截断，避免长答案把 prompt 撑爆
+    @staticmethod
+    def _clip(text, limit=HISTORY_ITEM_MAX_CHARS):
+        text = " ".join(str(text).split())
+        return text[:limit] + ("..." if len(text) > limit else "")
+
+    # 把最近几轮问答拼成 prompt 里可直接使用的历史片段
+    def _build_history_context(self, history):
+        # 不是 list 一律视为没带历史
+        if not history or not isinstance(history, list):
+            return ''
+
+        # 从最近一轮往前累加，超出总长预算就停，保证留下的总是最新的对话
+        blocks = []
+        total = 0
+        for item in reversed(history[-HISTORY_TURNS:]):
+            # 脏数据（不是 dict、缺字段、空内容）直接跳过
+            if not isinstance(item, dict):
+                continue
+            question = item.get('question')
+            answer = item.get('answer')
+            if not question or not answer:
+                continue
+            block = f"Q:{self._clip(question)}\nA:{self._clip(answer)}"
+            if total + len(block) > HISTORY_MAX_CHARS:
+                break
+            blocks.append(block)
+            total += len(block)
+
+        # 上面是倒着累加的，这里翻回来还原时间顺序
+        blocks.reverse()
+        return "\n".join(blocks)
+
+    # 1. 生成答案
+    def generate_answer(self, query, source_filter=None, history=None):
         #   耗时
-        start = time.time()
+        start_time = time.time()
+
+        # 构造对话历史片段：格式非法一律按「无历史」处理，不让它影响主流程
+        history_context = self._build_history_context(history)
+        if history_context:
+            logger.info(f'注入对话历史，长度 {len(history_context)} 字符')
+
         #   查询问题类型
-        classified_query = self.query_classifier.predict_category(query)
+        category = self.query_classifier.predict_category(query)
         #   如果查询属于“通用知识”类别，则直接使用 LLM 回答
-        if classified_query == '通用知识':
-            logger.info('查询为通用知识,不检索知识库,直接由大模型作答 ....')
+        if category == '通用知识':
             # 设置提示词,变量替换
-            # context 传空字符串:PromptTemplate 会把 None 渲染成字符串 "None"
-            prompt = self.rag_prompt.format(context = '' , question = query,phone  =conf.CUSTOMER_SERVICE_PHONE)
+            prompt = self.rag_prompt.format(context='', question=query, phone=conf.CUSTOMER_SERVICE_PHONE,
+                                            history=history_context)
             # 模型调用
-            res = self.llm(prompt)
-            logger.info(f'cost time:{time.time() - start}' )
-            return res
+            answer = self.llm(prompt)
+            return answer
+
         #   否则，进行 RAG 检索并生成答案
         logger.info('查询为专业咨询,执行RAG流程....')
         #   选择检索策略
         # 格式化模版,替换变量
-        #   strategy_prompt_template 是 PromptTemplate 对象(不可调用),需要用 format() 填充 query 变量
         prompt = self.strategy_selector.strategy_prompt_template.format(query=query)
+
         # LLM模型调用,由大模型帮我们选择具体的查询策略
         strategy = self.llm(prompt)
-        #   去掉模型可能输出的多余空白/换行,便于后续策略匹配
-        strategy = strategy.strip()
+        # 去掉模型可能输出的多余空白/换行,否则下面精确匹配会落空并退回“直接检索”
+        strategy = (strategy or '').strip()
         logger.info(f'选用策略：{strategy}')
-
         # 根据检索策略,选择具体的查询策略,来执行后续的处理
-        #  检索相关文档: retrieve_and_merge
-        docs = self.retrieve_and_merge(query,source_filter,strategy)
-
+        # 检索相关文档: retrieve_and_merge
+        docs = self.retrieve_and_merge(query=query, source_filter=source_filter, strategy=strategy)
         # 遍历文档, 使用换行符拼接文档 -> 把final_docs 里面的多条语句,通过\n,拼接成一个context
-        context = '\n'.join([doc.page_content for doc in docs])
-        prompt = self.rag_prompt.format(context = context,question = query,phone =conf.CUSTOMER_SERVICE_PHONE)
-        #   构造 Prompt，调用大语言模型生成答案
+        if docs:
+            context = '\n'.join([i.page_content for i in docs])
+            logger.info(f"构建上下文完成，包含 {len(docs)} 个文档块")
+        else:
+            context = ""
+            logger.info("未检索到相关文档，上下文为空")
+
+        # 构造 Prompt，调用大语言模型生成答案
+        prompt = self.rag_prompt.format(context=context,
+                                        question=query,
+                                        history=history_context,
+                                        phone=conf.CUSTOMER_SERVICE_PHONE)
+        # 模型调用
         answer = self.llm(prompt)
 
         #   记录查询处理完成的日志
-        logger.info(f'cost time:{time.time() - start}')
+        end_time = time.time()
+        logger.info(f'查询增强耗时为:{end_time - start_time :.2f}')
         # 返回结果
         return answer
 
@@ -97,7 +148,7 @@ class RAGSystem:
         # 策略名 -> 检索方法的映射表（在 __init__ 中构建）
         # 模型输出可能带引号/解释文字而无法精确匹配，取不到时退回「直接检索」
         retrieve = self.tools.get(strategy, self.tools['直接检索'])
-        docs = retrieve(query, source_filter=source_filter)
+        docs = retrieve(query = query, source_filter=source_filter)
 
         # ---- 旧的 if/elif 分派：改用 self.tools 字典分派后注释保留 ----
         # if strategy == '回溯问题检索':
@@ -172,22 +223,4 @@ class RAGSystem:
         docs = self.vector_store.hybrid_search_with_rerank(opt_query , source_filter=source_filter)
 
         return docs
-
-
-if __name__ == '__main__':
-    vector_store = VectorStore()
-    llm = StrategySelector().call_dashscope
-    # print(llm(prompt="什么是AI"))
-    rag_system = RAGSystem(vector_store,llm)
-    while True:
-        query = input('请输入你要询问的问题：')
-        # answer = rag_system.generate_answer(query='AI学科的课程大纲内容有什么', source_filter='ai_data')
-        # answer = rag_system.retrieve_and_merge(query='AI学科的课程大纲内容有什么', source_filter='ai_data',strategy = '假设问题检索')
-        # answer = rag_system.retrieve_and_merge(query='java和c各有什么特点？', source_filter='ai_data',strategy = '子查询检索')
-        # answer = rag_system._retrieve_with_backtracking(query='有100亿条数据，想把它存入milvus,请问可以吗？',source_filter='ai_data')
-        answer = rag_system.generate_answer(query = query,source_filter='ai_data')
-        # answer = rag_system._retrieve_with_hyde(query='AI课程里面的NLP技术有哪些？',source_filter='ai')
-        print(answer)
-
-
 

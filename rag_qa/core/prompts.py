@@ -13,21 +13,33 @@ class RAGPrompts:
     # 定义 RAG 提示模板
     @staticmethod
     def rag_prompt():
-        # 创建并返回 PromptTemplate 对象
+        '''添加了历史记录，注意用在：new_rag_system'''
         return PromptTemplate(
             template="""
-            你是一个智能助手，帮助用户回答问题。
-            如果提供了上下文，请基于上下文回答；如果没有上下文，请直接根据你的知识回答。
-            如果答案来源于检索到的文档，请在回答中说明。
+                   你是一个智能助手，负责帮助用户回答问题。请按照以下步骤处理：
 
-            上下文: {context}
-            问题: {question}
+                   1. **分析问题和上下文**：
+                      - 基于提供的上下文（如果有）和你的知识回答问题。
+                      - 如果答案来源于检索到的文档，请在回答中明确说明，例如：“根据提供的文档，……”。
 
-            如果无法回答，请回复：“信息不足，无法回答，请联系人工客服，电话：{phone}。”
-            回答:
-            """,
-            #   定义输入变量
-            input_variables=["context", "question", "phone"],
+                   2. **评估对话历史**：
+                      - 检查对话历史是否与当前问题相关（例如，是否涉及相同的话题、实体或问题背景）。
+                      - 如果对话历史与问题相关，请结合历史信息生成更准确的回答。
+                      - 如果对话历史无关（例如，仅包含问候或不相关的内容），忽略历史，仅基于上下文和问题回答。
+
+                   3. **生成回答**：
+                      - 提供清晰、准确的回答，避免无关信息。
+                      - 如果上下文和历史消息均不足以回答问题，请回复：“信息不足，无法回答，请联系人工客服，电话：{phone}。”
+                   **对话历史**:
+                    {history}
+                   **上下文**:
+                    {context}
+                   **问题**:
+                    {question}
+
+                   **回答**:
+                   """,
+            input_variables=["context", "history", "question", "phone"],
         )
 
     # 定义假设问题生成的 Prompt 模板
@@ -75,13 +87,3 @@ class RAGPrompts:
             #   定义输入变量
             input_variables=["query"],
         )
-
-if __name__ == '__main__':
-    # rga_prompt = RAGPrompts.rag_prompt()
-    # result = rga_prompt.format(context="黑马程序员", question="这个机构叫什么名称", phone="12345")
-    # subquery_prompt = RAGPrompts.subquery_prompt()
-    # result = subquery_prompt.format(query="姚明和王治郅都是NBA球员吗?")
-
-    backtracking_prompt = RAGPrompts.backtracking_prompt()
-    result = backtracking_prompt.format(query="我想自研一个腾讯会议,然后也能跟你们一样,自己设计这个系统靠谱吗?")
-    print(f'result-->{result}')

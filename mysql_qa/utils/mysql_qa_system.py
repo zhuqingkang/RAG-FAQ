@@ -36,16 +36,23 @@ class MySQLQASystem:
         # 初始化 BM25 搜索
         self.bm25_search = BM25Search(self.redis_client, self.mysql_client)
 
-    def query(self, query) -> str:
+    def query(self, query) -> tuple:
+        """
+        走 FAQ 链路检索答案。
+        :return: (answer, need_rag)
+                 answer 为 None 表示 FAQ 没有可用答案；
+                 need_rag 为 True 表示上层应转入 RAG 链路。
+        """
         logger.debug("FAQ 问答开始。。。")
 
         # 查询 MySQL 系统: 开始时间
         start = time.time()
         logger.info(f"query: {query}")
-        answer = self.bm25_search.search(query)
+        # 解包 BM25 的双返回值：答案 + 是否需要转 RAG
+        answer, need_rag = self.bm25_search.search(query)
         logger.info(f'FAQ 耗时是 {time.time() - start } s')
-        # 返回答案
-        return answer
+        # 返回答案与调度标志
+        return answer, need_rag
 
 def main():
     # 初始化 MySQL 系统
@@ -60,13 +67,13 @@ def main():
         if query == 'exit':
             break
         # 执行查询
-        res = mysql_system.query(query)
-        if res is not None:
+        answer, need_rag = mysql_system.query(query)
+        if answer:
             # 打印答案
-            print(res)
-        else:
-            # 调用 milvus
-            pass
+            print(answer)
+        elif need_rag:
+            # FAQ 拿不到可用答案，真实服务里这里转 RAG 链路
+            print('FAQ 未命中，需要转 RAG 链路')
 
 
 

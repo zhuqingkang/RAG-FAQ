@@ -24,6 +24,7 @@ for _p in (str(BASE_DIR), str(MYSQL_QA_DIR)):
 from base import Config, logger
 
 # FAQ 侧与 RAG 侧各自的单例/预热入口
+from utils import chat_store
 from utils.qa_service import ensure_ready as faq_ensure_ready, get_qa_system
 from rag_qa.rag_service import answer as rag_answer
 from rag_qa.rag_service import ensure_ready as rag_ensure_ready
@@ -45,7 +46,7 @@ NO_ANSWER_TEXT = "抱歉，知识库中没有找到可靠的答案，请换个�
 # ==================== 单条链路的执行 ====================
 
 def _normalize(answer):
-    """把历史 Redis 缓存里可能存成 list / tuple 的答案拍平，并剔除空白。"""
+    """把答案拍平成字符串并剔除空白；兼容 Redis 里早期存成 list / tuple 的脏数据。"""
     if isinstance(answer, (list, tuple)):
         answer = answer[0] if answer else None
     if answer is None:
@@ -54,38 +55,58 @@ def _normalize(answer):
     return text or None
 
 
+def _load_history(conversation_id, turns=5):
+    """
+    从会话存储里取最近 N 轮问答，供 RAG 注入上下文。
+    只在真正要走 RAG 时调用，FAQ 命中路径不产生这次查询。
+    读取失败不阻断问答，按「无历史」降级。
+    """
+    if not conversation_id:
+        return None
+    try:
+        return chat_store.recent_history(int(conversation_id), turns=turns)
+    except Exception as e:
+        logger.warning(f"读取对话历史失败，本次不带历史: {e}")
+        return None
+
+
 def ask_faq(question):
     """
     走 FAQ 链路。
-    :return: (answer, error)  answer 为 None 表示未命中或调用失败
+    :return: (answer, error, need_rag)
+             answer 为 None 表示未命中或调用失败；
+             need_rag 为 True 表示应当转入 RAG 链路。
     """
     try:
         # 首次调用会在内部惰性初始化（MySQL / Redis / BM25）
-        return _normalize(get_qa_system().query(question)), ""
+        answer, need_rag = get_qa_system().query(question)
+        return _normalize(answer), "", bool(need_rag)
     except Exception as e:
         logger.error(f"FAQ 链路异常: {e}")
         logger.exception(e)
-        return None, f"FAQ 服务异常: {e}"
+        # FAQ 自身故障时同样应转 RAG，否则整条链路直接不可用
+        return None, f"FAQ 服务异常: {e}", True
 
 
-def ask_rag(question, source_filter=None):
+def ask_rag(question, source_filter=None, history=None):
     """
     走 RAG 链路。
     :return: (answer, error)
     """
-    answer, error = rag_answer(question, source_filter=source_filter)
+    answer, error = rag_answer(question, source_filter=source_filter, history=history)
     return _normalize(answer), error
 
 
 # ==================== 统一入口 ====================
 
-def answer_query(question, mode="auto", source_filter=None):
+def answer_query(question, mode="auto", source_filter=None, conversation_id=None):
     """
     统一问答入口（同步、阻塞）。异步服务请丢线程池调用本函数。
 
-    :param question:      用户问题（调用方需保证非空）
-    :param mode:          auto / faq / rag
-    :param source_filter: 学科过滤，仅对 RAG 生效；None 表示不过滤
+    :param question:        用户问题（调用方需保证非空）
+    :param mode:            auto / faq / rag
+    :param source_filter:   学科过滤，仅对 RAG 生效；None 表示不过滤
+    :param conversation_id: 会话 id，用于给 RAG 取最近几轮对话历史；None 表示不带历史
     :return: dict ——
         {
           "answer":   str | None,      # None 表示没有答案
@@ -107,20 +128,30 @@ def answer_query(question, mode="auto", source_filter=None):
 
     # ---------- 1. FAQ 链路 ----------
     if mode in ("auto", "faq"):
-        answer, faq_error = ask_faq(question)
+        answer, faq_error, need_rag = ask_faq(question)
         if answer:
             return make_result(answer, ENGINE_FAQ, time.perf_counter() - start, note)
         if mode == "faq":
             # 只走 FAQ：没命中就直接返回兜底话术
             note = faq_error or "FAQ 未命中"
             return make_result(answer, ENGINE_NONE, time.perf_counter() - start, note)
-        # auto 模式：记录原因，继续转 RAG
-        note = f"FAQ 未命中（{faq_error}），已转 RAG" if faq_error else "FAQ 未命中，已转 RAG"
+        # auto 模式：need_rag 是 FAQ 给出的调度建议。
+        # False 只在「查询本身无效」时出现，此时不要为它启动昂贵的 RAG 链路。
+        if not need_rag:
+            note = faq_error or "FAQ 判定该查询无需检索，未转 RAG"
+            logger.info(note)
+            return make_result(None, ENGINE_NONE, time.perf_counter() - start, note)
+        # 记录原因，继续转 RAG
+        if faq_error:
+            note = f"FAQ 异常（{faq_error}），已转 RAG"
+        else:
+            note = "FAQ 无可靠答案，已转 RAG"
         logger.info(note)
 
     # ---------- 2. RAG 链路 ----------
     if mode in ("auto", "rag"):
-        answer, rag_error = ask_rag(question, source_filter=source_filter)
+        history = _load_history(conversation_id)
+        answer, rag_error = ask_rag(question, source_filter=source_filter, history=history)
         if answer:
             return make_result(answer, ENGINE_RAG, time.perf_counter() - start, note)
         if rag_error:

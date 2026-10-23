@@ -7,8 +7,6 @@
 import hashlib
 import os
 import sys
-import time
-start = time.time()
 # 获取当前文件所在目录的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # print(f'current_dir--》{current_dir}')
@@ -268,18 +266,13 @@ class VectorStore:
             limit=k,
             output_fields=["text", "parent_id", "parent_content", "source", "timestamp"]
         )[0]
-        # print(f'results--》{results}')
-        # print(f'results--》{type(results)}')
-        # print(f'results--》{len(results)}')
+
         # 将上述搜索到的结果进行Document对象封装，便于查询使用
         sub_chunks = [self._doc_from_hit(hit["entity"])for hit in results]
-        # print(f'sub_chunks--》{len(sub_chunks)}')
+
         # 从子块中提取去重的父文档
         parent_docs = self._get_unique_parent_docs(sub_chunks)
-        # print(f'parent_docs--》{paren3
-        # t_docs}')
-        # print(f'parent_docs--》{len(parent_docs)}')
-        # # 如果只有1个文档或者没有，直接返回跳过重排序
+        # 如果只有1个文档或者没有，直接返回跳过重排序
         if len(parent_docs) < 2:
             return parent_docs[:conf.CANDIDATE_M]
         # 如果有父文档，进行重排序
@@ -288,7 +281,6 @@ class VectorStore:
             pairs = [[query, doc.page_content] for doc in parent_docs]
             # 使用 BGE-Reranker 计算每个配对的得分
             scores = self.reranker.predict(pairs)
-            # print(f'scores--》{scores}')
             # 根据得分从高到低排序文档
             ranked_parent_docs = [doc for _, doc in sorted(zip(scores, parent_docs), reverse=True)]
         # 如果没有父文档，返回空列表
@@ -332,32 +324,3 @@ class VectorStore:
                 "timestamp": hit.get("timestamp")
             }
         )
-
-if __name__ == "__main__":
-    # 只有跑脚本时才需要文档处理（会拉起 OCR / modelscope 等重库）
-    from rag_qa.core.document_processor import process_documents
-
-    print('.....')
-    vector_store = VectorStore()
-    directory_path = conf.SHOW_DIR
-
-    documents = process_documents(directory_path) # 父子切块
-    vector_store.add_documents(documents) # 数据存储
-    print('=='*20)
-
-    # # query = "AI学科的课程内容是什么"
-    '''
-        LLaMA等.
-        截⽌23年，语⾔模型发展⾛过了三个阶段：
-        第⼀阶段 ：设计⼀系列的⾃监督训练⽬标（MLM、NSP等），设计新颖的模型架构
-        （Transformer），遵循Pre-training和Fine-tuning范式。典型代表是BERT、GPT、XLNet等；
-        第⼆阶段 ：逐步扩⼤模型参数和训练语料规模，探索不同类型的架构。典型代表是BART、T5、
-        GPT-3等；
-        第三阶段 ：⾛向AIGC（Artiﬁcial Intelligent Generated Content）时代，模型参数规模步⼊千万
-    '''
-    query='截⽌23年，语⾔模型发展⾛过了三个阶段'
-    results = vector_store.hybrid_search_with_rerank(query, source_filter='ai')
-    print(f'results-->{results}')
-
-    print(f'cost time-->{time.time() - start}')
-

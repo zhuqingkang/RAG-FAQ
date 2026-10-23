@@ -123,11 +123,12 @@ def ensure_ready():
         return False
 
 
-def answer(question, source_filter=None):
+def answer(question, source_filter=None, history=None):
     """
     调用 RAG 生成答案。
     :param question: 用户问题
     :param source_filter: 学科过滤（None 表示不过滤），取值见 Config().VALID_SOURCES
+    :param history: 最近几轮问答 [{"question": ..., "answer": ...}]；None 表示不带历史
     :return: (answer, error)；answer 为 None 时 error 说明原因
     """
     try:
@@ -136,7 +137,7 @@ def answer(question, source_filter=None):
         return None, str(e)
 
     try:
-        result = rag.generate_answer(question, source_filter=source_filter)
+        result = rag.generate_answer(question, source_filter=source_filter, history=history)
         return result, ""
     except Exception as e:
         logger.error(f"RAG 生成答案失败: {e}")

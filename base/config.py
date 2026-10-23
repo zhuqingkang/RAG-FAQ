@@ -2,8 +2,6 @@
 # 导入配置解析库
 import configparser
 from pathlib  import Path
-# 导入路径操作库
-import sys
 
 
 # 项目根目录
@@ -94,8 +92,3 @@ class Config:
         self.CUSTOMER_SERVICE_PHONE = self.config.get('app', 'customer_service_phone')
         self.VALID_SOURCES = eval(
             self.config.get('app', 'valid_sources', fallback=["ai", "java", "test", "ops", "bigdata"]))
-
-if __name__ == '__main__':
-    config = Config()
-    print(config.LOG_FILE)
-    print(sys.path)

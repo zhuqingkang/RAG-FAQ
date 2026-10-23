@@ -239,17 +239,3 @@ class QueryClassifier:
             pre = torch.argmax(output.logits, dim=1).item()
         # 根据预测结果返回类别
         return '专业知识' if pre ==1 else '通用知识'
-
-if __name__ == '__main__':
-    # 1.
-    save_path = os.path.join(rag_qa_path, 'models','bert_query_classifier')
-    query_classify = QueryClassifier(save_path)
-
-    # 2. 训练模型
-    # data_file = r'D:\workspace\workspace_python\llm-05\dev02_rag\integrated_qa_system\rag_qa\data\model\model_generic_2000.json'
-    # data_file =os.path.join( rag_qa_path,'data','model','model_generic_2000.json')
-    # query_classify.train_model(data_file)
-
-    # 3.模型预测
-    result = query_classify.predict_category(query="什么是面向对象编程的三大特性？")
-    print(result)

@@ -98,7 +98,8 @@ def query():
     cid = conversation["id"]
 
     try:
-        result = answer_query(question, mode=mode, source_filter=source)
+        # 带上 conversation_id：转入 RAG 时会用它取最近几轮对话历史
+        result = answer_query(question, mode=mode, source_filter=source, conversation_id=cid)
     except Exception as e:
         logger.error(f"处理查询失败: {e}")
         logger.exception(e)
