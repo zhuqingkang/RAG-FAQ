@@ -261,7 +261,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 |---|---|---|---|
 | 阿里云 DashScope | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-plus` | 0.3 ~ 1 s（国内） |
 | DeepSeek 官方 | `https://api.deepseek.com/v1` | `deepseek-chat` / `deepseek-reasoner` | 0.5 ~ 2 s |
-| 本地 vLLM | `http://127.0.0.1:8000/v1` | `Qwen/Qwen2.5-7B-Instruct` | 0.3 ~ 0.8 s（4060 + 7B-AWQ） |
+| 本地 vLLM | `http://127.0.0.1:8000/v1` | `Qwen/Qwen2.5-3B-Instruct`（8G 卡）/ 7B 需 16G+ | 0.3 ~ 0.8 s |
 | Ollama / OneAPI | `http://127.0.0.1:11434/v1` 等 | `qwen2.5:7b` | 0.5 ~ 2 s |
 
 本地 vLLM 无鉴权，但 OpenAI SDK 要求 `api_key` 非空，填 `EMPTY`；`enable_search` 是 DashScope 专有参数，其它供应商带上会 400，已用 `[llm] web_search = auto` 按 `base_url` 自动判断。选型建议压一轮看 P95 而非均值，详见 `readme/开发文档-详细版.md` §4.1 与 `config.example.ini` 的 `[llm]` 段注释。
