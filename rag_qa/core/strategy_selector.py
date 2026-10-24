@@ -16,17 +16,23 @@ from openai import OpenAI
 
 class StrategySelector:
     def __init__(self):
-        # 初始化 OpenAI 客户端
-        self.client = OpenAI(api_key  =  Config().DASHSCOPE_API_KEY,
-                            base_url  =  Config().DASHSCOPE_BASE_URL
-        )
+        # 初始化 OpenAI 兼容客户端（DashScope / DeepSeek / 本地 vLLM 同一套接口）
+        self.client = OpenAI(api_key=Config().LLM_API_KEY,
+                             base_url=Config().LLM_BASE_URL
+                             )
         # 获取策略选择提示模板
         self.strategy_prompt_template = self._get_strategy_prompt()
 
 
     def call_dashscope(self, prompt):
-        # 调用 DashScope API
+        # 调用大模型（方法名沿用历史，实际已不限于 DashScope）
         try:
+            # 联网搜索是 DashScope 的专有参数，其它供应商带上会直接 400，
+            # 是否发送由 Config().LLM_ENABLE_SEARCH 决定（[llm] web_search = auto/on/off）
+            kwargs = {}
+            if Config().LLM_ENABLE_SEARCH:
+                kwargs["extra_body"] = {"enable_search": True}
+
             # 创建聊天完成请求
             completion = self.client.chat.completions.create(
                 model=Config().LLM_MODEL,
@@ -35,14 +41,14 @@ class StrategySelector:
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.1,
-                extra_body={"enable_search": True} # 联网搜索
+                **kwargs
             )
 
             # 返回完成结果
             return completion.choices[0].message.content if completion.choices else "直接检索"
         except Exception as e:
             # 记录 API 调用失败
-            logger.error(f"DashScope API 调用失败: {e}")
+            logger.error(f"LLM 调用失败: {e}")
             # 默认返回直接检索
             return "直接检索"
 

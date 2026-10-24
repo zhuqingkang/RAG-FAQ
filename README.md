@@ -247,12 +247,24 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | `[mysql]` | host / user / password / database | localhost / root / 123 / subjects_kg |
 | `[redis]` | host / port / password / db | localhost / 6379 / 1234 / 0 |
 | `[milvus]` | host / port / database_name / collection_name | localhost / 19530 / test5 / edurag_final |
-| `[llm]` | model / dashscope_base_url | qwen3.7-plus / 私有兼容网关 |
+| `[llm]` | model / base_url / api_key / timeout / web_search | qwen3.7-plus / 私有兼容网关 / sk-… / 60 s / auto |
+| `[chat]` | anonymous_retention_days / user_retention_days / auto_purge | 1 天 / 30 天 / True |
 | `[retrieval]` | parent 1200 / child 300 / overlap 50 / k 3 / m 2 | 切块与检索参数 |
 | `[cache]` | cache_dir / verify_files / chunks | `rag_qa/data/.cache` / False / True |
 | `[app]` | valid_sources / customer_service_phone | ai,java,test,ops,bigdata / 12345678 |
 
-> `dashscope_api_key` 与 `customer_service_phone` **没有默认回退**，删掉会导致 `Config()` 直接报错。
+> `api_key`（旧键名 `dashscope_api_key`）与 `customer_service_phone` **没有默认回退**，删掉会导致 `Config()` 直接报错。
+
+**更换大模型供应商**：全程使用 OpenAI 兼容协议，改 `model` / `base_url` / `api_key` 三项即可，代码不动。常见选择：
+
+| 供应商 | `base_url` | `model` 示例 | 典型首 token |
+|---|---|---|---|
+| 阿里云 DashScope | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-plus` | 0.3 ~ 1 s（国内） |
+| DeepSeek 官方 | `https://api.deepseek.com/v1` | `deepseek-chat` / `deepseek-reasoner` | 0.5 ~ 2 s |
+| 本地 vLLM | `http://127.0.0.1:8000/v1` | `Qwen/Qwen2.5-7B-Instruct` | 0.3 ~ 0.8 s（4060 + 7B-AWQ） |
+| Ollama / OneAPI | `http://127.0.0.1:11434/v1` 等 | `qwen2.5:7b` | 0.5 ~ 2 s |
+
+本地 vLLM 无鉴权，但 OpenAI SDK 要求 `api_key` 非空，填 `EMPTY`；`enable_search` 是 DashScope 专有参数，其它供应商带上会 400，已用 `[llm] web_search = auto` 按 `base_url` 自动判断。选型建议压一轮看 P95 而非均值，详见 `readme/开发文档-详细版.md` §4.1 与 `config.example.ini` 的 `[llm]` 段注释。
 
 ---
 

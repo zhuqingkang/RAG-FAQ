@@ -58,14 +58,39 @@ class Config:
         # Milvus 集合名
         self.MILVUS_COLLECTION_NAME = self.config.get('milvus', 'collection_name', fallback='edurag_final')
 
-        # LLM 配置
-        # LLM 模型名
+        # LLM 配置（统一走 OpenAI 兼容协议：换供应商只改 model / base_url / api_key）
+        # 模型名
         self.LLM_MODEL = self.config.get('llm', 'model', fallback='qwen-plus')
-        # DashScope API 密钥
-        self.DASHSCOPE_API_KEY = self.config.get('llm', 'dashscope_api_key')
-        # DashScope API 地址
-        self.DASHSCOPE_BASE_URL = self.config.get('llm', 'dashscope_base_url',
-                                                  fallback='https://dashscope.aliyuncs.com/compatible-mode/v1')
+        # API 密钥：优先通用键 api_key，回退旧的 dashscope_api_key
+        api_key = (
+            self.config.get('llm', 'api_key', fallback='')
+            or self.config.get('llm', 'dashscope_api_key', fallback='')
+        )
+        if not api_key:
+            # 保持原有语义：密钥缺失直接报错，而不是等到首个请求才失败
+            raise configparser.NoOptionError('api_key', 'llm')
+        self.LLM_API_KEY = api_key
+        # API 地址：优先通用键 base_url，回退旧的 dashscope_base_url
+        self.LLM_BASE_URL = (
+            self.config.get('llm', 'base_url', fallback='')
+            or self.config.get('llm', 'dashscope_base_url',
+                               fallback='https://dashscope.aliyuncs.com/compatible-mode/v1')
+        )
+        # 单次生成超时（秒）：本地小模型可给 30，云端一般 60~120
+        self.LLM_TIMEOUT = self.config.getfloat('llm', 'timeout', fallback=60)
+
+        # 联网搜索：enable_search 是 DashScope 专有参数，DeepSeek / vLLM 等带上会 400
+        # auto = 仅当 base_url 指向 DashScope 时启用；on / off 为强制开关
+        web_search = self.config.get('llm', 'web_search', fallback='auto').strip().lower()
+        if web_search == 'auto':
+            _url = (self.LLM_BASE_URL or '').lower()
+            self.LLM_ENABLE_SEARCH = ('dashscope' in _url) or ('aliyuncs' in _url)
+        else:
+            self.LLM_ENABLE_SEARCH = (web_search == 'on')
+
+        # 兼容旧属性名：rag_qa/core/strategy_selector.py 等仍在用 DASHSCOPE_*
+        self.DASHSCOPE_API_KEY = self.LLM_API_KEY
+        self.DASHSCOPE_BASE_URL = self.LLM_BASE_URL
 
         # 缓存配置：把目录清单/解析文本/切块结果存成 JSON，减少重复的磁盘 IO
         # 缓存目录（默认 rag_qa/data/.cache）

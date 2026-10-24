@@ -25,10 +25,19 @@ _failed_at = 0.0            # 失败时间戳（time.monotonic）
 
 
 def _build_llm_client():
-    """构造 DashScope 客户端，并返回一个「prompt -> answer」的调用函数。"""
+    """
+    构造 OpenAI 兼容客户端，并返回一个「prompt -> answer」的调用函数。
+
+    只依赖 OpenAI 协议，因此 DashScope / DeepSeek / 本地 vLLM / Ollama / OneAPI
+    都可以直接用：换供应商只改 config.ini 的 [llm] 段，不用动代码。
+    """
     from openai import OpenAI
 
-    client = OpenAI(api_key=conf.DASHSCOPE_API_KEY, base_url=conf.DASHSCOPE_BASE_URL)
+    client = OpenAI(
+        api_key=conf.LLM_API_KEY,
+        base_url=conf.LLM_BASE_URL,
+        timeout=conf.LLM_TIMEOUT,
+    )
 
     def call_llm(prompt):
         """与 rag_main.py 中的 call_dashscope 行为保持一致。"""
