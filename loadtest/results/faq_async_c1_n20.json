@@ -1,0 +1,252 @@
+{
+  "scenario": "faq",
+  "mode": "faq",
+  "tag": "async",
+  "base_url": "http://127.0.0.1:8000",
+  "concurrency": 1,
+  "requests": 20,
+  "wall_time_s": 0.277,
+  "qps": 72.08,
+  "success": 20,
+  "errors": 0,
+  "hit_rate": 1.0,
+  "rtt_all": {
+    "count": 20,
+    "mean": 0.0138,
+    "std": 0.003,
+    "min": 0.0105,
+    "p50": 0.013,
+    "p90": 0.0143,
+    "p95": 0.015,
+    "p99": 0.0238,
+    "max": 0.0261
+  },
+  "rtt_found": {
+    "count": 20,
+    "mean": 0.0138,
+    "std": 0.003,
+    "min": 0.0105,
+    "p50": 0.013,
+    "p90": 0.0143,
+    "p95": 0.015,
+    "p99": 0.0238,
+    "max": 0.0261
+  },
+  "server_elapsed_all": {
+    "count": 20,
+    "mean": 0.0042,
+    "std": 0.001,
+    "min": 0.0017,
+    "p50": 0.0044,
+    "p90": 0.0052,
+    "p95": 0.0054,
+    "p99": 0.006,
+    "max": 0.0061
+  },
+  "error_samples": [],
+  "engine_mix": {
+    "faq": 20
+  },
+  "raw": [
+    {
+      "index": 0,
+      "question": "用上下文管理器实现函数运行时间的计算?",
+      "rtt": 0.026062099999762722,
+      "status": 200,
+      "server_elapsed": 0.0019,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 1,
+      "question": "有字典{'a':1,'b':2,'c':3},现在有一个需求\n装饰器练习题",
+      "rtt": 0.01048609999998007,
+      "status": 200,
+      "server_elapsed": 0.0017,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 2,
+      "question": "两个人开发项目,我push到github上后\n别人直接pull可以看到我的代码吗\n为什么我要pull request 他才能看到我提交的代码",
+      "rtt": 0.014329199999338016,
+      "status": 200,
+      "server_elapsed": 0.0061,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 3,
+      "question": "关联子查询的执行顺序是什么",
+      "rtt": 0.012609399998837034,
+      "status": 200,
+      "server_elapsed": 0.0043,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 4,
+      "question": "定义类字典对象(继承于dict类)，如何修改读写字典元素方法",
+      "rtt": 0.01245770000059565,
+      "status": 200,
+      "server_elapsed": 0.0046,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 5,
+      "question": "Ubuntu上Navicat for MySQL 显示乱码",
+      "rtt": 0.012880500000392203,
+      "status": 200,
+      "server_elapsed": 0.0048,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 6,
+      "question": "为什么isalnum函数会通过中文",
+      "rtt": 0.012626499999896623,
+      "status": 200,
+      "server_elapsed": 0.0045,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 7,
+      "question": "pycharm资源管理区域文件的显示更新",
+      "rtt": 0.012707599998975638,
+      "status": 200,
+      "server_elapsed": 0.0038,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 8,
+      "question": "如何在 Ubuntu 中快速创建Pycharm桌面快捷方式？",
+      "rtt": 0.013630400000693044,
+      "status": 200,
+      "server_elapsed": 0.0046,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 9,
+      "question": "VMware安装VMware Tools时显示灰色如何解决",
+      "rtt": 0.014324499999929685,
+      "status": 200,
+      "server_elapsed": 0.0045,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 10,
+      "question": "faild to load module canberra\n-gtk-module 报错",
+      "rtt": 0.013780799999949522,
+      "status": 200,
+      "server_elapsed": 0.0052,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 11,
+      "question": "PyCharm使用中文版本还是英文版本",
+      "rtt": 0.014009599999553757,
+      "status": 200,
+      "server_elapsed": 0.0043,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 12,
+      "question": "python3.7 64位版本pygame安装报错",
+      "rtt": 0.014401599999473547,
+      "status": 200,
+      "server_elapsed": 0.0041,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 13,
+      "question": "找不到可以连接的有效对等进程\nCould not open /dev/vmmon",
+      "rtt": 0.01421429999936663,
+      "status": 200,
+      "server_elapsed": 0.0054,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 14,
+      "question": "lxml的tree报错",
+      "rtt": 0.012158999999883235,
+      "status": 200,
+      "server_elapsed": 0.0038,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 15,
+      "question": "redis存储类型里面提到的“string类型是二进制安全的",
+      "rtt": 0.012417899999491055,
+      "status": 200,
+      "server_elapsed": 0.0039,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 16,
+      "question": "如何创建线程安全的单例对象",
+      "rtt": 0.012735700000121142,
+      "status": 200,
+      "server_elapsed": 0.004,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 17,
+      "question": "selenium使用chrome无头浏览器执行js代码",
+      "rtt": 0.013564599999881466,
+      "status": 200,
+      "server_elapsed": 0.0045,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 18,
+      "question": "怎么获取MongoDB中某个集合中所有文档的键的名字",
+      "rtt": 0.012963299999682931,
+      "status": 200,
+      "server_elapsed": 0.0044,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 19,
+      "question": "PyCharm只能以单元测试方式运行python代码怎么解决",
+      "rtt": 0.013128399999914109,
+      "status": 200,
+      "server_elapsed": 0.0044,
+      "engine": "faq",
+      "found": true,
+      "note": ""
+    }
+  ]
+}

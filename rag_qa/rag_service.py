@@ -1,5 +1,5 @@
 # rag_qa/rag_service.py
-# RAG 问答单例：Flask 版与 FastAPI 异步版共用，保证只初始化一次。
+# RAG 问答单例：供 app_async 复用，保证只初始化一次。
 # 与 mysql_qa/utils/qa_service.py 的设计保持一致：惰性初始化 + 线程安全 + 失败降级。
 import sys
 import threading

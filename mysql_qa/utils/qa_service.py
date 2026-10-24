@@ -1,5 +1,5 @@
 # mysql_qa/utils/qa_service.py
-# 问答系统单例：Flask 版和 FastAPI 异步版共用，保证只初始化一次
+# 问答系统单例：供 app_async 的三条链路共用，保证只初始化一次
 import sys
 import threading
 from pathlib import Path

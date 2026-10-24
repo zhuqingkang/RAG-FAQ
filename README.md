@@ -28,8 +28,7 @@ curl http://localhost:9091/healthz     # 返回 OK 表示 Milvus 就绪
 
 # 4) 模型：按下方「模型准备」下载后放到 rag_qa/models/
 
-python app.py            # Flask   → http://127.0.0.1:5000
-python app_async.py      # FastAPI → http://127.0.0.1:8000
+python app_async.py      # FastAPI + Uvicorn → http://127.0.0.1:8000
 ```
 
 启动顺序：FAQ 预热（jieba + BM25 索引，秒级）→ RAG 预热（后台加载 BGE-M3 / reranker，数十秒）→ 接收请求。
@@ -87,8 +86,8 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 ```
 浏览器 → 唯一前端（templates/ + static/）
-        → app.py / app_async.py        入口层
-        → qa_router.py                 路由层（唯一判定入口）
+        → app_async.py                 入口层（唯一入口）
+        → qa_router.py                 路由层（ask_faq / ask_rag，无状态）
              ├─ FAQ  mysql_qa/  → BM25 → Redis 缓存 → MySQL knowledge
              │       返回 (answer, need_rag)，need_rag 决定是否降级
              └─ RAG  rag_qa/    → 混合检索 → 父块去重 → rerank → 注入历史 → LLM 生成
@@ -112,27 +111,39 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 | FAQ 链路（精确检索） | RAG 链路（检索 + 生成） |
 |---|---|
-| ![FAQ 实测 0.0026 s](readme/assets/bench-faq.jpg) | ![RAG 实测 26.701 s](readme/assets/bench-rag.jpg) |
-| **0.0026 s** · BM25 命中后直接取标准答案 | **26.701 s** · 分类 → 选策略 → 检索 → 精排 → 生成 |
+| ![FAQ 实测 0.0138 s](readme/assets/bench-faq.jpg) | ![RAG 实测 28.9154 s](readme/assets/bench-rag.jpg) |
+| **0.0138 s** · BM25 命中后直接取标准答案 | **28.9154 s** · 分类 → 选策略 → 检索 → 精排 → 生成 |
 
-两者相差约 4 个数量级。26.701 s 为单次样本（五段串行调用，属偏慢的一次），RAG 耗时会随问题复杂度与生成长度波动，不宜当作平均值。
+两者相差 3 个数量级以上。截图里的 FAQ 耗时是**服务端 `elapsed` 口径**（不含 HTTP 与会话落库），与下方端到端分位数不可直接比较；28.9154 s 为单次样本（多段串行调用），RAG 耗时会随问题复杂度与生成长度波动，不宜当作平均值。
 
 ### 压测分位数（更可信的口径）
 
-单次样本容易失真，下面是固定并发、批量样本下的分位数（详见 [readme/压测报告.md](readme/压测报告.md)）：
+单次样本容易失真，下面是固定并发、批量样本下的分位数（异步版，2026-10-24；完整口径与同步版对照见 [readme/压测对比报告-同步vs异步.md](readme/压测对比报告-同步vs异步.md)）：
 
 | 链路 | 口径 | 并发 | 样本 | P50 | P95 | P99 |
 |---|---|---|---|---|---|---|
-| FAQ | 冷缓存 · 端到端 | 8 | 300 | 80.2 ms | **117.5 ms** | **130.6 ms** |
-| FAQ | 冷缓存 · 服务端处理 | 8 | 300 | 4.7 ms | 7.2 ms | 9.7 ms |
-| FAQ | 热缓存 · 服务端处理 | 8 | 200 | 1.7 ms | 2.6 ms | 2.9 ms |
-| RAG | 端到端（LLM 直答） | 2 | 44 | 29.47 s | **40.07 s** | **49.68 s** |
+| FAQ | 冷缓存 · 端到端 | 8 | 300 | 31.0 ms | **37.3 ms** | 635.5 ms |
+| FAQ | 冷缓存 · 服务端处理 | 8 | 300 | 12.8 ms | 17.8 ms | 305.9 ms |
+| FAQ | 热缓存 · 端到端 | 8 | 200 | 21.5 ms | **30.0 ms** | 34.3 ms |
+| RAG | 端到端（LLM 直答） | 2 | 24 | 33.2 s | **41.0 s** | 42.2 s |
 
-- 上方截图的 0.0026 s 与热缓存 P95（2.6 ms）一致，**不是**冷检索口径；冷检索的服务端 P95 为 7.2 ms。
-- FAQ 端到端 117 ms 中，约 110 ms 是单进程 Flask 与每请求日志写盘的开销，检索本身只占几毫秒；换 `waitress` 多 worker 可大幅回落。
+- FAQ 吞吐：并发 8 时 **170 req/s**，并发 16 时回落到 124 req/s（16 核下 FAQ 是 CPU 密集，闸门给到 16 反而抢 GIL）。
+- 冷缓存的 P99 有少量 0.6 s 级抖动样本，P50/P95 更能代表稳态。
 - RAG 的 P95/P99 反映的是大模型生成耗时，与系统自身处理能力基本无关。
 
 > 注意：本次压测时意图分类器全部输出「通用知识」，RAG 实际走的是「大模型直答」分支，未触发 Milvus 检索与 BGE 精排，故上表 RAG 数字不含检索开销。
+
+### 历史版本：Flask 同步版（已移除）
+
+项目早期有一个 Flask 同步入口 `app.py`（开发服务器，:5000），作为对比基线保留了一轮完整压测，已在 2026-10-24 移除，不再纳入代码库。保留这段记录的理由是它解释了本项目的架构选型：
+
+| 口径（并发 8 · 冷缓存 · 300 样本） | Flask 同步版 | 当前异步版 | 变化 |
+|---|---|---|---|
+| FAQ 端到端 P95 | 1546.5 ms | **37.3 ms** | −97.6% |
+| FAQ 吞吐 | 6.51 req/s | **170.1 req/s** | ×26 |
+| 框架外开销（P50） | 1053 ms | 18.2 ms | −98.3% |
+
+差异的 92% 来自「每请求新建线程 → 每请求新建 MySQL 连接」，而不是 Web 框架本身：开发服务器一请求一线程，`chat_store` 的线程本地连接永远复用不上，单次建连在压测机上实测 168 ms。异步版用固定线程池 + `run_sync` 把连接复用回来，同时消除了「并发上升 → 延迟线性劣化」的结构性缺陷。完整拆解见 [readme/压测对比报告-同步vs异步.md](readme/压测对比报告-同步vs异步.md)。
 
 ---
 
@@ -140,14 +151,14 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 | 路径 | 作用 |
 |---|---|
-| `app.py` / `app_async.py` | Flask / FastAPI 入口，只负责 HTTP 与落库 |
-| `qa_router.py` | 统一路由：`answer_query`、`ask_faq`、`ask_rag`、预热、能力描述 |
+| `app_async.py` | 唯一入口（FastAPI + Uvicorn），只负责 HTTP、并发闸门与落库 |
+| `qa_router.py` | 路由层：`ask_faq`、`ask_rag`、`make_result`、预热、能力描述（无状态，供入口层复用） |
 | `templates/index.html`、`static/*` | 唯一前端：会话列表、模式切换、学科过滤、引擎徽标 |
 | `base/` | `Config`（读 config.ini）+ 单例 `logger` |
 | `mysql_qa/` | FAQ 能力包：`utils`（单例/组合器/会话存储）、`retrieval`、`db`、`cache` |
 | `rag_qa/` | RAG 能力包：`rag_service`、`core`（检索/生成/切块/缓存）、`edu_*` 加载与切分 |
-| `readme/` | 详细版、简略版、压测报告、结构图、流程图、实测对比截图 |
-| `loadtest/` | 压测脚本 `bench_qa.py` 与原始明细 `results/*.json` |
+| `readme/` | 详细版 / 简略版、压测报告（历史存档）、压测对比报告、建议手册、结构图、流程图、实测截图 |
+| `loadtest/` | 压测原始明细 `results/*.json`（脚本已移除，文件名为 `{场景}_{批次}_c{并发}_n{请求数}.json`） |
 | `milvus_redis/` | Milvus + Redis 的 `docker-compose.yml` 与部署说明（含可修改项清单） |
 
 ---
@@ -208,15 +219,16 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 - `add_exchange` 单事务写一轮问答，顺带把默认标题自动改成首个问题。
 - `recent_history(session_id, turns=5)` 取最近 N 轮问答对，供 RAG 注入；只有真正转到 RAG 时才查这一次库。
 - `conversations.meta` 形如 `FAQ · 耗时 0.0123 s`，前端据此还原引擎徽标。
-- 旧 SQLite 实现保留为**快速验证通道**：MySQL 表还没建好时零配置跑通链路，接口签名与 MySQL 版一致。迁移脚本 `mysql_qa/utils/migrate_sqlite_history.py --apply` 按 uuid5 固定映射导入旧库，重复执行幂等（旧库已迁移完毕并从仓库清除）。
+- 运行期只有 MySQL 这一套实现；SQLite 只剩一次性迁移脚本 `mysql_qa/utils/migrate_sqlite_history.py --apply`（按 uuid5 固定映射导入旧库、重复执行幂等），旧库 `chat_history.db` 已迁移完毕并从仓库清除。
 - **保留策略**：临时会话（`user_id IS NULL`）保留 1 天、登录用户保留 30 天，按 `chat_sessions.updated_at` 以会话为单位整体清理；服务启动时自动执行，也可 `python mysql_qa/utils/chat_store.py --purge` 手动触发，阈值在 `config.ini [chat]` 段调整（`auto_purge = false` 可关闭）。
 
 **身份 / 寒暄直答**
 - `mysql_qa/utils/smalltalk.py` 维护规则表，全句匹配「你是谁 / 在吗 / 谢谢」这类问题，命中即返回模板文案（耗时微秒级）。
-- 直接返回的 `engine` 为 `smalltalk`，前端徽标显示「直答」；两套服务共用同一份规则，行为不漂移。
+- 直接返回的 `engine` 为 `smalltalk`，前端徽标显示「直答」；规则集中在 `smalltalk.py`，与路由层解耦，改文案不动编排。
 - 公司名称与开场白集中在 `COMPANY_NAME` 与 `RULES` 中，替换即可。
 
-**异步版差异**
+**并发与限流**
+
 - 阻塞调用全部 `run_sync` 进线程池；三套 `CapacityLimiter`：FAQ=`max(4, CPU)`、RAG=2、DB=32。
 - 超时：FAQ 30 s、RAG 180 s（环境变量可覆盖）。
 - single-flight 去重：key = `(question, mode, source, conversation_id)`，同刻相同 key 只算一次。会话必须进 key——历史随会话变化，同一问题跨会话不能共用结果。
@@ -227,7 +239,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 | 层 | 组件 |
 |---|---|
-| 服务 | Python 3.12.14 · Flask 3.1.3 · FastAPI 0.143 · Uvicorn 0.54 · anyio 4.15 · Jinja2 3.1 |
+| 服务 | Python 3.12.14 · FastAPI 0.143 · Uvicorn 0.54 · anyio 4.15 · Jinja2 3.1 |
 | 检索 | jieba 0.42 · rank-bm25 0.2 · pymilvus 3.0（dense + sparse 混合检索） |
 | 模型 | milvus-model（BGE-M3）· sentence-transformers 6.1（bge-reranker-large）· torch 2.7.1+cu126 · transformers 5.17 |
 | 生成 | openai SDK 3.16 → DashScope 兼容接口（qwen3.7-plus） |
@@ -280,7 +292,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 **一句话结论：** FAQ 是"带精确响应缓存的链路"，RAG 是"每次全量重算的链路"（编码 → 检索 → 精排 → 生成四步全跑）。
 
-注意区分：`rag_qa/data/.cache/` 下的 `catalog/documents/chunks` 三级 JSON 属于**离线建库缓存**（省 OCR 与切块），不是在线四级缓存；异步版的 single-flight 只合并同一时刻的并发请求，不能跨时间复用。
+注意区分：`rag_qa/data/.cache/` 下的 `catalog/documents/chunks` 三级 JSON 属于**离线建库缓存**（省 OCR 与切块），不是在线四级缓存；single-flight 只合并同一时刻的并发请求，不能跨时间复用。
 
 ---
 
@@ -301,7 +313,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | 四策略分派 | 检索 | 回溯 / 子查询 / HyDE / 直接检索按 LLM 策略真正分派执行 | 已落地 |
 | 通用知识直答 | 检索 | 通用知识不检索，直接由 LLM 作答 | 已落地 |
 | 幻觉四道闸 | 答案质量 | FAQ 阈值直答 → 上下文收窄 → prompt 兜底句 → 出口空答案兜底 | 已落地 |
-| 问答判定收口 | 工程化 | Flask / FastAPI 共用 `qa_router` 一份判定 | 已落地 |
+| 问答判定收口 | 工程化 | 判定顺序只写在入口层 `_route`，链路能力由 `qa_router` 提供 | 已落地 |
 | need_rag 调度契约 | 工程化 | FAQ 逐层返回 `(answer, need_rag)`；无效查询不启动 RAG | 已落地 |
 | 多轮对话历史 | 体验 | 转 RAG 时注入最近 5 轮问答，单条 200 字 / 整体 1500 字预算 | 已落地 |
 | 包结构与导入收敛 | 维护 | 每层 `__init__.py`；包内相对、跨包绝对；sys.path 只留入口层 | 已落地 |
@@ -379,8 +391,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 | 项目 | 在本项目中的作用 | 链接 |
 |---|---|---|
-| **Flask** | 同步服务入口 | https://github.com/pallets/flask |
-| **FastAPI** | 异步服务入口 | https://github.com/fastapi/fastapi |
+| **FastAPI** | 服务入口（HTTP 协议、路由与请求体解析） | https://github.com/fastapi/fastapi |
 | **Uvicorn** | ASGI 服务器 | https://github.com/encode/uvicorn |
 | **anyio** | 线程池与并发闸门 | https://github.com/agronholm/anyio |
 | **Jinja2** | 页面模板渲染 | https://github.com/pallets/jinja |
@@ -395,4 +406,4 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | **通义千问 Qwen / 阿里云百炼（DashScope）** | 检索策略选择与答案生成 | https://github.com/QwenLM/Qwen ｜ https://help.aliyun.com/zh/model-studio/ |
 | **OpenAI Python SDK** | 以 OpenAI 兼容协议调用 DashScope | https://github.com/openai/openai-python |
 
-> 各依赖的具体版本见 [`requirements.txt`](requirements.txt)（从 conda env `edurag` 导出，共 371 个包）。
+> 各依赖的具体版本见 [`requirements.txt`](requirements.txt)（从 conda env `edurag` 导出，共 369 个包）。

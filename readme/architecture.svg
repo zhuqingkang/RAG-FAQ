@@ -22,14 +22,14 @@
   <!-- ================= 接入层 ================= -->
   <text x="40" y="106" class="band">接入层 · 入口 / 前端</text>
   <rect x="40" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
-  <text x="58" y="146" class="node-file">app.py</text>
-  <text x="58" y="168" class="node-sub">Flask 同步入口 · 127.0.0.1:5000</text>
-  <text x="58" y="188" class="node-sub">请求内直接阻塞执行</text>
+  <text x="58" y="146" class="node-file">浏览器 / HTTP 客户端</text>
+  <text x="58" y="168" class="node-sub">POST /query · 会话列表</text>
+  <text x="58" y="188" class="node-sub">唯一前端见右侧页面与静态资源</text>
 
   <rect x="340" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
   <text x="358" y="146" class="node-file">app_async.py</text>
-  <text x="358" y="168" class="node-sub">FastAPI 异步入口 · :8000</text>
-  <text x="358" y="188" class="node-sub">线程池 + 限流 + 单飞去重</text>
+  <text x="358" y="168" class="node-sub">FastAPI + Uvicorn · 127.0.0.1:8000</text>
+  <text x="358" y="188" class="node-sub">唯一入口 · 线程池 + 三闸门 + 单飞去重</text>
 
   <rect x="640" y="118" width="260" height="92" rx="12" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
   <text x="658" y="146" class="node-file">templates/index.html</text>
@@ -44,9 +44,9 @@
   <!-- ================= 路由层 ================= -->
   <text x="40" y="242" class="band">路由层 · 统一调度</text>
   <rect x="40" y="254" width="1160" height="96" rx="14" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
-  <text x="62" y="282" class="node-file">qa_router.py —— 唯一的路由判定，两个入口共用</text>
-  <text x="62" y="306" class="node-sub">answer_query(question, mode, source_filter, conversation_id) → {answer, engine, found, elapsed, note}</text>
-  <text x="62" y="328" class="node-sub">auto：FAQ 命中即返回；need_rag=false 不转 RAG　|　faq / rag：强制单链路　|　ask_faq / ask_rag / make_result / warm_up_* / describe</text>
+  <text x="62" y="282" class="node-file">qa_router.py —— 链路能力层（无状态），请求编排在入口层 _route</text>
+  <text x="62" y="306" class="node-sub">ask_faq(question) → (answer, error, need_rag)　|　ask_rag(question, source_filter, history) → (answer, error)　|　make_result → {answer, engine, found, elapsed, note}</text>
+  <text x="62" y="328" class="node-sub">_route 判定顺序：直答 → FAQ → RAG　|　auto 下 need_rag=false 不转 RAG　|　faq / rag 强制单链路　|　warm_up_faq / warm_up_rag / describe</text>
 
   <!-- 路由到两条链路的箭头 -->
   <line x1="330" y1="350" x2="330" y2="384" stroke="#8ea2bf" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#arr)"/>
@@ -75,7 +75,7 @@
 
   <rect x="335" y="620" width="255" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
   <text x="353" y="643" class="node-file">db/MySQLClient.py</text>
-  <text x="353" y="662" class="node-sub">jpkb 表取答案 · 单连接加锁</text>
+  <text x="353" y="662" class="node-sub">knowledge 表取答案 · 连接复用</text>
 
   <rect x="60" y="684" width="530" height="54" rx="10" fill="#ffffff" stroke="#c3e8d7"/>
   <text x="78" y="707" class="node-file">utils/preprocess.py</text>
@@ -143,14 +143,14 @@
   <text x="58" y="999" class="node-sub">IVF_FLAT(nlist 128) + 倒排</text>
 
   <rect x="276" y="936" width="218" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
-  <text x="294" y="961" class="node-file">MySQL jpkb ＋ Redis</text>
+  <text x="294" y="961" class="node-file">MySQL knowledge ＋ Redis</text>
   <text x="294" y="981" class="node-sub">subjects_kg 库 · db 0</text>
   <text x="294" y="999" class="node-sub">问答对 / 问题列表 / 答案缓存</text>
 
   <rect x="512" y="936" width="218" height="76" rx="12" fill="#ffffff" stroke="#cfd8e6"/>
-  <text x="530" y="961" class="node-file">SQLite chat_history.db</text>
-  <text x="530" y="981" class="node-sub">messages · recent_history()</text>
-  <text x="530" y="999" class="node-sub">WAL · 线程本地连接</text>
+  <text x="530" y="961" class="node-file">MySQL 会话库</text>
+  <text x="530" y="981" class="node-sub">conversations · chat_sessions</text>
+  <text x="530" y="999" class="node-sub">UUID 会话 · 线程本地连接</text>
 
   <rect x="748" y="936" width="218" height="76" rx="12" fill="#eef7ff" stroke="#a9cdf0"/>
   <text x="766" y="961" class="node-file">milvus_redis/</text>
@@ -162,5 +162,5 @@
   <text x="1002" y="981" class="node-sub">config.example.ini 为样例</text>
   <text x="1002" y="999" class="node-sub">config.ini 本地不入库</text>
 
-  <text x="40" y="1036" class="foot">依赖锁定：requirements.txt（371 包，源自 conda env edurag）　·　模型权重 5.4 GB 不入库，下载方式见 README「模型准备」　·　.gitignore 排除模型 / 日志 / 会话库 / 本地配置</text>
+  <text x="40" y="1036" class="foot">依赖锁定：requirements.txt（369 包，源自 conda env edurag）　·　模型权重 5.4 GB 不入库，下载方式见 README「模型准备」　·　.gitignore 排除模型 / 日志 / 本地配置</text>
 </svg>

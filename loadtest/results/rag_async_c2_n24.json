@@ -1,0 +1,292 @@
+{
+  "scenario": "rag",
+  "mode": "rag",
+  "tag": "async",
+  "base_url": "http://127.0.0.1:8000",
+  "concurrency": 2,
+  "requests": 24,
+  "wall_time_s": 397.531,
+  "qps": 0.06,
+  "success": 24,
+  "errors": 0,
+  "hit_rate": 1.0,
+  "rtt_all": {
+    "count": 24,
+    "mean": 32.0373,
+    "std": 7.3552,
+    "min": 16.062,
+    "p50": 33.2092,
+    "p90": 40.9639,
+    "p95": 41.0359,
+    "p99": 42.2138,
+    "max": 42.5637
+  },
+  "rtt_found": {
+    "count": 24,
+    "mean": 32.0373,
+    "std": 7.3552,
+    "min": 16.062,
+    "p50": 33.2092,
+    "p90": 40.9639,
+    "p95": 41.0359,
+    "p99": 42.2138,
+    "max": 42.5637
+  },
+  "server_elapsed_all": {
+    "count": 24,
+    "mean": 32.0187,
+    "std": 7.3526,
+    "min": 16.0532,
+    "p50": 33.2,
+    "p90": 40.9547,
+    "p95": 41.0268,
+    "p99": 42.2017,
+    "max": 42.5507
+  },
+  "error_samples": [],
+  "engine_mix": {
+    "rag": 24
+  },
+  "raw": [
+    {
+      "index": 0,
+      "question": "请详细介绍Transformer中自注意力机制的计算过程",
+      "rtt": 34.192854500000976,
+      "status": 200,
+      "server_elapsed": 34.0002,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 1,
+      "question": "解释一下BERT的MLM和NSP两个预训练任务的区别",
+      "rtt": 31.13495049999983,
+      "status": 200,
+      "server_elapsed": 31.1217,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 2,
+      "question": "大模型微调中LoRA的原理是什么，为什么能省显存",
+      "rtt": 36.043137299999216,
+      "status": 200,
+      "server_elapsed": 36.0301,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 3,
+      "question": "简述知识图谱在智能教育系统里的典型应用",
+      "rtt": 17.527441400001408,
+      "status": 200,
+      "server_elapsed": 17.5191,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 4,
+      "question": "向量数据库的ANN近似检索是怎么实现的",
+      "rtt": 40.99959189999936,
+      "status": 200,
+      "server_elapsed": 40.9901,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 5,
+      "question": "RAG系统里为什么要在召回之后再加一层重排序",
+      "rtt": 37.67011559999992,
+      "status": 200,
+      "server_elapsed": 37.6608,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 6,
+      "question": "训练深度网络时梯度消失问题有哪些常见解决办法",
+      "rtt": 23.984247700000196,
+      "status": 200,
+      "server_elapsed": 23.9715,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 7,
+      "question": "对比RNN和CNN处理文本序列时的优缺点",
+      "rtt": 29.729996399999436,
+      "status": 200,
+      "server_elapsed": 29.7171,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 8,
+      "question": "什么是few-shot prompting，和微调有什么区别",
+      "rtt": 32.42922379999982,
+      "status": 200,
+      "server_elapsed": 32.4207,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 9,
+      "question": "请说明BM25算法的打分原理和它的局限",
+      "rtt": 40.18209550000029,
+      "status": 200,
+      "server_elapsed": 40.1692,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 10,
+      "question": "教育领域做知识点推荐一般用哪些召回策略",
+      "rtt": 40.88059649999923,
+      "status": 200,
+      "server_elapsed": 40.872,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 11,
+      "question": "如何评估一个问答系统的答案质量",
+      "rtt": 26.42006190000029,
+      "status": 200,
+      "server_elapsed": 26.4101,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 12,
+      "question": "请详细介绍Transformer中自注意力机制的计算过程",
+      "rtt": 33.38366379999934,
+      "status": 200,
+      "server_elapsed": 33.3758,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 13,
+      "question": "解释一下BERT的MLM和NSP两个预训练任务的区别",
+      "rtt": 29.46688240000003,
+      "status": 200,
+      "server_elapsed": 29.453,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 14,
+      "question": "大模型微调中LoRA的原理是什么，为什么能省显存",
+      "rtt": 28.326059900000473,
+      "status": 200,
+      "server_elapsed": 28.3138,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 15,
+      "question": "简述知识图谱在智能教育系统里的典型应用",
+      "rtt": 16.0620171999999,
+      "status": 200,
+      "server_elapsed": 16.0532,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 16,
+      "question": "向量数据库的ANN近似检索是怎么实现的",
+      "rtt": 35.39786110000023,
+      "status": 200,
+      "server_elapsed": 35.3863,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 17,
+      "question": "RAG系统里为什么要在召回之后再加一层重排序",
+      "rtt": 33.0347299999994,
+      "status": 200,
+      "server_elapsed": 33.0243,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 18,
+      "question": "训练深度网络时梯度消失问题有哪些常见解决办法",
+      "rtt": 20.485553000000436,
+      "status": 200,
+      "server_elapsed": 20.477,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 19,
+      "question": "对比RNN和CNN处理文本序列时的优缺点",
+      "rtt": 42.56372949999968,
+      "status": 200,
+      "server_elapsed": 42.5507,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 20,
+      "question": "什么是few-shot prompting，和微调有什么区别",
+      "rtt": 27.731987499999377,
+      "status": 200,
+      "server_elapsed": 27.7199,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 21,
+      "question": "请说明BM25算法的打分原理和它的局限",
+      "rtt": 34.26960640000107,
+      "status": 200,
+      "server_elapsed": 34.2601,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 22,
+      "question": "教育领域做知识点推荐一般用哪些召回策略",
+      "rtt": 41.04224950000025,
+      "status": 200,
+      "server_elapsed": 41.0333,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    },
+    {
+      "index": 23,
+      "question": "如何评估一个问答系统的答案质量",
+      "rtt": 35.93719969999984,
+      "status": 200,
+      "server_elapsed": 35.9195,
+      "engine": "rag",
+      "found": true,
+      "note": ""
+    }
+  ]
+}

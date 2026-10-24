@@ -56,10 +56,15 @@
 <div class="wrap">
 
 <header>
-  <h1>EduRAG 集成问答系统 · 压力测试报告</h1>
+  <h1>EduRAG 集成问答系统 · 压力测试报告（Flask 同步版 · 历史存档）</h1>
   <div class="meta">
     测试时间 2026-10-23 21:08 – 21:36 ｜ 被测服务 http://127.0.0.1:5000（Flask 开发服务器，单进程）
     ｜ 硬件 RTX 4060 Laptop / conda env <code>edurag</code> (Python 3.12)
+  </div>
+  <div class="note">
+    <b>存档说明：</b>本报告测的是同步版 <code>app.py</code>，该文件已于 2026-10-24 移除；
+    当前唯一入口为异步版 <code>app_async.py</code>，最新分位数见
+    <a href="压测对比报告-同步vs异步.md">压测对比报告-同步vs异步.md</a>。
   </div>
 </header>
 
@@ -156,7 +161,7 @@
 
 <h2>五、测试方法与局限</h2>
 <ul>
-  <li>压测工具为自研脚本 <code>loadtest/bench_qa.py</code>，走真实 HTTP 接口 <code>POST /query</code>，线程模型为固定并发数 + 队列派发。</li>
+  <li>压测工具为自研脚本 <code>loadtest/bench_qa.py</code>（该脚本已于 2026-10-24 移除，仓库内只保留原始明细），走真实 HTTP 接口 <code>POST /query</code>，线程模型为固定并发数 + 队列派发。</li>
   <li>FAQ 输入取自 MySQL <code>knowledge</code> 表 467 条真实问题，每个问题只请求一次，尽量避开 Redis 缓存；改写问号版本用于强制冷路径。</li>
   <li>RAG 输入为 12 条技术类问题循环，强制 <code>mode=rag</code> 绕过 FAQ。</li>
   <li><b>分位数算法</b>：<code>numpy.percentile</code> 线性插值。RAG 的 P99 在 n=44 时实际接近最大值，参考价值弱于 P95；若要稳定 P99 需 ≥100 样本（约 50 分钟）。</li>

@@ -178,15 +178,15 @@ async def _route(
     question: str, mode: str, source_filter: Optional[str], conversation_id: Optional[int]
 ) -> dict:
     """
-    异步版路由：与 qa_router.answer_query 的判定顺序保持一致，
+    统一路由：判定顺序（直答 → FAQ → RAG）固定在这里，
     区别只是每条链路各自走独立的并发闸门与超时。
-    返回值结构同 answer_query。
+    返回值结构见 qa_router.make_result。
     """
     start = time.perf_counter()
     note = ""
 
     # ---------- 0. 身份 / 寒暄直答 ----------
-    # 与同步版共用同一份规则，保证两套服务行为一致
+    # 这类问题没有检索价值，直接返回模板文案：耗时微秒级，也避免大模型自由发挥
     reply = match_smalltalk(question)
     if reply:
         return make_result(reply, ENGINE_SMALLTALK, time.perf_counter() - start,

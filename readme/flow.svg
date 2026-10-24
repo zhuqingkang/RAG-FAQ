@@ -21,7 +21,7 @@
 
   <rect width="1240" height="1210" fill="#f6f8fc"/>
   <text x="40" y="42" class="title">EduRAG 集成问答系统 · 请求流程图</text>
-  <text x="40" y="64" class="subtitle">一次提问从进入服务到返回答案的完整路径（同步版逐步；异步版的差异在右侧标注）</text>
+  <text x="40" y="64" class="subtitle">一次提问从进入服务到返回答案的完整路径（异步版实链路：阻塞调用进线程池，FAQ / RAG / DB 三闸门限流）</text>
 
   <!-- 连线：主脊 -->
   <line x1="620" y1="122" x2="620" y2="144" stroke="#8ea2bf" stroke-width="1.8" marker-end="url(#a)"/>
@@ -54,13 +54,13 @@
 
   <!-- 4 会话 -->
   <rect x="420" y="304" width="400" height="52" rx="10" fill="#ffffff" stroke="#cfd8e6" stroke-width="1.2"/>
-  <text x="442" y="326" class="t">解析会话（SQLite）</text>
+  <text x="442" y="326" class="t">解析会话（MySQL）</text>
   <text x="442" y="345" class="s">无 session_id → 新建会话；cid 供 RAG 取最近 5 轮历史</text>
 
   <!-- 5 路由 -->
   <rect x="420" y="382" width="400" height="52" rx="10" fill="#eef3ff" stroke="#9db6ff" stroke-width="1.4"/>
-  <text x="442" y="404" class="t">qa_router 判定 mode</text>
-  <text x="442" y="423" class="s">auto：FAQ 优先，need_rag=true 才转 RAG　|　faq / rag：单链路</text>
+  <text x="442" y="404" class="t">入口层 _route 判定顺序</text>
+  <text x="442" y="423" class="s">直答 → FAQ → RAG；auto 下 need_rag 才转 RAG｜faq / rag 单链路</text>
 
   <!-- 6 FAQ 缓存 -->
   <rect x="420" y="460" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
@@ -74,7 +74,7 @@
 
   <!-- 8 MySQL -->
   <rect x="420" y="616" width="400" height="52" rx="10" fill="#eefaf4" stroke="#8edcba" stroke-width="1.2"/>
-  <text x="442" y="638" class="t">FAQ ③ MySQL jpkb 取标准答案</text>
+  <text x="442" y="638" class="t">FAQ ③ MySQL knowledge 取标准答案</text>
   <text x="442" y="657" class="s">答案非空才写回 Redis → (answer, need_rag=false)</text>
 
   <!-- 9 分类 -->
@@ -128,7 +128,7 @@
   <!-- ============ 右侧说明 ============ -->
   <line x1="824" y1="174" x2="872" y2="174" stroke="#c9d3e3" stroke-width="1.3" stroke-dasharray="4 3"/>
   <rect x="876" y="138" width="324" height="76" rx="10" fill="#ffffff" stroke="#dbe3ef"/>
-  <text x="894" y="160" class="noteT">异步版（app_async.py）</text>
+  <text x="894" y="160" class="noteT">并发控制（app_async.py）</text>
   <text x="894" y="179" class="note">FAQ / RAG / DB 三套 CapacityLimiter 限流</text>
   <text x="894" y="196" class="note">超时 30s / 180s；single-flight 按会话去重</text>
 

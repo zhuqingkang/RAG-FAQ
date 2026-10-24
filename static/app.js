@@ -188,7 +188,8 @@ function addMessage(role, text, opts = {}) {
 
     const metaText = document.createElement('span');
     metaText.className = 'meta-text';
-    metaText.textContent = opts.meta || '';
+    // 徽标已经表达引擎，这里去掉 meta 里重复的前缀（"FAQ · 耗时 0.01 s" -> "耗时 0.01 s"）
+    metaText.textContent = String(opts.meta || '').replace(/^(FAQ|RAG|直答|未命中)\s*·\s*/, '');
     // 过程说明（例如「FAQ 未命中，已转 RAG」）作为悬浮提示，不占版面
     if (opts.note) metaText.title = opts.note;
     meta.appendChild(metaText);
