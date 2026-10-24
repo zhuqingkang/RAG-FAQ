@@ -1,7 +1,7 @@
 # 本地依赖环境：Milvus + Redis（docker compose）
 
 本目录提供项目运行所需的两个外部服务：**Milvus（向量库）** 与 **Redis（缓存）**。
-MySQL 与 DashScope 不在本文件范围内：前者需自行安装（`subjects_kg` 库 + `jpkb` 表），后者是云服务。
+MySQL 与 DashScope 不在本文件范围内：前者需自行安装（`subjects_kg` 库 + `knowledge` 表），后者是云服务。
 
 ## 组件一览
 
@@ -99,7 +99,7 @@ print(r.ping())                   # True
 | 容器资源上限 | 各服务加 `mem_limit` / `cpus`，或用 `deploy.resources` | Milvus 单机建议 ≥ 4 GB 内存；内存不足会反复重启 |
 | 网络名 | 文件末尾 `networks.default.name` | 只在需要与其它 compose 项目互通时才要改 |
 | 时区 | 各服务 `environment` 加 `TZ=Asia/Shanghai` | 影响容器内日志时间戳，不影响业务 |
-| 增加 MySQL | 追加一个 `mysql` 服务 | 本项目需要 `subjects_kg` 库与 `jpkb` 表，建表 SQL 见开发文档 §8.5 |
+| 增加 MySQL | 追加一个 `mysql` 服务 | 本项目需要 `subjects_kg` 库与 `knowledge` 表，建表 SQL 见开发文档 §8.5 |
 
 ## 常见问题
 

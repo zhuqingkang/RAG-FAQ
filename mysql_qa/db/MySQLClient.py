@@ -33,8 +33,11 @@ class MySQLClient:
 
     def create_table(self):
         try:
+            # 表名 knowledge（原 jpkb 已改名）。
+            # 单学科知识对体量很大时可按 subject_name 分区，
+            # 但主键需改为 (id, subject_name)，写法见 readme/开发文档-详细版.md §8.5.1
             sql = """
-                create table if not exists jpkb (
+                create table if not exists knowledge (
                     id int auto_increment primary key,
                     subject_name varchar(100) ,
                     question varchar(1000) ,
@@ -53,7 +56,7 @@ class MySQLClient:
             df = pd.read_csv(csv_path)
 
             sql = """
-                    insert into jpkb (subject_name, question, answer) values (%s, %s, %s);
+                    insert into knowledge (subject_name, question, answer) values (%s, %s, %s);
                     """
 
             with self._lock:
@@ -72,7 +75,7 @@ class MySQLClient:
         logger.info(f'Mysql 查询问列表开始。。。')
         try:
             sql ='''
-            select question from jpkb;
+            select question from knowledge;
             '''
             with self._lock:
                 self.cursor.execute(sql)
@@ -87,7 +90,7 @@ class MySQLClient:
         try:
             # 获取指定问题的答案
             sql = '''
-            select answer from jpkb where question = %s;'''
+            select answer from knowledge where question = %s;'''
             with self._lock:
                 self.cursor.execute(sql, (question,))
                 res = self.cursor.fetchone()

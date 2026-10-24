@@ -157,7 +157,7 @@
 <h2>五、测试方法与局限</h2>
 <ul>
   <li>压测工具为自研脚本 <code>loadtest/bench_qa.py</code>，走真实 HTTP 接口 <code>POST /query</code>，线程模型为固定并发数 + 队列派发。</li>
-  <li>FAQ 输入取自 MySQL <code>jpkb</code> 表 467 条真实问题，每个问题只请求一次，尽量避开 Redis 缓存；改写问号版本用于强制冷路径。</li>
+  <li>FAQ 输入取自 MySQL <code>knowledge</code> 表 467 条真实问题，每个问题只请求一次，尽量避开 Redis 缓存；改写问号版本用于强制冷路径。</li>
   <li>RAG 输入为 12 条技术类问题循环，强制 <code>mode=rag</code> 绕过 FAQ。</li>
   <li><b>分位数算法</b>：<code>numpy.percentile</code> 线性插值。RAG 的 P99 在 n=44 时实际接近最大值，参考价值弱于 P95；若要稳定 P99 需 ≥100 样本（约 50 分钟）。</li>
   <li>被测服务为单实例、单进程、开发服务器，<b>数据不代表生产部署能力</b>；所有请求均真实写入 <code>chat_store</code>，压测产生的对话记录已留在库中。</li>

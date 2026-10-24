@@ -9,7 +9,7 @@
 # 说明：
 #   1) 走真实 HTTP 接口 POST /query，测的是端到端延迟（RTT）。
 #   2) 同时记录服务端自报的 elapsed 字段，用于拆分「框架/落库开销」与「检索生成开销」。
-#   3) faq 场景从 MySQL jpkb 表读取真实问题，每个问题只请求一次，尽量避开 Redis 缓存；
+#   3) faq 场景从 MySQL knowledge 表读取真实问题，每个问题只请求一次，尽量避开 Redis 缓存；
 #      faq_hot 场景固定同一问题，命中 Redis 缓存，用于对比冷热路径。
 #   4) rag 场景强制 mode=rag，绕过 FAQ。
 import argparse
@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent          # .../integrated_qa_system/l
 PROJECT_DIR = BASE_DIR.parent                       # .../integrated_qa_system
 RESULT_DIR = BASE_DIR / "results"
 
-# FAQ 场景：能从 jpkb 读到的真实问题不够时，循环复用
+# FAQ 场景：能从 knowledge 读到的真实问题不够时，循环复用
 # RAG 场景：专业咨询类问题，会走「意图分类 -> 检索 -> 精排 -> 生成」完整链路
 RAG_QUESTIONS = [
     "请详细介绍Transformer中自注意力机制的计算过程",
@@ -60,11 +60,11 @@ def read_mysql_config():
 
 
 def load_faq_questions():
-    """从 jpkb 表取全部问题，作为 FAQ 压测的输入集。"""
+    """从 knowledge 表取全部问题，作为 FAQ 压测的输入集。"""
     conn = pymysql.connect(**read_mysql_config())
     try:
         with conn.cursor() as cursor:
-            cursor.execute("select question from jpkb;")
+            cursor.execute("select question from knowledge;")
             rows = cursor.fetchall()
     finally:
         conn.close()
@@ -76,7 +76,7 @@ def build_jobs(scenario, total, variant=False):
     if scenario in ("faq", "faq_hot"):
         questions = load_faq_questions()
         if not questions:
-            raise RuntimeError("jpkb 表没有数据，无法进行 FAQ 压测")
+            raise RuntimeError("knowledge 表没有数据，无法进行 FAQ 压测")
         if scenario == "faq_hot":
             # 固定问同一个问题：第一次之后全部命中 Redis 缓存
             questions = [questions[0]]

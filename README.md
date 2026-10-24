@@ -88,7 +88,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 浏览器 → 唯一前端（templates/ + static/）
         → app.py / app_async.py        入口层
         → qa_router.py                 路由层（唯一判定入口）
-             ├─ FAQ  mysql_qa/  → BM25 → Redis 缓存 → MySQL jpkb
+             ├─ FAQ  mysql_qa/  → BM25 → Redis 缓存 → MySQL knowledge
              │       返回 (answer, need_rag)，need_rag 决定是否降级
              └─ RAG  rag_qa/    → 混合检索 → 父块去重 → rerank → 注入历史 → LLM 生成
         → chat_store（MySQL: conversations / chat_sessions）落库 → 返回 JSON
@@ -96,7 +96,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 | 链路 | 数据源 | 检索 | 生成 | 耗时 | 触发条件 |
 |---|---|---|---|---|---|
-| FAQ | MySQL `jpkb` | BM25 + softmax，最高分 > 0.85 | 直接取标准答案 | 毫秒 | `auto` 下永远先试 |
+| FAQ | MySQL `knowledge` | BM25 + softmax，最高分 > 0.85 | 直接取标准答案 | 毫秒 | `auto` 下永远先试 |
 | RAG | Milvus `edurag_final` | BGE-M3 dense(0.7)+sparse(0.3) → 父块去重 → reranker Top2 | DashScope 生成（带最近 5 轮历史） | 秒 | `need_rag=true` 或 `mode=rag` |
 
 `mode` 三态：`auto`（默认，FAQ 优先）/ `faq`（只查 FAQ）/ `rag`（只走 RAG）。
@@ -186,7 +186,8 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 **FAQ 链路**
 - 单例 + 预热：`mysql_qa/utils/qa_service.get_qa_system()` / `ensure_ready()`。
-- 索引：启动时 `select question from jpkb` → jieba 分词 → BM25；daemon 线程每 30 分钟重新同步。
+- 索引：启动时 `select question from knowledge` → jieba 分词 → BM25；daemon 线程每 30 分钟重新同步。
+- 容量规划：单学科知识对体量很大时可按 `subject_name` 分区（主键需改为 `(id, subject_name)`，LIST COLUMNS 或 KEY 分区），建表写法与限制见 `readme/开发文档-详细版.md` §8.5.1。
 - 判定：Redis `answer:{query}` 命中即返回；否则 BM25 打分 → softmax → 最高分 > 0.85 才算命中。
 - 返回值契约：`BM25Search.search()` / `MySQLQASystem.query()` 统一返回 `(answer, need_rag)`。命中问题但 `fetch_answer` 为空时不写缓存，按「无可用答案」置 `need_rag=true`，避免空值污染 Redis。
 - 命中后用最相似的历史问题去 MySQL 取标准答案，并回写缓存。
@@ -230,7 +231,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | 模型 | milvus-model（BGE-M3）· sentence-transformers 6.1（bge-reranker-large）· torch 2.7.1+cu126 · transformers 5.17 |
 | 生成 | openai SDK 3.16 → DashScope 兼容接口（qwen3.7-plus） |
 | **LangChain** | **langchain 1.4.4 · langchain-core 1.6.9 · langchain-community 0.4.2 · langchain-text-splitters 1.1.3** |
-| 存储 | MySQL（jpkb · conversations · chat_sessions）· Redis 8.1 · Milvus（edurag_final） |
+| 存储 | MySQL（knowledge · conversations · chat_sessions）· Redis 8.1 · Milvus（edurag_final） |
 | 解析 | pymupdf · python-docx · python-pptx · RapidOCR · opencv |
 
 **LangChain 用在基础抽象层**：`PromptTemplate`（提示词模板）、`Document` / `BaseLoader`（文档对象与加载器基类）、`RecursiveCharacterTextSplitter`（中文切分）、`TextLoader`（.txt 读取）。检索、重排、生成、路由均为自研代码，未使用 LCEL / Chain / Agent / Retriever。
