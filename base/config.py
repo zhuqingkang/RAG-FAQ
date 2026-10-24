@@ -77,6 +77,14 @@ class Config:
         # 是否启用父子切块结果缓存
         self.CACHE_CHUNKS = self.config.getboolean('cache', 'chunks', fallback=True)
 
+        # 会话保留策略
+        # 未登录的临时会话保留天数（超过即清理）
+        self.CHAT_ANON_RETENTION_DAYS = self.config.getint('chat', 'anonymous_retention_days', fallback=1)
+        # 已登录用户的会话保留天数
+        self.CHAT_USER_RETENTION_DAYS = self.config.getint('chat', 'user_retention_days', fallback=30)
+        # 启动时是否自动执行一次清理
+        self.CHAT_AUTO_PURGE = self.config.getboolean('chat', 'auto_purge', fallback=True)
+
         # 检索参数
         # 父块大小
         self.PARENT_CHUNK_SIZE = self.config.getint('retrieval', 'parent_chunk_size', fallback=1200)

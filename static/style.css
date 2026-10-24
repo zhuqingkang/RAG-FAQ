@@ -442,7 +442,7 @@ body {
 	background: rgba(255, 92, 122, 0.08);
 }
 
-/* 引擎徽标：FAQ（绿）/ RAG（紫） */
+/* 引擎徽标：直答（青）/ FAQ（绿）/ RAG（紫） */
 .badge {
 	display: inline-flex;
 	align-items: center;
@@ -459,6 +459,12 @@ body {
 	color: #7bf0c0;
 	background: rgba(61, 220, 151, 0.16);
 	border: 1px solid rgba(61, 220, 151, 0.42);
+}
+
+.badge.smalltalk {
+	color: #8fd8ff;
+	background: rgba(70, 170, 255, 0.16);
+	border: 1px solid rgba(70, 170, 255, 0.42);
 }
 
 .badge.rag {

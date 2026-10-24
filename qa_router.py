@@ -24,6 +24,7 @@ from base import Config, logger
 # FAQ 侧与 RAG 侧各自的单例/预热入口
 from mysql_qa.utils import chat_store
 from mysql_qa.utils.qa_service import ensure_ready as faq_ensure_ready, get_qa_system
+from mysql_qa.utils.smalltalk import match_smalltalk
 from rag_qa.rag_service import answer as rag_answer
 from rag_qa.rag_service import ensure_ready as rag_ensure_ready
 
@@ -36,6 +37,8 @@ MODES = ("auto", "faq", "rag")
 ENGINE_FAQ = "faq"
 ENGINE_RAG = "rag"
 ENGINE_NONE = "none"
+# 身份 / 寒暄直答：不经过检索与生成，直接返回模板文案
+ENGINE_SMALLTALK = "smalltalk"
 
 # FAQ 未命中时给用户的兜底话术
 NO_ANSWER_TEXT = "抱歉，知识库中没有找到可靠的答案，请换个问法试试~"
@@ -62,7 +65,8 @@ def _load_history(conversation_id, turns=5):
     if not conversation_id:
         return None
     try:
-        return chat_store.recent_history(int(conversation_id), turns=turns)
+        # conversation_id 现为 36 位 UUID 字符串，不再做 int 转换
+        return chat_store.recent_history(str(conversation_id), turns=turns)
     except Exception as e:
         logger.warning(f"读取对话历史失败，本次不带历史: {e}")
         return None
@@ -104,7 +108,7 @@ def answer_query(question, mode="auto", source_filter=None, conversation_id=None
     :param question:        用户问题（调用方需保证非空）
     :param mode:            auto / faq / rag
     :param source_filter:   学科过滤，仅对 RAG 生效；None 表示不过滤
-    :param conversation_id: 会话 id，用于给 RAG 取最近几轮对话历史；None 表示不带历史
+    :param conversation_id: 会话标识（36 位 UUID 字符串），用于给 RAG 取最近几轮对话历史；None 表示不带历史
     :return: dict ——
         {
           "answer":   str | None,      # None 表示没有答案
@@ -123,6 +127,13 @@ def answer_query(question, mode="auto", source_filter=None, conversation_id=None
 
     answer = None
     note = ""
+
+    # ---------- 0. 身份 / 寒暄直答 ----------
+    # 这类问题没有检索价值，直接返回模板文案：耗时微秒级，也避免大模型自由发挥
+    reply = match_smalltalk(question)
+    if reply:
+        return make_result(reply, ENGINE_SMALLTALK, time.perf_counter() - start,
+                           "身份/寒暄直答，未进入检索链路")
 
     # ---------- 1. FAQ 链路 ----------
     if mode in ("auto", "faq"):
@@ -215,6 +226,7 @@ def describe():
         "modes": list(MODES),
         "sources": list(conf.VALID_SOURCES),
         "engines": {
+            ENGINE_SMALLTALK: "身份与寒暄直答（规则命中，不进入检索链路）",
             ENGINE_FAQ: "FAQ 知识库（BM25 检索 · Redis 缓存）",
             ENGINE_RAG: "RAG 知识库（Milvus 混合检索 · BGE 精排 · 大模型生成）",
         },

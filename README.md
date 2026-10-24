@@ -91,7 +91,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
              ├─ FAQ  mysql_qa/  → BM25 → Redis 缓存 → MySQL jpkb
              │       返回 (answer, need_rag)，need_rag 决定是否降级
              └─ RAG  rag_qa/    → 混合检索 → 父块去重 → rerank → 注入历史 → LLM 生成
-        → chat_store（SQLite）落库 → 返回 JSON
+        → chat_store（MySQL: conversations / chat_sessions）落库 → 返回 JSON
 ```
 
 | 链路 | 数据源 | 检索 | 生成 | 耗时 | 触发条件 |
@@ -200,10 +200,19 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 - 生成：`rag_prompt(context, history, question, phone)` → DashScope；无可靠上下文时输出含客服电话的兜底句。
 
 **会话存储**
-- SQLite + WAL，库文件 `mysql_qa/data/chat_history.db`；线程本地连接 + 全局写锁。
-- `add_exchange` 单事务写"一问一答"，顺带把默认标题自动改成首个问题。
-- `recent_history(cid, turns=5)` 取最近 N 轮问答对，供 RAG 注入；只有真正转到 RAG 时才查这一次库。
-- `messages.meta` 形如 `FAQ · 耗时 0.0123 s`，前端据此还原引擎徽标。
+- MySQL 两张表：`conversations`（一行一轮问答：`session_id / question / answer / timestamp / user_id / meta`）+ `chat_sessions`（会话元信息：标题、归属用户、时间）。
+- 会话标识 `session_id` 为 36 位 UUID，未登录也可用（临时 id，`user_id` 为 `NULL`）；登录后调用 `bind_user(session_id, user_id)` 把历史挂到账号名下。
+- 线程本地连接（pymysql），首次访问才建表；缺列自动补齐，兼容手工建表/演示 SQL 灌入的数据。
+- `add_exchange` 单事务写一轮问答，顺带把默认标题自动改成首个问题。
+- `recent_history(session_id, turns=5)` 取最近 N 轮问答对，供 RAG 注入；只有真正转到 RAG 时才查这一次库。
+- `conversations.meta` 形如 `FAQ · 耗时 0.0123 s`，前端据此还原引擎徽标。
+- 旧 SQLite 实现保留为**快速验证通道**：MySQL 表还没建好时零配置跑通链路，接口签名与 MySQL 版一致。迁移脚本 `mysql_qa/utils/migrate_sqlite_history.py --apply` 按 uuid5 固定映射导入旧库，重复执行幂等（旧库已迁移完毕并从仓库清除）。
+- **保留策略**：临时会话（`user_id IS NULL`）保留 1 天、登录用户保留 30 天，按 `chat_sessions.updated_at` 以会话为单位整体清理；服务启动时自动执行，也可 `python mysql_qa/utils/chat_store.py --purge` 手动触发，阈值在 `config.ini [chat]` 段调整（`auto_purge = false` 可关闭）。
+
+**身份 / 寒暄直答**
+- `mysql_qa/utils/smalltalk.py` 维护规则表，全句匹配「你是谁 / 在吗 / 谢谢」这类问题，命中即返回模板文案（耗时微秒级）。
+- 直接返回的 `engine` 为 `smalltalk`，前端徽标显示「直答」；两套服务共用同一份规则，行为不漂移。
+- 公司名称与开场白集中在 `COMPANY_NAME` 与 `RULES` 中，替换即可。
 
 **异步版差异**
 - 阻塞调用全部 `run_sync` 进线程池；三套 `CapacityLimiter`：FAQ=`max(4, CPU)`、RAG=2、DB=32。
@@ -221,7 +230,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | 模型 | milvus-model（BGE-M3）· sentence-transformers 6.1（bge-reranker-large）· torch 2.7.1+cu126 · transformers 5.17 |
 | 生成 | openai SDK 3.16 → DashScope 兼容接口（qwen3.7-plus） |
 | **LangChain** | **langchain 1.4.4 · langchain-core 1.6.9 · langchain-community 0.4.2 · langchain-text-splitters 1.1.3** |
-| 存储 | MySQL（jpkb）· Redis 8.1 · Milvus（edurag_final）· SQLite（chat_history.db） |
+| 存储 | MySQL（jpkb · conversations · chat_sessions）· Redis 8.1 · Milvus（edurag_final） |
 | 解析 | pymupdf · python-docx · python-pptx · RapidOCR · opencv |
 
 **LangChain 用在基础抽象层**：`PromptTemplate`（提示词模板）、`Document` / `BaseLoader`（文档对象与加载器基类）、`RecursiveCharacterTextSplitter`（中文切分）、`TextLoader`（.txt 读取）。检索、重排、生成、路由均为自研代码，未使用 LCEL / Chain / Agent / Retriever。
@@ -350,8 +359,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | **jieba** | 中文分词（FAQ 检索与文档处理） | https://github.com/fxsjy/jieba |
 | **rank_bm25** | BM25Okapi 稀疏检索 | https://github.com/dorianbrown/rank_bm25 |
 | **Redis / redis-py** | 问题列表与答案缓存 | https://github.com/redis/redis ｜ https://github.com/redis/redis-py |
-| **MySQL / PyMySQL** | FAQ 标准问答对存储 | https://www.mysql.com ｜ https://github.com/PyMySQL/PyMySQL |
-| **SQLite** | 会话与消息持久化 | https://www.sqlite.org |
+| **MySQL / PyMySQL** | FAQ 标准问答对 + 会话问答记录（`conversations` / `chat_sessions`） | https://www.mysql.com ｜ https://github.com/PyMySQL/PyMySQL |
 
 ### 服务与工程
 

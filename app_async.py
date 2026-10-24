@@ -25,9 +25,11 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from base import logger
+from base import Config, logger
 from mysql_qa.utils import chat_store
+from mysql_qa.utils.smalltalk import match_smalltalk
 from qa_router import (
+    ENGINE_SMALLTALK,
     MODES,
     NO_ANSWER_TEXT,
     ask_faq,
@@ -51,7 +53,7 @@ RAG_CONCURRENCY = int(os.getenv("RAG_CONCURRENCY", "2"))
 FAQ_TIMEOUT = float(os.getenv("FAQ_TIMEOUT", "30"))
 # 单次 RAG 生成超时（秒）：大模型生成较慢，给足时间
 RAG_TIMEOUT = float(os.getenv("RAG_TIMEOUT", "180"))
-# SQLite 都是毫秒级小事务，可以给大一点的并发
+# 会话落库（MySQL）是毫秒级小事务，连接按线程独占，可以给大一点的并发
 DB_CONCURRENCY = int(os.getenv("DB_CONCURRENCY", "32"))
 
 faq_limiter = CapacityLimiter(FAQ_CONCURRENCY)
@@ -59,7 +61,7 @@ rag_limiter = CapacityLimiter(RAG_CONCURRENCY)
 db_limiter = CapacityLimiter(DB_CONCURRENCY)
 
 # 引擎标识 → 展示名（写入消息 meta，历史对话也据此还原徽标）
-ENGINE_LABEL = {"faq": "FAQ", "rag": "RAG", "none": "未命中"}
+ENGINE_LABEL = {"smalltalk": "直答", "faq": "FAQ", "rag": "RAG", "none": "未命中"}
 
 
 # ==================== 应用 ====================
@@ -76,6 +78,20 @@ async def lifespan(_app: FastAPI):
 
     # FAQ 侧预热很快（jieba + BM25 索引），在启动阶段同步完成，避免首个请求抖动
     await run_sync(warm_up_faq, limiter=faq_limiter)
+
+    # 过期会话清理：临时会话 1 天、登录用户会话 30 天（config.ini [chat] 段可调）
+    conf = Config()
+    if conf.CHAT_AUTO_PURGE:
+        try:
+            stats = await run_sync(
+                chat_store.purge_expired,
+                conf.CHAT_ANON_RETENTION_DAYS,
+                conf.CHAT_USER_RETENTION_DAYS,
+                limiter=db_limiter,
+            )
+            logger.info(f"过期会话清理完成：{stats}")
+        except Exception as e:
+            logger.warning(f"过期会话清理失败（不影响服务）: {e}")
     # RAG 侧要加载 BGE-M3 / reranker，放后台线程，让服务立即具备响应能力
     warm_up_rag(in_background=True)
 
@@ -117,9 +133,14 @@ async def read_payload(request: Request) -> dict:
         return {}
 
 
-def _save_exchange(cid: int, question: str, answer: str, meta: str, fallback_title: str) -> str:
+def _save_exchange(cid: str, question: str, answer: str, meta: str, fallback_title: str, user_id=None) -> str:
     """保存一问一答（单事务）并返回最新标题（在线程池里执行）。"""
-    return chat_store.add_exchange(cid, question, answer, meta=meta) or fallback_title
+    return chat_store.add_exchange(cid, question, answer, meta=meta, user_id=user_id) or fallback_title
+
+
+def _create_conversation(user_id=None):
+    """run_sync 不支持关键字参数，这里包一层。"""
+    return chat_store.create_conversation(user_id=user_id)
 
 
 def _rag_sync(question: str, source_filter: Optional[str], history):
@@ -142,7 +163,7 @@ async def _load_history(conversation_id):
     if not conversation_id:
         return None
     try:
-        return await run_sync(chat_store.recent_history, int(conversation_id), limiter=db_limiter)
+        return await run_sync(chat_store.recent_history, str(conversation_id), limiter=db_limiter)
     except Exception as e:
         logger.warning(f"读取对话历史失败，本次不带历史: {e}")
         return None
@@ -163,6 +184,13 @@ async def _route(
     """
     start = time.perf_counter()
     note = ""
+
+    # ---------- 0. 身份 / 寒暄直答 ----------
+    # 与同步版共用同一份规则，保证两套服务行为一致
+    reply = match_smalltalk(question)
+    if reply:
+        return make_result(reply, ENGINE_SMALLTALK, time.perf_counter() - start,
+                           "身份/寒暄直答，未进入检索链路")
 
     # ---------- 1. FAQ 链路 ----------
     if mode in ("auto", "faq"):
@@ -214,7 +242,7 @@ async def route_with_dedup(
     会话必须进 key：RAG 会按会话注入对话历史，
     同一个问题在不同会话里的答案可能不同，跨会话复用会串味。
     """
-    key = (question, mode, source_filter or "", conversation_id or 0)
+    key = (question, mode, source_filter or "", conversation_id or "")
     loop = asyncio.get_running_loop()
     fut = _inflight.get(key)
 
@@ -256,10 +284,11 @@ async def index():
 async def query(request: Request):
     """
     POST /query
-    请求体：{"query": "...", "session_id": 1, "mode": "auto", "source": "ai"}
-        - session_id 可选（不传则新建会话）
+    请求体：{"query": "...", "session_id": "uuid", "mode": "auto", "source": "ai", "user_id": 1}
+        - session_id 可选（36 位 UUID，不传则新建会话）
         - mode 可选：auto（默认）/ faq / rag
         - source 可选：学科过滤，仅对 RAG 生效
+        - user_id 可选：仅登录后传，用于把会话与历史记录归到账号名下
     """
     start = time.perf_counter()
     data = await read_payload(request)
@@ -281,14 +310,18 @@ async def query(request: Request):
         mode = "auto"
     source = str(data.get("source") or "").strip() or None
 
-    # ---- 会话处理（阻塞的 SQLite 调用也放线程池）----
+    # user_id 只在登录后由前端带上；匿名访问为 None
+    user_id = data.get("user_id")
+    try:
+        user_id = int(user_id) if user_id not in (None, "", "null") else None
+    except (TypeError, ValueError):
+        user_id = None
+
+    # ---- 会话处理（阻塞的 MySQL 调用也放线程池）----
     session_id = data.get("session_id")
     cid = None
     if session_id not in (None, "", "null"):
-        try:
-            cid = int(session_id)
-        except (TypeError, ValueError):
-            cid = None
+        cid = str(session_id).strip() or None
 
     conversation = (
         await run_sync(chat_store.get_conversation, cid, limiter=db_limiter)
@@ -296,8 +329,8 @@ async def query(request: Request):
         else None
     )
     if conversation is None:
-        conversation = await run_sync(chat_store.create_conversation, limiter=db_limiter)
-        logger.info(f"新建会话 id={conversation['id']}")
+        conversation = await run_sync(_create_conversation, user_id, limiter=db_limiter)
+        logger.info(f"新建会话 id={conversation['id']} user_id={user_id}")
     cid = conversation["id"]
 
     # ---- 路由：FAQ 优先，未命中转 RAG ----
@@ -333,6 +366,7 @@ async def query(request: Request):
             final_answer,
             meta_text,
             conversation["title"],
+            user_id,
             limiter=db_limiter,
         )
     except Exception as e:
@@ -362,24 +396,33 @@ async def api_meta():
 
 # ==================== 会话管理 ====================
 @app.get("/api/conversations")
-async def api_list_conversations():
-    conversations = await run_sync(chat_store.list_conversations, limiter=db_limiter)
+async def api_list_conversations(user_id: Optional[int] = None):
+    """会话列表；带 user_id 时只返回该账号名下的会话。"""
+    conversations = await run_sync(
+        chat_store.list_conversations, 100, user_id, limiter=db_limiter
+    )
     return {"code": 0, "conversations": conversations}
 
 
 @app.post("/api/conversations")
 async def api_create_conversation(request: Request):
     data = await read_payload(request)
+    user_id = data.get("user_id")
+    try:
+        user_id = int(user_id) if user_id not in (None, "", "null") else None
+    except (TypeError, ValueError):
+        user_id = None
     conv = await run_sync(
         chat_store.create_conversation,
         data.get("title") or "新对话",
+        user_id,
         limiter=db_limiter,
     )
     return JSONResponse({"code": 0, "conversation": conv}, status_code=201)
 
 
 @app.get("/api/conversations/{cid}")
-async def api_get_conversation(cid: int):
+async def api_get_conversation(cid: str):
     conv = await run_sync(chat_store.get_conversation, cid, limiter=db_limiter)
     if conv is None:
         return JSONResponse({"code": 404, "message": "会话不存在"}, status_code=404)
@@ -388,7 +431,7 @@ async def api_get_conversation(cid: int):
 
 
 @app.patch("/api/conversations/{cid}")
-async def api_rename_conversation(cid: int, request: Request):
+async def api_rename_conversation(cid: str, request: Request):
     data = await read_payload(request)
     title = str(data.get("title") or "").strip()
     if not title:
@@ -401,7 +444,7 @@ async def api_rename_conversation(cid: int, request: Request):
 
 
 @app.delete("/api/conversations/{cid}")
-async def api_delete_conversation(cid: int):
+async def api_delete_conversation(cid: str):
     ok = await run_sync(chat_store.delete_conversation, cid, limiter=db_limiter)
     if not ok:
         return JSONResponse({"code": 404, "message": "会话不存在"}, status_code=404)
@@ -443,6 +486,7 @@ if __name__ == "__main__":
         host="127.0.0.1",
         port=int(os.getenv("PORT", "8000")),
         log_level="info",
-        # 单进程多线程即可（BM25 / 向量库 / BGE 模型在进程内共享）；如需多进程请配合 WAL（已启用）
+        # 单进程多线程即可（BM25 / 向量库 / BGE 模型在进程内共享）；
+        # 会话落库已改为 MySQL，如需多进程直接调大 workers 即可，无需再做文件级兼容
         workers=1,
     )

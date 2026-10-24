@@ -122,9 +122,10 @@ function renderRich(text) {
 /** 生成引擎徽标元素 */
 function buildBadge(engine) {
   const span = document.createElement('span');
-  const key = engine === 'faq' || engine === 'rag' ? engine : 'miss';
+  const labels = { faq: 'FAQ', rag: 'RAG', smalltalk: '直答' };
+  const key = labels[engine] ? engine : 'miss';
   span.className = `badge ${key}`;
-  span.textContent = engine === 'faq' ? 'FAQ' : engine === 'rag' ? 'RAG' : '未命中';
+  span.textContent = labels[engine] || '未命中';
   return span;
 }
 
@@ -133,6 +134,7 @@ function engineFromMeta(meta) {
   const text = String(meta || '');
   if (text.startsWith('FAQ')) return 'faq';
   if (text.startsWith('RAG')) return 'rag';
+  if (text.startsWith('直答')) return 'smalltalk';
   return '';
 }
 

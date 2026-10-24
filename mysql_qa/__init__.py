@@ -7,4 +7,4 @@
 #   from mysql_qa.cache import RedisClient                             # 缓存
 #
 # 这里刻意不做聚合导出：mysql_qa.retrieval 会拉起 jieba / rank_bm25，
-# 若在包入口 re-export，只想拿 chat_store（纯 sqlite3）的调用方也会被迫付这份开销。
+# 若在包入口 re-export，只想拿 chat_store（MySQL 会话存储）的调用方也会被迫付这份开销。
