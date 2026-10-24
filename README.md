@@ -5,6 +5,7 @@
 - 详细开发文档：[readme/开发文档-详细版.md](readme/开发文档-详细版.md)
 - 简略版副本：[readme/开发文档-简略版.md](readme/开发文档-简略版.md)
 - 压测报告（P95 / P99）：[readme/压测报告.md](readme/压测报告.md)　｜　可视化版：`readme/压测报告.html`
+- **容量与部署建议手册**：[readme/建议手册.md](readme/建议手册.md)　（本机基线参数 → 100 并发算力推算 → 按规模调参）
 - 项目介绍页（单文件离线版，双击即可打开）：`readme/project-intro.html`（仅本地保留，未纳入版本库）
 - 项目结构图：[readme/architecture.svg](readme/architecture.svg)　｜　请求流程图：[readme/flow.svg](readme/flow.svg)
 
