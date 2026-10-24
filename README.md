@@ -2,12 +2,11 @@
 
 单服务、双链路的教育领域问答系统：**FAQ**（MySQL + BM25 + Redis）优先，未命中转 **RAG**（Milvus + BGE 精排 + 大模型生成）。对外只暴露一套页面与一个问答接口。
 
-- 详细开发文档：[readme/开发文档-详细版.md](readme/开发文档-详细版.md)
-- 简略版副本：[readme/开发文档-简略版.md](readme/开发文档-简略版.md)
-- 压测报告（P95 / P99）：[readme/压测报告.md](readme/压测报告.md)　｜　可视化版：`readme/压测报告.html`
-- **容量与部署建议手册**：[readme/建议手册.md](readme/建议手册.md)　（本机基线参数 → 100 并发算力推算 → 按规模调参）
-- 项目介绍页（单文件离线版，双击即可打开）：`readme/project-intro.html`（仅本地保留，未纳入版本库）
-- 项目结构图：[readme/architecture.svg](readme/architecture.svg)　｜　请求流程图：[readme/flow.svg](readme/flow.svg)
+- 开发文档：[详细版](readme/开发文档-详细版.md)　｜　[简略版](readme/开发文档-简略版.md)
+- 压测与选型（同步 vs 异步同场次 A/B，7 场景）：[readme/压测对比报告-同步vs异步.md](readme/压测对比报告-同步vs异步.md)
+- 历史基线（Flask 同步版，已下线）：[readme/压测报告.md](readme/压测报告.md)　｜　[可视化版](readme/压测报告.html)
+- **容量与部署建议手册**：[readme/建议手册.md](readme/建议手册.md)（本机基线参数 → 100 并发算力推算 → 按规模调参）
+- 结构图：[readme/architecture.svg](readme/architecture.svg)　｜　请求流程图：[readme/flow.svg](readme/flow.svg)
 
 ![项目结构图](readme/architecture.svg)
 
@@ -127,7 +126,7 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | FAQ | 热缓存 · 端到端 | 8 | 200 | 21.5 ms | **30.0 ms** | 34.3 ms |
 | RAG | 端到端（LLM 直答） | 2 | 24 | 33.2 s | **41.0 s** | 42.2 s |
 
-- FAQ 吞吐：并发 8 时 **170 req/s**，并发 16 时回落到 124 req/s（16 核下 FAQ 是 CPU 密集，闸门给到 16 反而抢 GIL）。
+- FAQ 吞吐：并发 8 时 **170.1 req/s**（P95 37.3 ms），并发 16 时回落到 123.6 req/s、P95 涨到 668.7 ms（16 核下 FAQ 是 CPU 密集，闸门给到 16 反而抢 GIL）；RAG 在并发 2 时约 0.06 req/s。
 - 冷缓存的 P99 有少量 0.6 s 级抖动样本，P50/P95 更能代表稳态。
 - RAG 的 P95/P99 反映的是大模型生成耗时，与系统自身处理能力基本无关。
 
@@ -169,10 +168,10 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 
 ```json
 // 请求
-{"query": "AI 学科的课程大纲", "session_id": 3, "mode": "auto", "source": "ai"}
+{"query": "AI 学科的课程大纲", "session_id": "b63fa4f6-8ed3-4f35-bf45-4e9a3d88a8aa", "mode": "auto", "source": "ai"}
 
 // 响应
-{"code": 0, "session_id": 3, "title": "AI 学科的课程大纲", "answer": "……",
+{"code": 0, "session_id": "b63fa4f6-…", "title": "AI 学科的课程大纲", "answer": "……",
  "found": true, "engine": "rag", "elapsed": 3.2145, "note": "FAQ 无可靠答案，已转 RAG"}
 ```
 
@@ -338,8 +337,8 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | FAQ 全部不命中 | 语料变大后 softmax 最高分被稀释 | 重新标定阈值，或改用其他归一化方式 |
 | RAG 一直未命中且 note 有 Milvus 报错 | 向量库不可用 | 检查 Milvus、库名 `test5` 与集合名 |
 | 改了文件但建库结果没变 | 目录 mtime 未变（原地覆盖） | `[cache] verify_files = True` |
-| MySQL 重启后 FAQ 持续报错 | 单连接无重连 | 重启服务（或补重连逻辑） |
-| 前端学科选了 `ops` 检索为空 | 无对应 `ops_data` 语料 | 补语料或从配置移除 |
+| MySQL 重启后 FAQ 持续报错 | `MySQLClient`（knowledge 查询）是单连接 + 锁，**没有重连**；`chat_store` 有 `ping(reconnect=True)` | 重启服务（或给 `MySQLClient` 补重连） |
+| 前端学科选了 `ops` / `java` / `bigdata` 检索为空 | `rag_qa/data` 下只有 `ai_data` 与 `test_data` | 补对应语料目录，或从 `valid_sources` 移除 |
 
 ---
 
@@ -348,12 +347,12 @@ clf.save_model()                              # 输出到 models/bert_query_clas
 | 位置 | 现状 | 可添加 / 可修改 |
 |---|---|---|
 | FAQ 阈值 | 固定 0.85，与语料规模强耦合 | 改打分方式（min-max / top1-top2 间隔），阈值移到 `config.ini` |
-| MySQL 连接 | 单连接 + 锁，无重连 | 加 `ping(reconnect=True)` 或连接池 |
+| MySQL 连接 | `MySQLClient` 单连接 + 锁、无重连；`chat_store` 线程本地连接 + `ping(reconnect=True)`，但都是一线程一条 | 前者补重连，两者都可改连接池（多进程部署前必须做） |
 | LLM 客户端 | 两处各自封装，参数不一致 | 抽公共 `llm_client`，统一 temperature / 超时 / 重试 |
 | 调试输出 | 已注释停用：`print(max_index)`、两处 `pass`、旧 if/elif 分派（代码保留） | 确认后可删除 |
-| 学科配置 | `valid_sources` 含 `ops`，但无语料 | 补 `ops_data/` 或从配置移除 |
+| 学科配置 | `valid_sources` 有 ai / java / test / ops / bigdata，但 `rag_qa/data` 下只有 `ai_data` 与 `test_data` | 补齐语料目录，或把非在用学科从配置移除 |
 | 密钥管理 | `config.ini` 明文存 API Key | 改为环境变量注入 |
-| 观测字段 | 只返回 `engine` / `elapsed` / `note` | 补 `cached`、分段耗时、trace id |
+| 观测字段 | 可用于观测的只有 `engine` / `elapsed` / `note` | 补 `cached`、分段耗时、trace id |
 | 子查询清洗 | `split('\n')` 未过滤空行与序号，`is None` 判断恒假 | 清洗后判空再检索 |
 
 完整说明见 [详细版 §15](readme/开发文档-详细版.md)。
